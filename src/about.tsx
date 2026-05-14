@@ -238,7 +238,7 @@ export default function AboutPage() {
             <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
 
               <h3 className="text-3xl font-bold mb-3">
-                Mr. Navtej Mangat
+                Mr. Navtej Singh Mangat
               </h3>
 
               <p className="text-lg font-semibold text-[#5b3419] mb-6">
@@ -246,7 +246,7 @@ export default function AboutPage() {
               </p>
 
               <p className="text-[17px] leading-8 text-[#4a3728]">
-                UK Citizen • International Community Guidance & Advisory Support
+                Retired Solicitor Supreme Court of England and Wales • International Community Guidance & Advisory Support
               </p>
 
             </div>
