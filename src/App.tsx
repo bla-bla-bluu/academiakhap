@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import AboutPage from "./about"; // ✅ import your real about page
 function HomePage() {
   const posts = [
     {
@@ -334,15 +335,6 @@ function HomePage() {
           </div>
         </div>
       </section>
-    </div>
-  );
-}
-function AboutPage() {
-  return (
-    <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] p-20">
-      <h1 className="text-6xl font-bold">
-        About Us Page
-      </h1>
     </div>
   );
 }
