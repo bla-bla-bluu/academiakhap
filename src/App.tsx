@@ -49,7 +49,7 @@ function HomePage() {
       {/* Left Side */}
 <div className="flex items-center gap-3">
   <img
-    src="/public/logo_clean.png"
+    src="/logo_clean.png"
     alt="Academia Khap Logo"
     className="w-12 h- object-contain"
   />
