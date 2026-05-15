@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import AboutPage from "./about"; // ✅ import your real about page
+import AboutPage from "./about"; // 
+import WorkWithUsPage from "./work";
 function HomePage() {
   const posts = [
     {
@@ -41,14 +42,22 @@ function HomePage() {
    <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
 
   {/* Transparent Top Navbar */}
-  <nav className="fixed top-1 left-1/2 -translate-x-1/2 w-[100%] z-50 bg-[#3b2415]/55 backdrop-blur-md border border-white/10 rounded-2xl">
+  <nav className="fixed top-1 left-1/2 -translate-x-1/2 w-[100%] z-50 backdrop-blur-md border border-white/10 rounded-2xl">
 
-    <div className="max-w-6xl mx-auto px-2 py-1.5 flex items-center justify-between">
+    <div className="max-w-6xl mx-auto px-2 py-1 flex items-center justify-between">
 
       {/* Left Side */}
-      <h1 className="text-[#f5ede0] text-2xl font-bold tracking-wide drop-shadow-lg">
-        Academia Khap
-      </h1>
+<div className="flex items-center gap-3">
+  <img
+    src="/public/logo_clean.png"
+    alt="Academia Khap Logo"
+    className="w-12 h- object-contain"
+  />
+
+  <h1 className="text-2xl font-bold tracking-wide">
+    
+  </h1>
+</div>
 
       {/* Right Side */}
       <div className="flex items-center gap-3">
@@ -107,9 +116,11 @@ function HomePage() {
                 Explore Research
               </button>
 
-              <button className="px-8 py-4 rounded-full border border-[#5b3419] text-[#5b3419] font-semibold hover:bg-[#5b3419] hover:text-white transition duration-300">
+              <Link
+                to="/work"
+                className="px-8 py-4 rounded-full border border-[#5b3419] text-[#5b3419] font-semibold hover:bg-[#5b3419] hover:text-white transition duration-300">
                 Work With Us
-              </button>
+              </Link>
 
             </div>
 
@@ -321,13 +332,25 @@ function HomePage() {
           </p>
 
           <div className="flex flex-wrap justify-center gap-5">
+          <a
+            href="https://www.instagram.com/khap.academia"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <button className="px-8 py-4 rounded-full bg-white text-[#5b3419] font-semibold">
               Instagram
             </button>
+          </a>
 
+          <a
+            href="https://www.linkedin.com/in/khap-academia/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <button className="px-8 py-4 rounded-full border border-white font-semibold">
               LinkedIn
             </button>
+          </a>
 
             <button className="px-8 py-4 rounded-full border border-white font-semibold">
               Contact Us
@@ -348,6 +371,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
 
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/work" element={<WorkWithUsPage />} />
 
       </Routes>
 
