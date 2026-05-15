@@ -9,9 +9,17 @@ export default function AboutPage() {
 
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
 
-          <h1 className="text-2xl font-bold tracking-wide">
-            Academia Khap
-          </h1>
+<div className="flex items-center gap-3">
+  <img
+    src="/public/logo_clean.png"
+    alt="Academia Khap Logo"
+    className="w-12 h-12 object-contain"
+  />
+
+  <h1 className="text-2xl font-bold tracking-wide">
+    Academia Khap
+  </h1>
+</div>
 
           <div className="flex gap-4">
 
@@ -214,7 +222,25 @@ export default function AboutPage() {
           </h2>
 
           <div className="grid lg:grid-cols-3 gap-8">
+            <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
 
+              <h3 className="text-3xl font-bold mb-3">
+                Mr. Navtej Singh Mangat
+              </h3>
+
+              <p className="text-lg font-semibold text-[#5b3419] mb-6">
+                Senior Advisor
+              </p>
+              <ul className="space-y-2 list-disc pl-5 text-[17px] leading-8 text-[#4a3728]">
+                <li>Retired Solicitor Supreme Court of England and Wales</li>
+                <li>Barrister at Hon'ble Society of Lincoln's Inn</li>
+                <li>International Community Guidance & Advisory Support</li>
+              </ul>
+              <p className="text-[17px] leading-8 text-[#4a3728]">
+                 • 
+              </p>
+
+            </div>
             {/* Ajay Kumar */}
             <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
 
@@ -231,23 +257,6 @@ export default function AboutPage() {
                 <li>MTech Defence Technology</li>
                 <li>PhD Artificial Intelligence</li>
               </ul>
-
-            </div>
-
-            {/* Navtej */}
-            <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
-
-              <h3 className="text-3xl font-bold mb-3">
-                Mr. Navtej Singh Mangat
-              </h3>
-
-              <p className="text-lg font-semibold text-[#5b3419] mb-6">
-                Senior Advisor
-              </p>
-
-              <p className="text-[17px] leading-8 text-[#4a3728]">
-                Retired Solicitor Supreme Court of England and Wales • International Community Guidance & Advisory Support
-              </p>
 
             </div>
 
