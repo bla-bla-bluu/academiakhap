@@ -11,7 +11,7 @@ export default function AboutPage() {
 
 <div className="flex items-center gap-3">
   <img
-    src="/public/logo_clean.png"
+    src="/logo_clean.png"
     alt="Academia Khap Logo"
     className="w-12 h-12 object-contain"
   />
@@ -224,21 +224,66 @@ export default function AboutPage() {
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
 
-              <h3 className="text-3xl font-bold mb-3">
-                Mr. Navtej Singh Mangat
-              </h3>
+{/* Navtej Mangat */}
+<div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
 
-              <p className="text-lg font-semibold text-[#5b3419] mb-6">
-                Senior Advisor
-              </p>
-              <ul className="space-y-2 list-disc pl-5 text-[17px] leading-8 text-[#4a3728]">
-                <li>Retired Solicitor Supreme Court of England and Wales</li>
-                <li>Barrister at Hon'ble Society of Lincoln's Inn</li>
-                <li>International Community Guidance & Advisory Support</li>
-              </ul>
-              <p className="text-[17px] leading-8 text-[#4a3728]">
-                 • 
-              </p>
+  <h3 className="text-3xl font-bold mb-3">
+    Mr. Navtej Singh Mangat
+  </h3>
+
+  <p className="text-lg font-semibold text-[#5b3419] mb-6">
+    Senior Advisor — Legal, International Affairs & Strategic Guidance
+  </p>
+
+  <ul className="space-y-2 list-disc pl-5 text-[17px] leading-8 text-[#4a3728]">
+
+    <li>
+      Education: Charterhouse School & Epsom College, United Kingdom
+    </li>
+
+    <li>
+      UCL — LLB (Hons), Law
+    </li>
+
+    <li>
+      Law Society Finals (College of Law, Guildford) — Distinction
+    </li>
+
+    <li>
+      Bar Examinations, Honourable Society of Lincoln’s Inn — Distinction
+    </li>
+
+    <li>
+      Qualified Solicitor & Barrister in the United Kingdom
+    </li>
+
+    <li>
+      Retired Solicitor — Supreme Court of England & Wales
+    </li>
+
+    <li>
+      15+ Years In-House General Commercial Lawyer for multinational corporations including Wyeth, Pfizer, Peugeot-Citroën, Allergan, Syngenta & 3M
+    </li>
+
+    <li>
+      Political Experience: Press Officer to Woking Constituency Labour Party at age 21
+    </li>
+
+    <li>
+      Youngest shortlisted Prospective Parliamentary Candidate (PPC) for constituency nomination at age 23
+    </li>
+
+    <li>
+      Diploma in Advanced French — Institut Français (Université de Lille)
+    </li>
+
+    <li>
+      International Community Guidance, Legal Advisory & Strategic Support
+    </li>
+
+  </ul>
+
+</div>
 
             </div>
             {/* Ajay Kumar */}
