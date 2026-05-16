@@ -33,7 +33,7 @@ export default function WorkWithUsPage() {
             </Link>
 
             <Link
-              to="/work-with-us"
+              to="/work"
               className="px-5 py-2 rounded-full bg-[#5b3419] text-white"
             >
               Work With Us
