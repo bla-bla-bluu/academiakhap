@@ -48,7 +48,7 @@ export default function AboutPage() {
             </div>
 
             <h3 className="text-2xl sm:text-3xl font-bold mb-2">
-              Dr. Deepak Dhillon
+              Dr. Dhillon
             </h3>
 
             <p className="text-lg font-semibold text-[#5b3419] mb-6">
@@ -90,7 +90,7 @@ export default function AboutPage() {
             </div>
 
             <h3 className="text-3xl font-bold mb-2">
-              Mr. Harsh Kaliraman
+              Mr. Kaliraman
             </h3>
 
             <p className="text-lg font-semibold text-[#5b3419] mb-6">
@@ -131,7 +131,7 @@ export default function AboutPage() {
             </div>
 
             <h3 className="text-3xl font-bold mb-2">
-              Mr. Aastik Tewatia
+              Mr. Tewatia
             </h3>
 
             <p className="text-lg font-semibold text-[#5b3419] mb-6">
