@@ -405,7 +405,7 @@ function HomePage() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <button className="px-8 py-4 rounded-full bg-white text-[#5b3419] font-semibold">
+            <button className="px-8 py-4 rounded-full border border-white font-semibold hover:bg-white hover:text-[#5b3419] transition duration-300">
               Instagram
             </button>
           </a>
@@ -415,14 +415,16 @@ function HomePage() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <button className="px-8 py-4 rounded-full border border-white font-semibold">
+            <button className="px-8 py-4 rounded-full border border-white font-semibold hover:bg-white hover:text-[#5b3419] transition duration-300">
               LinkedIn
             </button>
           </a>
 
-            <button className="px-8 py-4 rounded-full border border-white font-semibold">
-              Contact Us
-            </button>
+          <Link
+          to="/contact"
+          className="px-8 py-4 rounded-full border border-white font-semibold hover:bg-white hover:text-[#5b3419] transition duration-300">
+          Contact Us
+        </Link>
           </div>
         </div>
       </section>
