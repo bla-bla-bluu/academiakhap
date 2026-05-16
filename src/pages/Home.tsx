@@ -56,7 +56,7 @@ function HomePage() {
         </div>
 
         {/* Hero Content */}
-        <div className="max-w-7xl mx-auto px-6 py-14 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14 text-center">
 
           <div className="max-w-6xl mx-auto">
 
@@ -64,7 +64,7 @@ function HomePage() {
               Research • History • Culture
             </p>
 
-<p className="text-2xl leading-[2.5rem] text-[#4b3526] text-center max-w-5xl mx-auto">
+<p className="text-lg sm:text-xl lg:text-2xl leading-8 sm:leading-10 text-[#4b3526] text-center max-w-5xl mx-auto">
 
   A collective platform focused on evidence-based research,
 
@@ -89,7 +89,7 @@ function HomePage() {
             ].map((item) => (
             <p
               key={item}
-              className="text-lg font-bold text-black whitespace-nowrap"
+              className="text-base sm:text-lg font-bold text-black whitespace-nowrap"
             >
               {item}
             </p>
@@ -101,13 +101,13 @@ function HomePage() {
 
       {/* Posts */}
       <section className="bg-[#efe4cf] border-y border-[#8b6a43]/20">
-        <div className="max-w-7xl mx-auto px-6 py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
           <div className="flex items-end justify-between mb-12 flex-wrap gap-6">
             <div>
               <p className="uppercase tracking-[0.3em] text-sm text-[#8b6a43] mb-3">
                 Publications & Posts
               </p>
-              <h2 className="text-5xl font-bold">Featured Research Topics</h2>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold">Featured Research Topics</h2>
             </div>
 
             <Link
@@ -122,17 +122,17 @@ function HomePage() {
             {posts.map((post) => (
               <div
                 key={post.title}
-                className="bg-[#f8f2e7] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition"
+                className="bg-[#f8f2e7] border border-[#b38b59]/30 rounded-[2rem] p-6 sm:p-8 shadow-sm hover:shadow-xl transition"
               >
                 <div className="inline-block px-4 py-2 rounded-full bg-[#5b3419] text-white text-sm mb-5">
                   {post.category}
                 </div>
 
-                <h3 className="text-3xl font-bold mb-4 leading-tight">
+                <h3 className="text-2xl sm:text-3xl font-bold mb-4 leading-tight">
                   {post.title}
                 </h3>
 
-                <p className="text-lg leading-8 text-[#4a3728] mb-6">
+                <p className="text-base sm:text-lg leading-7 sm:leading-8 text-[#4a3728] mb-6">
                   {post.excerpt}
                 </p>
 
@@ -146,7 +146,7 @@ function HomePage() {
       </section>
 
 {/* Members */}
-<section className="max-w-7xl mx-auto px-6 py-20">
+<section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
 
   {/* Community & Team Outside Ring */}
   <p className="uppercase tracking-[0.3em] text-sm text-[#8b6a43] mb-5">
@@ -156,16 +156,16 @@ function HomePage() {
   <div className="grid lg:grid-cols-2 gap-10 items-stretch">
 
     {/* Left Section */}
-    <div className="border border-[#b38b59]/25 rounded-[2.5rem] p-12">
+    <div className="border border-[#b38b59]/25 rounded-[2.5rem] p-6 sm:p-12">
 
       <Link
         to="/about"
-        className="inline-block text-5xl font-bold mb-8 px-6 py-3 rounded-2xl border border-[#5b3419] bg-[#5b3419] text-white transition duration-300 hover:bg-[#f4efe4] hover:text-[#5b3419]"
+        className="inline-block text-3xl sm:text-4xl lg:text-5xl font-bold mb-8 px-6 py-3 rounded-2xl border border-[#5b3419] bg-[#5b3419] text-white transition duration-300 hover:bg-[#f4efe4] hover:text-[#5b3419]"
       >
         Our Members
       </Link>
 
-      <p className="text-lg leading-9 text-[#4a3728] mb-10">
+      <p className="text-base sm:text-lg leading-8 sm:leading-9 text-[#4a3728] mb-10">
         Academia Khap is built through collaboration between researchers,
         scholars, legal experts, educators, historians, and socially aware
         contributors dedicated to knowledge-based engagement.
@@ -187,11 +187,11 @@ function HomePage() {
     </div>
 
  {/* Right Section */}
-<div className="rounded-[2.5rem] bg-[#5b3419] text-white p-12 shadow-2xl flex flex-col justify-start min-h-full">
+<div className="rounded-[2.5rem] bg-[#5b3419] text-white p-6 sm:p-12 shadow-2xl flex flex-col justify-start min-h-full">
 
   <Link
     to="/work"
-    className="inline-block self-start mt-2 mb-8 px-8 py-3 text-4xl font-bold rounded-full border border-white text-white hover:bg-white hover:text-[#5b3419] transition duration-300"
+    className="inline-block self-start mt-2 mb-8 px-6 sm:px-8 py-3 text-2xl sm:text-3xl lg:text-4xl font-bold rounded-full border border-white text-white hover:bg-white hover:text-[#5b3419] transition duration-300"
   >
     Work With Us
   </Link>
@@ -231,7 +231,7 @@ function HomePage() {
      {/* Donation */}
 <section className="bg-[#efe4cf] border-y border-[#8b6a43]/20">
 
-  <div className="max-w-7xl mx-auto px-6 py-20 grid lg:grid-cols-2 gap-14 items-start">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 grid lg:grid-cols-2 gap-10 sm:gap-14 items-start">
 
     {/* Left Content */}
     <div>
@@ -240,18 +240,18 @@ function HomePage() {
         Support Our Work
       </p>
 
-      <h2 className="text-5xl font-bold mb-8">
+      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-8">
         Donations & Contributions
       </h2>
 
-      <p className="text-lg leading-9 text-[#4a3728] mb-6">
+      <p className="text-base sm:text-lg leading-8 sm:leading-9 text-[#4a3728] mb-6">
         Contributions help support independent research,
         publication of articles and books, archival work,
         digital awareness campaigns, educational initiatives,
         and preservation of historical and cultural knowledge.
       </p>
 
-      <p className="text-lg leading-9 text-[#4a3728] mb-6">
+      <p className="text-base sm:text-lg leading-8 sm:leading-9 text-[#4a3728] mb-6">
         Academia Khap functions through collaborative
         participation and community support. Every contribution
         directly supports research-oriented, educational,
@@ -385,15 +385,15 @@ function HomePage() {
 
 </section>
       {/* Contact */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
         <div className="rounded-[2.5rem] bg-[#5b3419] text-white p-14 text-center shadow-2xl">
           <p className="uppercase tracking-[0.35em] text-sm text-[#e7d6be] mb-4">
             Get Connected
           </p>
 
-          <h2 className="text-5xl font-bold mb-8">Join Academia Khap</h2>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-8">Join Academia Khap</h2>
 
-          <p className="max-w-3xl mx-auto text-lg leading-9 text-[#f5ede0] mb-10">
+          <p className="max-w-3xl mx-auto text-base sm:text-lg leading-8 sm:leading-9 text-[#f5ede0] mb-10">
             Connect with us for research collaborations, social projects,
             publications, historical discussions, awareness campaigns, and
             community-oriented initiatives.
