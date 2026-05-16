@@ -9,17 +9,17 @@ export default function AboutPage() {
 
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
 
-<div className="flex items-center gap-3">
-  <img
-    src="/logo_clean.png"
-    alt="Academia Khap Logo"
-    className="w-12 h-12 object-contain"
-  />
+          <div className="flex items-center gap-3">
+            <img
+              src="/logo_clean.png"
+              alt="Academia Khap Logo"
+              className="w-12 h-12 object-contain"
+            />
 
-  <h1 className="text-2xl font-bold tracking-wide">
-    Academia Khap
-  </h1>
-</div>
+            <h1 className="text-2xl font-bold tracking-wide">
+              Academia Khap
+            </h1>
+          </div>
 
           <div className="flex gap-4">
 
@@ -28,13 +28,6 @@ export default function AboutPage() {
               className="px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300"
             >
               Home
-            </Link>
-
-            <Link
-              to="/about"
-              className="px-5 py-2 rounded-full bg-[#5b3419] text-white"
-            >
-              About Us
             </Link>
 
           </div>
@@ -56,65 +49,8 @@ export default function AboutPage() {
             Directors & Core Team
           </h1>
 
-          <p className="max-w-4xl text-xl leading-10 text-[#4a3728]">
-            Academia Khap is driven by researchers,
-            strategists, community leaders, and policy-oriented
-            contributors working toward cultural continuity,
-            evidence-based dialogue, and social understanding.
-          </p>
-
         </div>
-
-      </section>
-
-      {/* Directors */}
-      <section className="max-w-7xl mx-auto px-6 py-24">
-
-        <div className="grid lg:grid-cols-3 gap-8">
-
-          {/* Harsh */}
-          <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
-
-            <div className="w-20 h-20 rounded-full bg-[#5b3419] text-white flex items-center justify-center text-2xl font-bold mb-6">
-              H
-            </div>
-
-            <h3 className="text-3xl font-bold mb-2">
-              Mr. Harsh Kaliraman
-            </h3>
-
-            <p className="text-lg font-semibold text-[#5b3419] mb-6">
-              Community & Operations Director
-            </p>
-
-            <div className="space-y-4 text-[17px] leading-8 text-[#4a3728]">
-
-              <p>
-                Oversees operations, outreach,
-                organizational management,
-                and community coordination.
-              </p>
-
-              <div className="pt-4 border-t border-[#d8c2a0]">
-
-                <p className="font-semibold mb-2">
-                  Qualifications
-                </p>
-
-                <ul className="space-y-1 list-disc pl-5">
-                  <li>BA</li>
-                  <li>MA Archaeology</li>
-                  <li>Community Leadership</li>
-                  <li>Operations Management</li>
-                  <li>Public Outreach</li>
-                </ul>
-
-              </div>
-
-            </div>
-
-          </div>
-
+       <div className="grid lg:grid-cols-3 gap-6 max-w-7xl mx-auto px-6 py-24">
           {/* Dhillon */}
           <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
 
@@ -146,12 +82,10 @@ export default function AboutPage() {
                 </p>
 
                 <ul className="space-y-1 list-disc pl-5">
-                  <li>BVoc</li>
-                  <li>MSc Computer Science</li>
-                  <li>MTech Defence Technology</li>
-                  <li>PhD Artificial Intelligence</li>
-                  <li>Academic Writing</li>
-                  <li>Historical & Social Analysis</li>
+
+                  <li>B.Voc, MSc CS, MTech Defence Tech, PhD Artificial Intelligence</li>
+                  <li>Community Leadership, Academic Writing & Fact Analysis</li>
+
                 </ul>
 
               </div>
@@ -159,7 +93,47 @@ export default function AboutPage() {
             </div>
 
           </div>
+          {/* Harsh */}
+          <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
 
+            <div className="w-20 h-20 rounded-full bg-[#5b3419] text-white flex items-center justify-center text-2xl font-bold mb-6">
+              H
+            </div>
+
+            <h3 className="text-3xl font-bold mb-2">
+              Mr. Harsh Kaliraman
+            </h3>
+
+            <p className="text-lg font-semibold text-[#5b3419] mb-6">
+              Community & Operations Director
+            </p>
+
+            <div className="space-y-4 text-[17px] leading-8 text-[#4a3728]">
+
+              <p>
+                Oversees operations, outreach,
+                organizational management,
+                and community coordination.
+              </p>
+
+              <div className="pt-4 border-t border-[#d8c2a0]">
+
+                <p className="font-semibold mb-2">
+                  Qualifications
+                </p>
+
+                <ul className="space-y-1 list-disc pl-5">
+
+                  <li>BA, MA Archaeology</li>
+                  <li>Public Outreach, Evidence Analysis, Community Gathering</li>
+
+                </ul>
+
+              </div>
+
+            </div>
+
+          </div>
           {/* Tewatia */}
           <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
 
@@ -191,11 +165,8 @@ export default function AboutPage() {
                 </p>
 
                 <ul className="space-y-1 list-disc pl-5">
-                  <li>BA</li>
-                  <li>MA History</li>
-                  <li>Policy Communication</li>
-                  <li>Public Relations</li>
-                  <li>Community Coordination</li>
+                  <li>BA, MA History</li>
+                  <li>Policy Communication, Public Relations & Community Coordination, Historical Document Analysis</li>
                 </ul>
 
               </div>
@@ -203,9 +174,7 @@ export default function AboutPage() {
             </div>
 
           </div>
-
         </div>
-
       </section>
 
       {/* Supporting Members */}
@@ -224,73 +193,65 @@ export default function AboutPage() {
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
 
-{/* Navtej Mangat */}
-<div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+              {/* Navtej Mangat */}
+              <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
 
-  <h3 className="text-3xl font-bold mb-3">
-    Mr. Navtej Singh Mangat
-  </h3>
+                <h3 className="text-3xl font-bold mb-3">
+                  Mr. Navtej Singh Mangat
+                </h3>
 
-  <p className="text-lg font-semibold text-[#5b3419] mb-6">
-    Senior Advisor — Legal, International Affairs & Strategic Guidance
-  </p>
+                <p className="text-lg font-semibold text-[#5b3419] mb-6">
+                  Senior Advisor — Legal, International Affairs & Strategic Guidance
+                </p>
 
-  <ul className="space-y-2 list-disc pl-5 text-[17px] leading-8 text-[#4a3728]">
+                <ul className="space-y-2 list-disc pl-5 text-[17px] leading-8 text-[#4a3728]">
 
-    <li>
-      Education: Charterhouse School & Epsom College, United Kingdom
-    </li>
+                  <li>
+                    Education: Charterhouse School & Epsom College, United Kingdom
+                  </li>
 
-    <li>
-      UCL — LLB (Hons), Law
-    </li>
+                  <li>
+                    UCL — LLB (Hons), Law Society Finals (College of Law, Guildford) — Distinction
+                  </li>
 
-    <li>
-      Law Society Finals (College of Law, Guildford) — Distinction
-    </li>
+                  <li>
+                    Bar Examinations, Honourable Society of Lincoln’s Inn — Distinction
+                  </li>
 
-    <li>
-      Bar Examinations, Honourable Society of Lincoln’s Inn — Distinction
-    </li>
+                  <li>
+                    Qualified Solicitor & Barrister in the United Kingdom, Retired Solicitor — Supreme Court of England & Wales
+                  </li>
 
-    <li>
-      Qualified Solicitor & Barrister in the United Kingdom
-    </li>
+                  <li>
+                    15+ Years In-House General Commercial Lawyer for multinational corporations including Wyeth, Pfizer, Peugeot-Citroën, Allergan, Syngenta & 3M
+                  </li>
 
-    <li>
-      Retired Solicitor — Supreme Court of England & Wales
-    </li>
+                  <li>
+                    Political Experience: Press Officer to Woking Constituency Labour Party at age 21
+                  </li>
 
-    <li>
-      15+ Years In-House General Commercial Lawyer for multinational corporations including Wyeth, Pfizer, Peugeot-Citroën, Allergan, Syngenta & 3M
-    </li>
+                  <li>
+                    Youngest shortlisted Prospective Parliamentary Candidate (PPC) for constituency nomination at age 23
+                  </li>
 
-    <li>
-      Political Experience: Press Officer to Woking Constituency Labour Party at age 21
-    </li>
+                  <li>
+                    Diploma in Advanced French — Institut Français (Université de Lille)
+                  </li>
 
-    <li>
-      Youngest shortlisted Prospective Parliamentary Candidate (PPC) for constituency nomination at age 23
-    </li>
+                  <li>
+                    International Community Guidance, Legal Advisory & Strategic Support
+                  </li>
 
-    <li>
-      Diploma in Advanced French — Institut Français (Université de Lille)
-    </li>
+                </ul>
 
-    <li>
-      International Community Guidance, Legal Advisory & Strategic Support
-    </li>
-
-  </ul>
-
-</div>
+              </div>
 
             </div>
             {/* Ajay Kumar */}
             <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
 
               <h3 className="text-3xl font-bold mb-3">
-                Mr. Ajay Kumar Vashist
+                Dr. Ajay Kumar Vashist
               </h3>
 
               <p className="text-lg font-semibold text-[#5b3419] mb-6">
@@ -298,9 +259,8 @@ export default function AboutPage() {
               </p>
 
               <ul className="space-y-2 list-disc pl-5 text-[17px] leading-8 text-[#4a3728]">
-                <li>BTech</li>
-                <li>MTech Defence Technology</li>
-                <li>PhD Artificial Intelligence</li>
+                <li>BTech, MTech Defence Tech, PhD Artificial Intelligence</li>
+                <li>Fact observations, Community Outreach & Analysis</li>
               </ul>
 
             </div>
