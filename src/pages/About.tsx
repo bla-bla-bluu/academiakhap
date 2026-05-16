@@ -6,18 +6,18 @@ export default function AboutPage() {
 
       {/* Navbar */}
       <nav className="w-full bg-[#efe4cf] border-b border-[#8b6a43]/20">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex flex-col sm:flex-row gap-3 sm:gap-0 items-start sm:items-center justify-between">
           <div className="flex items-center gap-3">
             <img
               src="/logo_clean.png"
               alt="Academia Khap Logo"
-              className="w-12 h-12 object-contain"/>
+              className="w-10 h-10 sm:w-12 sm:h-12 object-contain"/>
 
-            <h1 className="text-2xl font-bold tracking-wide">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-wide">
               Academia Khap
             </h1>
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-2 sm:gap-4">
             <Link
               to="/"
               className="px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300">
@@ -28,18 +28,18 @@ export default function AboutPage() {
       </nav>
 
       {/* Hero */}
-      <section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 pt-20 pb-8">
+      <section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 pt-12 sm:pt-20 pb-8">
 
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <p className="uppercase tracking-[0.35em] text-sm text-[#8b6a43] mb-4">
             Leadership & Team
           </p>
-          <h1 className="text-6xl font-bold leading-tight mb-10">
+          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold leading-tight mb-10">
             Directors & Core Team
           </h1>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6 max-w-7xl mx-auto px-6 pt-4 pb-16">
+        <div className="grid lg:grid-cols-3 gap-6 max-w-7xl mx-auto px-4 sm:px-6 pt-4 pb-12 sm:pb-16">
           {/* Dhillon */}
           <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
 
@@ -47,7 +47,7 @@ export default function AboutPage() {
               D
             </div>
 
-            <h3 className="text-3xl font-bold mb-2">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-2">
               Dr. Deepak Dhillon
             </h3>
 
@@ -167,15 +167,15 @@ export default function AboutPage() {
       </section>
 
       {/* Supporting Members */}
-      <section className="bg-[#efe4cf] border-y border-[#8b6a43]/20 py-24">
+      <section className="bg-[#efe4cf] border-y border-[#8b6a43]/20 py-12 sm:py-24">
 
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
           <p className="uppercase tracking-[0.35em] text-sm text-[#8b6a43] mb-4">
             Supporting Members
           </p>
 
-          <h2 className="text-5xl font-bold mb-14">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-10 sm:mb-14">
             Advisory & Research Support
           </h2>
 

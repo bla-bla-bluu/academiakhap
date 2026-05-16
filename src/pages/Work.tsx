@@ -7,23 +7,23 @@ export default function WorkWithUsPage() {
       {/* Navbar */}
       <nav className="w-full bg-[#efe4cf] border-b border-[#8b6a43]/20">
 
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex flex-col sm:flex-row gap-3 sm:gap-0 items-start sm:items-center justify-between">
 
           <div className="flex items-center gap-3">
 
             <img
               src="/logo_clean.png"
               alt="Academia Khap Logo"
-              className="w-12 h-12 object-contain"
+              className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
             />
 
-            <h1 className="text-2xl font-bold tracking-wide">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-wide">
               Academia Khap
             </h1>
 
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-2 sm:gap-4">
 
             <Link
               to="/"
@@ -46,20 +46,20 @@ export default function WorkWithUsPage() {
       </nav>
 
       {/* Hero */}
-      <section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 py-24">
+      <section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 py-12 sm:py-24">
 
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
           <p className="uppercase tracking-[0.35em] text-sm text-[#8b6a43] mb-4">
             Collaborate With Academia Khap
           </p>
 
-          <h1 className="text-6xl font-bold leading-tight mb-10">
+          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold leading-tight mb-10">
             Researchers, Scholars,
             Historians & Community Contributors
           </h1>
 
-          <p className="max-w-5xl text-xl leading-10 text-[#4a3728]">
+          <p className="max-w-5xl text-base sm:text-lg lg:text-xl leading-8 sm:leading-9 lg:leading-10 text-[#4a3728]">
             Academia Khap works through collaborative research,
             historical documentation, policy discussion,
             digital awareness, cultural preservation,
@@ -71,7 +71,7 @@ export default function WorkWithUsPage() {
       </section>
 
       {/* Work Areas */}
-      <section className="max-w-7xl mx-auto px-6 py-24">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-24">
 
         <div className="mb-16">
 
@@ -79,7 +79,7 @@ export default function WorkWithUsPage() {
             Areas of Contribution
           </p>
 
-          <h2 className="text-5xl font-bold">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
             Work Domains
           </h2>
 
@@ -115,10 +115,10 @@ export default function WorkWithUsPage() {
           ].map((item) => (
             <div
               key={item.title}
-              className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm"
+              className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-6 sm:p-8 shadow-sm"
             >
 
-              <h3 className="text-3xl font-bold mb-5">
+              <h3 className="text-2xl sm:text-3xl font-bold mb-5">
                 {item.title}
               </h3>
 
@@ -134,15 +134,15 @@ export default function WorkWithUsPage() {
       </section>
 
       {/* Contributor Details */}
-      <section className="bg-[#efe4cf] border-y border-[#8b6a43]/20 py-24">
+      <section className="bg-[#efe4cf] border-y border-[#8b6a43]/20 py-12 sm:py-24">
 
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
           <p className="uppercase tracking-[0.35em] text-sm text-[#8b6a43] mb-4">
             Contributor Information
           </p>
 
-          <h2 className="text-5xl font-bold mb-16">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-10 sm:mb-16">
             Who Can Work With Us
           </h2>
 
@@ -197,7 +197,7 @@ export default function WorkWithUsPage() {
       </section>
 
       {/* Why Join */}
-      <section className="max-w-7xl mx-auto px-6 py-24">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-24">
 
         <div className="max-w-5xl">
 
@@ -205,11 +205,11 @@ export default function WorkWithUsPage() {
             Why Collaborate
           </p>
 
-          <h2 className="text-5xl font-bold mb-10">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-10">
             Purpose & Long-Term Vision
           </h2>
 
-          <div className="space-y-8 text-xl leading-10 text-[#4a3728]">
+          <div className="space-y-8 text-base sm:text-lg lg:text-xl leading-8 sm:leading-9 lg:leading-10 text-[#4a3728]">
 
             <p>
               Academia Khap aims to create a long-term
@@ -242,19 +242,19 @@ export default function WorkWithUsPage() {
       </section>
 
       {/* Application */}
-      <section className="bg-[#5b3419] text-white py-24">
+      <section className="bg-[#5b3419] text-white py-12 sm:py-24">
 
-        <div className="max-w-5xl mx-auto px-6 text-center">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
 
           <p className="uppercase tracking-[0.35em] text-sm text-[#e7d6be] mb-4">
             Join Academia Khap
           </p>
 
-          <h2 className="text-5xl font-bold mb-10">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-10">
             Research • Culture • Documentation
           </h2>
 
-          <p className="text-xl leading-10 text-[#f5ede0] mb-12">
+          <p className="text-base sm:text-lg lg:text-xl leading-8 sm:leading-9 lg:leading-10 text-[#f5ede0] mb-12">
             We welcome individuals committed to
             evidence-based thinking,
             intellectual contribution,

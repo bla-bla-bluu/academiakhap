@@ -40,9 +40,9 @@ export default function ResearchPage() {
     <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
       <Navbar links={[{ to: "/", label: "Home" }]} />
 
-      <div className="grid lg:grid-cols-[350px_1fr] min-h-screen">
+      <div className="grid lg:grid-cols-[320px_1fr] xl:grid-cols-[350px_1fr] min-h-screen">
         <div className="border-r border-[#b38b59]/20 bg-[#efe4cf] p-6">
-          <h2 className="text-3xl font-bold mb-6">Research Archive</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6">Research Archive</h2>
 
           <div className="relative mb-8">
             <Search className="absolute left-4 top-4 text-[#8b6a43]" />
@@ -68,25 +68,25 @@ export default function ResearchPage() {
           </div>
         </div>
 
-        <div className="p-12">
+        <div className="p-6 sm:p-8 lg:p-12">
           <p className="uppercase tracking-[0.35em] text-sm text-[#8b6a43] mb-4">
             Publications & Articles
           </p>
 
           {!selectedArticle ? (
             <>
-              <h1 className="text-6xl font-bold mb-8">Research & Evidence Archive</h1>
+              <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold mb-8">Research & Evidence Archive</h1>
 
-              <p className="text-xl leading-10 text-[#4a3728] max-w-5xl">
+              <p className="text-base sm:text-lg lg:text-xl leading-8 sm:leading-9 lg:leading-10 text-[#4a3728] max-w-5xl">
                 Explore detailed articles supported with historical references,
                 archival material, community records, source citations,
                 images, academic arguments, and documented evidence.
               </p>
 
               <div className="mt-12 rounded-[2rem] border border-[#b38b59]/20 bg-[#faf6ef] p-10">
-                <h2 className="text-3xl font-bold mb-5">Select an Article</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-5">Select an Article</h2>
 
-                <p className="text-lg leading-9 text-[#4a3728]">
+                <p className="text-base sm:text-lg leading-8 sm:leading-9 text-[#4a3728]">
                   Choose an article from the left panel to begin reading.
                   The article will open in this right panel for faster browsing.
                 </p>
@@ -98,11 +98,11 @@ export default function ResearchPage() {
                 {selectedArticle.category}
               </p>
 
-              <h1 className="text-5xl font-bold mb-8 leading-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-8 leading-tight">
                 {selectedArticle.title}
               </h1>
 
-              <div className="space-y-6 text-lg leading-9 text-[#4a3728]">
+              <div className="space-y-6 text-base sm:text-lg leading-8 sm:leading-9 text-[#4a3728]">
                 {selectedArticle.body.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
                 ))}
