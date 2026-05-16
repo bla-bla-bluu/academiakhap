@@ -6,51 +6,40 @@ export default function AboutPage() {
 
       {/* Navbar */}
       <nav className="w-full bg-[#efe4cf] border-b border-[#8b6a43]/20">
-
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-
           <div className="flex items-center gap-3">
             <img
               src="/logo_clean.png"
               alt="Academia Khap Logo"
-              className="w-12 h-12 object-contain"
-            />
+              className="w-12 h-12 object-contain"/>
 
             <h1 className="text-2xl font-bold tracking-wide">
               Academia Khap
             </h1>
           </div>
-
           <div className="flex gap-4">
-
             <Link
               to="/"
-              className="px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300"
-            >
+              className="px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300">
               Home
             </Link>
-
           </div>
-
         </div>
-
       </nav>
 
       {/* Hero */}
-      <section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 py-24">
+      <section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 pt-20 pb-8">
 
         <div className="max-w-7xl mx-auto px-6">
-
           <p className="uppercase tracking-[0.35em] text-sm text-[#8b6a43] mb-4">
             Leadership & Team
           </p>
-
           <h1 className="text-6xl font-bold leading-tight mb-10">
             Directors & Core Team
           </h1>
-
         </div>
-       <div className="grid lg:grid-cols-3 gap-6 max-w-7xl mx-auto px-6 py-24">
+
+        <div className="grid lg:grid-cols-3 gap-6 max-w-7xl mx-auto px-6 pt-4 pb-16">
           {/* Dhillon */}
           <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
 
