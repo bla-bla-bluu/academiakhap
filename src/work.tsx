@@ -33,13 +33,6 @@ export default function WorkWithUsPage() {
             </Link>
 
             <Link
-              to="/about"
-              className="px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300"
-            >
-              About Us
-            </Link>
-
-            <Link
               to="/work-with-us"
               className="px-5 py-2 rounded-full bg-[#5b3419] text-white"
             >
