@@ -39,23 +39,19 @@ export default function AboutPage() {
           </h1>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6 max-w-7xl mx-auto px-4 sm:px-6 pt-4 pb-12 sm:pb-16">
+        <div className="grid lg:grid-cols-3 gap-5 max-w-7xl mx-auto px-4 sm:px-6 pt-4 pb-12 sm:pb-16">
           {/* Dhillon */}
-          <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+          <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-6 shadow-sm">
 
-            <div className="w-20 h-20 rounded-full bg-[#5b3419] text-white flex items-center justify-center text-2xl font-bold mb-6">
-              D
-            </div>
-
-            <h3 className="text-2xl sm:text-3xl font-bold mb-2">
-              Dr. Dhillon
+            <h3 className="text-2xl font-bold mb-2">
+              Mr. Dhillon
             </h3>
 
-            <p className="text-lg font-semibold text-[#5b3419] mb-6">
+            <p className="text-base font-semibold text-[#5b3419] mb-5">
               Strategic Research Director
             </p>
 
-            <div className="space-y-4 text-[17px] leading-8 text-[#4a3728]">
+            <div className="space-y-3 text-[16px] leading-7 text-[#4a3728]">
 
               <p>
                 Leads research initiatives,
@@ -83,21 +79,17 @@ export default function AboutPage() {
 
           </div>
           {/* Harsh */}
-          <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+          <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-6 shadow-sm">
 
-            <div className="w-20 h-20 rounded-full bg-[#5b3419] text-white flex items-center justify-center text-2xl font-bold mb-6">
-              H
-            </div>
-
-            <h3 className="text-3xl font-bold mb-2">
+            <h3 className="text-2xl font-bold mb-2">
               Mr. Kaliraman
             </h3>
 
-            <p className="text-lg font-semibold text-[#5b3419] mb-6">
+            <p className="text-base font-semibold text-[#5b3419] mb-5">
               Community & Operations Director
             </p>
 
-            <div className="space-y-4 text-[17px] leading-8 text-[#4a3728]">
+            <div className="space-y-3 text-[16px] leading-7 text-[#4a3728]">
 
               <p>
                 Oversees operations, outreach,
@@ -124,21 +116,17 @@ export default function AboutPage() {
 
           </div>
           {/* Tewatia */}
-          <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+          <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-6 shadow-sm">
 
-            <div className="w-20 h-20 rounded-full bg-[#5b3419] text-white flex items-center justify-center text-2xl font-bold mb-6">
-              T
-            </div>
-
-            <h3 className="text-3xl font-bold mb-2">
+            <h3 className="text-2xl font-bold mb-2">
               Mr. Tewatia
             </h3>
 
-            <p className="text-lg font-semibold text-[#5b3419] mb-6">
+            <p className="text-base font-semibold text-[#5b3419] mb-5">
               Policy & Communications Director
             </p>
 
-            <div className="space-y-4 text-[17px] leading-8 text-[#4a3728]">
+            <div className="space-y-3 text-[16px] leading-7 text-[#4a3728]">
 
               <p>
                 Handles institutional communication,
@@ -167,129 +155,267 @@ export default function AboutPage() {
       </section>
 
       {/* Supporting Members */}
-      <section className="bg-[#efe4cf] border-y border-[#8b6a43]/20 py-12 sm:py-24">
+{/* Supporting Members */}
+<section className="bg-[#efe4cf] border-y border-[#8b6a43]/20 py-12 sm:py-24">
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
-          <p className="uppercase tracking-[0.35em] text-sm text-[#8b6a43] mb-4">
-            Supporting Members
+    <p className="uppercase tracking-[0.35em] text-sm text-[#8b6a43] mb-4">
+      Supporting Members
+    </p>
+
+    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-14">
+      Advisory, Research & Community Support
+    </h2>
+
+    {/* Senior Advisors */}
+    <div className="mb-20">
+
+      <h3 className="text-3xl font-bold mb-8">
+        Senior Advisors & Backbone
+      </h3>
+
+      <div className="grid lg:grid-cols-2 gap-8">
+
+        {/* Navtej Mangat */}
+        <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+
+          <h3 className="text-3xl font-bold mb-3">
+            Mr. Navtej Singh Mangat
+          </h3>
+
+          <p className="text-lg font-semibold text-[#5b3419] mb-6">
+            Senior Advisor — Legal & International Affairs
           </p>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-10 sm:mb-14">
-            Advisory & Research Support
-          </h2>
+          <div className="space-y-3 text-[17px] leading-8 text-[#4a3728]">
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
-
-              {/* Navtej Mangat */}
-              <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
-
-                <h3 className="text-3xl font-bold mb-3">
-                  Mr. Navtej Singh Mangat
-                </h3>
-
-                <p className="text-lg font-semibold text-[#5b3419] mb-6">
-                  Senior Advisor — Legal, International Affairs & Strategic Guidance
-                </p>
-
-                <ul className="space-y-2 list-disc pl-5 text-[17px] leading-8 text-[#4a3728]">
-
-                  <li>
-                    Education: Charterhouse School & Epsom College, United Kingdom
-                  </li>
-
-                  <li>
-                    UCL — LLB (Hons), Law Society Finals (College of Law, Guildford) — Distinction
-                  </li>
-
-                  <li>
-                    Bar Examinations, Honourable Society of Lincoln’s Inn — Distinction
-                  </li>
-
-                  <li>
-                    Qualified Solicitor & Barrister in the United Kingdom, Retired Solicitor — Supreme Court of England & Wales
-                  </li>
-
-                  <li>
-                    15+ Years In-House General Commercial Lawyer for multinational corporations including Wyeth, Pfizer, Peugeot-Citroën, Allergan, Syngenta & 3M
-                  </li>
-
-                  <li>
-                    Political Experience: Press Officer to Woking Constituency Labour Party at age 21
-                  </li>
-
-                  <li>
-                    Youngest shortlisted Prospective Parliamentary Candidate (PPC) for constituency nomination at age 23
-                  </li>
-
-                  <li>
-                    Diploma in Advanced French — Institut Français (Université de Lille)
-                  </li>
-
-                  <li>
-                    International Community Guidance, Legal Advisory & Strategic Support
-                  </li>
-
-                </ul>
-
-              </div>
-
-            </div>
-            {/* Ajay Kumar */}
-            <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
-
-              <h3 className="text-3xl font-bold mb-3">
-                Dr. Ajay Kumar Vashist
-              </h3>
-
-              <p className="text-lg font-semibold text-[#5b3419] mb-6">
-                Research & Technical Support
-              </p>
-
-              <ul className="space-y-2 list-disc pl-5 text-[17px] leading-8 text-[#4a3728]">
-                <li>BTech, MTech Defence Tech, PhD Artificial Intelligence</li>
-                <li>Fact observations, Community Outreach & Analysis</li>
-              </ul>
-
-            </div>
-
-            {/* Ajay Gathwal */}
-            <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
-
-              <h3 className="text-3xl font-bold mb-3">
-                Mr. Ajay Gathwal
-              </h3>
-
-              <p className="text-lg font-semibold text-[#5b3419] mb-6">
-                Senior Advisor
-              </p>
-
-              <p className="text-[17px] leading-8 text-[#4a3728]">
-                American Citizen • International Advisory & Strategic Support
-              </p>
-
-            </div>
-
-          </div>
-
-          {/* Legal Advisor */}
-          <div className="mt-16 bg-[#faf6ef] border border-dashed border-[#b38b59]/40 rounded-[2rem] p-10 text-center">
-
-            <h3 className="text-3xl font-bold mb-4">
-              Legal Advisory Panel
-            </h3>
-
-            <p className="text-lg text-[#4a3728]">
-              Additional legal advisors and academic contributors
-              will be announced officially.
+            <p className="font-semibold">
+              Education
             </p>
+
+            <ul className="space-y-2 list-disc pl-5">
+              <li>Charterhouse School & Epsom College (UK)</li>
+              <li>UCL — LLB (Hons)</li>
+              <li>Law Society Finals (Guildford) — Distinction</li>
+              <li>Lincoln’s Inn Bar Examinations — Distinction</li>
+              <li>Diploma in Advanced French — Institut Français</li>
+            </ul>
 
           </div>
 
         </div>
 
-      </section>
+        {/* Ajay Gathwal */}
+        <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+
+          <h3 className="text-3xl font-bold mb-3">
+            Mr. Ajay Gathwal
+          </h3>
+
+          <p className="text-lg font-semibold text-[#5b3419] mb-6">
+            Senior Advisor
+          </p>
+
+          <p className="text-[17px] leading-8 text-[#4a3728]">
+            American Citizen • International Advisory &
+            Strategic Guidance.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    {/* Research & Academic Members */}
+    <div className="mb-20">
+
+      <h3 className="text-3xl font-bold mb-8">
+        Research & Academic Members
+      </h3>
+
+      <div className="grid lg:grid-cols-3 gap-8">
+
+        {[
+          {
+            name: "Dr. Vikas Malik",
+            qualification: "BA, MA History",
+            expertise: "Evidence Analyst, Document & Fact Analysis",
+          },
+          {
+            name: "Dr. Chahat Talan",
+            qualification: "BSc, MSc, BEd, MEd, PhD (Mathematics)",
+            expertise: "Community Outreach, Tribe & Race Analysis",
+          },
+          {
+            name: "Mr. Ajay Kumar Vashist",
+            qualification: "BTech, MTech Defence Technology, PhD Artificial Intelligence",
+            expertise: "Research Support, Technical Analysis, Community Outreach",
+          },
+          {
+            name: "Mr. Ritik Baliyan",
+            qualification: "BA Economics + Political Science, MA Politics & International Relations, PhD Political Science",
+            expertise: "Agrarian Politics",
+          },
+          {
+            name: "Miss Antim Chaudhary",
+            qualification: "BA, MA Modern History, PhD",
+            expertise: "Military History",
+          },
+          {
+            name: "Mr. Hitesh Dahiya",
+            qualification: "BA (Political Science + Philosophy), MA Political Science",
+            expertise: "Philosophy, Psychology, Social Issues, Geopolitics",
+          },
+          {
+            name: "Mr. Yashvardhan Pannu",
+            qualification: "BA Political Science & International Relations (Hons)",
+            expertise: "Geopolitical Analysis, Youth Diplomacy, Amateur Research",
+          },
+          {
+            name: "Aryaman Tewatia",
+            qualification: "BA History + Political Science, MA Development Studies, MA Political Science",
+            expertise: "Political Analysis & Field Work",
+          },
+        ].map((member) => (
+          <div
+            key={member.name}
+            className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm"
+          >
+            <h3 className="text-2xl font-bold mb-3">
+              {member.name}
+            </h3>
+
+            <p className="mb-4 text-[#5b3419] font-semibold">
+              Qualifications
+            </p>
+
+            <p className="text-[16px] leading-7 text-[#4a3728] mb-5">
+              {member.qualification}
+            </p>
+
+            <p className="mb-2 font-semibold text-[#5b3419]">
+              Expertise
+            </p>
+
+            <p className="text-[16px] leading-7 text-[#4a3728]">
+              {member.expertise}
+            </p>
+
+          </div>
+        ))}
+
+      </div>
+
+    </div>
+
+    {/* Legal Advisory Panel */}
+    <div className="mb-20">
+
+      <h3 className="text-3xl font-bold mb-8">
+        Legal Advisory Panel
+      </h3>
+
+      <div className="grid lg:grid-cols-3 gap-8">
+        <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+
+          <h3 className="text-2xl font-bold mb-3">
+            Adv. Anant Chattha
+          </h3>
+
+          <p className="text-[#5b3419] font-semibold mb-3">
+            High Court of Delhi
+          </p>
+
+          <p className="text-[16px] leading-7 text-[#4a3728]">
+            B.A LL.B (Hons) • Legal Affairs, Community Outreach & Fact Analysis
+          </p>
+
+        </div>
+                <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+
+          <h3 className="text-2xl font-bold mb-3">
+            Sneha Shokeen
+          </h3>
+
+          <p className="text-[#5b3419] font-semibold mb-3">
+            B.B.A. LL.B.
+          </p>
+
+          <p className="text-[16px] leading-7 text-[#4a3728]">
+            Property Rights, Valuation & Ground Realities
+          </p>
+
+        </div>
+        <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+
+          <h3 className="text-2xl font-bold mb-3">
+            Mr. Vikas K. Farshwal
+          </h3>
+
+          <p className="text-[#5b3419] font-semibold mb-3">
+            B.A. LL.B
+          </p>
+
+          <p className="text-[16px] leading-7 text-[#4a3728]">
+            Legal Affairs, Community Outreach & Fact Analysis
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    {/* Community Outreach */}
+    <div>
+
+      <h3 className="text-3xl font-bold mb-8">
+        Community & Field Outreach
+      </h3>
+
+      <div className="grid lg:grid-cols-2 gap-8">
+
+        <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+
+          <h3 className="text-2xl font-bold mb-3">
+            Dr. Paras Narwal
+          </h3>
+
+          <p className="text-[#5b3419] font-semibold mb-3">
+            B.H.M.S.
+          </p>
+
+          <p className="text-[16px] leading-7 text-[#4a3728]">
+            Community Outreach
+          </p>
+
+        </div>
+
+        <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+
+          <h3 className="text-2xl font-bold mb-3">
+            Mr. Chowdary Sathyam Patel
+          </h3>
+
+          <p className="text-[#5b3419] font-semibold mb-3">
+            BTech Agricultural Engineering, MBA International Transportation & Logistics Management
+          </p>
+
+          <p className="text-[16px] leading-7 text-[#4a3728]">
+            Social Researcher, Community Representative & Genetic Study
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
 
     </div>
   );
