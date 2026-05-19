@@ -119,7 +119,7 @@ export default function AboutPage() {
           <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-6 shadow-sm">
 
             <h3 className="text-2xl font-bold mb-2">
-              Mr. Tewatia
+              Mr. Farshwal
             </h3>
 
             <p className="text-base font-semibold text-[#5b3419] mb-5">
