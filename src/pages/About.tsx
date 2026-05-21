@@ -119,7 +119,7 @@ export default function AboutPage() {
           <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-6 shadow-sm">
 
             <h3 className="text-2xl font-bold mb-2">
-              Mr. Farshwal
+              Mr. Vashist
             </h3>
 
             <p className="text-base font-semibold text-[#5b3419] mb-5">
@@ -142,7 +142,7 @@ export default function AboutPage() {
                 </p>
 
                 <ul className="space-y-1 list-disc pl-5">
-                  <li>BA, MA History</li>
+                  <li>BTech, MTech Defence Technology, PhD Artificial Intelligence</li>
                   <li>Policy Communication, Public Relations & Community Coordination, Historical Document Analysis</li>
                 </ul>
 
@@ -184,25 +184,9 @@ export default function AboutPage() {
             Mr. Navtej Singh Mangat
           </h3>
 
-          <p className="text-lg font-semibold text-[#5b3419] mb-6">
-            Senior Advisor — Legal & International Affairs
-          </p>
-
-          <div className="space-y-3 text-[17px] leading-8 text-[#4a3728]">
-
-            <p className="font-semibold">
-              Education
+            <p className="text-[17px] leading-8 text-[#4a3728]">
+          University College London — LLB (Hons), Diploma in Advanced French — Institut Français
             </p>
-
-            <ul className="space-y-2 list-disc pl-5">
-              <li>Charterhouse School & Epsom College (UK)</li>
-              <li>UCL — LLB (Hons)</li>
-              <li>Law Society Finals (Guildford) — Distinction</li>
-              <li>Lincoln’s Inn Bar Examinations — Distinction</li>
-              <li>Diploma in Advanced French — Institut Français</li>
-            </ul>
-
-          </div>
 
         </div>
 
@@ -213,13 +197,20 @@ export default function AboutPage() {
             Mr. Ajay Gathwal
           </h3>
 
-          <p className="text-lg font-semibold text-[#5b3419] mb-6">
-            Senior Advisor
-          </p>
-
           <p className="text-[17px] leading-8 text-[#4a3728]">
             American Citizen • International Advisory &
             Strategic Guidance.
+          </p>
+
+        </div>
+          <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+
+          <h3 className="text-3xl font-bold mb-3">
+            Dr. Shivani Singh Tomar
+          </h3>
+
+          <p className="text-[17px] leading-8 text-[#4a3728]">
+          BA, MA History, MPhil, PhD (Architecture)
           </p>
 
         </div>
@@ -240,7 +231,7 @@ export default function AboutPage() {
         {[
           {
             name: "Dr. Vikas Malik",
-            qualification: "BA, MA History",
+            qualification: "BA, MA History, PhD (History)",
             expertise: "Evidence Analyst, Document & Fact Analysis",
           },
           {
@@ -249,9 +240,9 @@ export default function AboutPage() {
             expertise: "Community Outreach, Tribe & Race Analysis",
           },
           {
-            name: "Mr. Ajay Kumar Vashist",
-            qualification: "BTech, MTech Defence Technology, PhD Artificial Intelligence",
-            expertise: "Research Support, Technical Analysis, Community Outreach",
+            name: " Dr. Rajeev Singh Bargoti ",
+            qualification: "MPhil, PhD (Historical Archeology)",
+            expertise: "Evidence Analyst, Document & Fact Analysis, Military History",
           },
           {
             name: "Mr. Ritik Baliyan",
