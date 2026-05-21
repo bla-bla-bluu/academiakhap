@@ -401,6 +401,15 @@ function HomePage() {
 
           <div className="flex flex-wrap justify-center gap-5">
           <a
+            href="https://www.youtube.com/@academiakhap"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <button className="px-8 py-4 rounded-full border border-white font-semibold hover:bg-white hover:text-[#5b3419] transition duration-300">
+              Youtube
+            </button>
+          </a>
+          <a
             href="https://www.instagram.com/khap.academia"
             target="_blank"
             rel="noopener noreferrer"
