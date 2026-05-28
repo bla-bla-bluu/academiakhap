@@ -4,10 +4,12 @@ import AboutPage from "./pages/About";
 import WorkWithUsPage from "./pages/Work";
 import ResearchPage from "./pages/Research";
 import ContactPage from "./pages/Contact";
+import SEO from "./components/SEO";
 
 export default function App() {
   return (
     <BrowserRouter>
+      <SEO />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />

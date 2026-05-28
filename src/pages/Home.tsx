@@ -8,6 +8,13 @@ function HomePage() {
       excerpt:
         "A historical and architectural study of Bahanpur Haveli and Unchagaon Fort, documenting the heritage of the Pilania zamindars of Bulandshahr and the contrasting trajectories of rural heritage preservation.",
     },
+    {
+      title: "The Royal Legacy of Kuchesar",
+      category: "History",
+      slug: "/research?article=kuchesar",
+      excerpt:
+        "A study of the Dalal family and Kuchesar Fort, examining Jat zamindari history, estate architecture, inheritance, and rural heritage preservation in Bulandshahr.",
+    },
   ];
 
   const members = [
