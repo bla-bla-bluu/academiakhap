@@ -1,3 +1,4 @@
+import Kuchesar from "../content/articles/Kuchesar";
 import PilaniaZamindars from "../content/articles/PilaniaZamindars";
 
 export type Article = {
@@ -17,5 +18,13 @@ export const articles: Article[] = [
     slug: "/research/pilania-zamindars",
     body: PilaniaZamindars.body,
     sources: PilaniaZamindars.sources,
+  },
+  {
+    id: 2,
+    title: "The Royal Legacy of Kuchesar",
+    category: "History",
+    slug: "/research/kuchesar",
+    body: Kuchesar.body,
+    sources: Kuchesar.sources,
   },
 ];
