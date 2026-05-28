@@ -1,0 +1,14 @@
+Redeploy note:
+
+The website project has been moved to:
+/Users/dr/Desktop/khap/website
+
+Run commands from that folder:
+
+cd /Users/dr/Desktop/khap/website
+npm install
+npm run build
+
+For Vercel:
+- If uploading only this folder to GitHub, keep Vercel root as repository root.
+- If keeping this folder inside a larger repository, set Vercel Root Directory to website.
