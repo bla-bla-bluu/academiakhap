@@ -2,32 +2,11 @@ import { Link } from "react-router-dom";
 function HomePage() {
   const posts = [
     {
-      title: "Inter-Caste Marriage, Gotra & Cultural Continuity",
-      category: "Social Structure",
-      slug: "/research?article=inter-caste-marriage",
+      title: "History and Heritage of the Pilania Zamindars",
+      category: "History",
+      slug: "/research?article=pilania-zamindars",
       excerpt:
-        "Understanding compatibility, lineage traditions, adaptation, and long-term social continuity in Indian communities.",
-    },
-    {
-      title: "Jat, Jatt, Jutt & Tribal Identity",
-      category: "History & Identity",
-      slug: "/research?article=jat-identity",
-      excerpt:
-        "Exploring tribal continuity across religions, regions, and historical transitions.",
-    },
-    {
-      title: "Social Media & Born Superior Narratives",
-      category: "Social Analysis",
-      slug: "/research?article=born-superior-narrative",
-      excerpt:
-        "A critical analysis of online superiority narratives, caste conflicts, and misinformation.",
-    },
-    {
-      title: "Language, Transliteration & Historical Terms",
-      category: "Linguistics",
-      slug: "/research?article=historical-terms",
-      excerpt:
-        "Research-oriented discussion on Jat, Jatt, Jutt, Zutt and historical transliteration systems.",
+        "A historical and architectural study of Bahanpur Haveli and Unchagaon Fort, documenting the heritage of the Pilania zamindars of Bulandshahr and the contrasting trajectories of rural heritage preservation.",
     },
   ];
 
