@@ -1,4 +1,5 @@
 import Kuchesar from "../content/articles/Kuchesar";
+import IndoIranianHeritage from "../content/articles/indo-iranian-heritage";
 import PilaniaZamindars from "../content/articles/PilaniaZamindars";
 
 export type Article = {
@@ -26,5 +27,13 @@ export const articles: Article[] = [
     slug: "/research/kuchesar",
     body: Kuchesar.body,
     sources: Kuchesar.sources,
+  },
+  {
+    id: 3,
+    title: "Population Genetics and the Indo-Iranian Heritage: A Review of Recent Studies",
+    category: "Population Genetics",
+    slug: "/research/indo-iranian-heritage",
+    body: IndoIranianHeritage.body,
+    sources: IndoIranianHeritage.sources,
   },
 ];
