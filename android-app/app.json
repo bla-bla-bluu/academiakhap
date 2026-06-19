@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "Academia Khap",
+    "slug": "academia-khap",
+    "version": "1.0.0",
+    "sdkVersion": "54.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo_clean.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/logo_clean.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#f4efe4"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "com.academiakhap.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo_clean.png",
+        "backgroundColor": "#f4efe4"
+      },
+      "permissions": []
+    }
+  }
+}
