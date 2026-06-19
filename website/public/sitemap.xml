@@ -37,6 +37,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://academiakhap.vercel.app/research?article=indo-iranian-heritage</loc>
+    <lastmod>2026-06-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://academiakhap.vercel.app/contact</loc>
     <lastmod>2026-05-28</lastmod>
     <changefreq>monthly</changefreq>
