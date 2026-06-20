@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   ImageBackground,
   Linking,
@@ -14,6 +15,11 @@ import {
 } from "react-native";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { Article, articles } from "./src/data/articles";
+import { AuthProvider, useAuth } from "./src/contexts/AuthContext";
+import LoginScreen from "./src/screens/LoginScreen";
+import AdminConsoleScreen from "./src/screens/AdminConsoleScreen";
+import MemberConsoleScreen from "./src/screens/MemberConsoleScreen";
+import ChatScreen from "./src/screens/ChatScreen";
 
 const logo = require("./assets/logo.png");
 const logoClean = require("./assets/logo_clean.png");
@@ -41,7 +47,7 @@ const COLORS = {
   black: "#000000"
 };
 
-type Tab = "home" | "research" | "about" | "work" | "contact";
+type Tab = "home" | "research" | "about" | "work" | "contact" | "account" | "chat";
 
 const team = [
   {
@@ -154,7 +160,15 @@ function NavButton({
   );
 }
 
-function BottomNav({ activeTab, setActiveTab }: { activeTab: Tab; setActiveTab: (tab: Tab) => void }) {
+function BottomNav({
+  activeTab,
+  setActiveTab,
+  showChat
+}: {
+  activeTab: Tab;
+  setActiveTab: (tab: Tab) => void;
+  showChat: boolean;
+}) {
   return (
     <View style={styles.bottomNav}>
       <NavButton icon="⌂" label="Home" active={activeTab === "home"} onPress={() => setActiveTab("home")} />
@@ -162,6 +176,10 @@ function BottomNav({ activeTab, setActiveTab }: { activeTab: Tab; setActiveTab: 
       <NavButton icon="◎" label="About" active={activeTab === "about"} onPress={() => setActiveTab("about")} />
       <NavButton icon="✦" label="Work" active={activeTab === "work"} onPress={() => setActiveTab("work")} />
       <NavButton icon="@" label="Contact" active={activeTab === "contact"} onPress={() => setActiveTab("contact")} />
+      {showChat && (
+        <NavButton icon="✉" label="Chat" active={activeTab === "chat"} onPress={() => setActiveTab("chat")} />
+      )}
+      <NavButton icon="⚙" label="Account" active={activeTab === "account"} onPress={() => setActiveTab("account")} />
     </View>
   );
 }
@@ -477,13 +495,40 @@ function ContactScreen() {
   );
 }
 
-export default function App() {
+function AppContent() {
   const [activeTab, setActiveTab] = useState<Tab>("home");
   const [initialArticle, setInitialArticle] = useState<Article | null>(null);
+  const { user, profile, loading } = useAuth();
+
+  useEffect(() => {
+    if (!user && activeTab === "chat") {
+      setActiveTab("account");
+    }
+  }, [user, activeTab]);
 
   const navigateTo = (tab: Tab, article?: Article) => {
     setActiveTab(tab);
     setInitialArticle(tab === "research" && article ? article : null);
+  };
+
+  const renderAccountScreen = () => {
+    if (loading) {
+      return (
+        <View style={[styles.appBody, { alignItems: "center", justifyContent: "center" }]}>
+          <ActivityIndicator color={COLORS.primaryAccent} />
+        </View>
+      );
+    }
+    if (!user) return <LoginScreen />;
+    if (profile?.role === "admin") return <AdminConsoleScreen />;
+    if (profile?.role === "member") return <MemberConsoleScreen />;
+    return (
+      <View style={[styles.appBody, { alignItems: "center", justifyContent: "center", padding: 24 }]}>
+        <Text style={styles.cardBody}>
+          Your account doesn't have a profile set up yet. Contact an Academia Khap admin.
+        </Text>
+      </View>
+    );
   };
 
   const renderScreen = () => {
@@ -491,6 +536,9 @@ export default function App() {
     if (activeTab === "research") return <ResearchScreen initialArticle={initialArticle} />;
     if (activeTab === "about") return <AboutScreen />;
     if (activeTab === "work") return <WorkScreen navigateTo={navigateTo} />;
+    if (activeTab === "contact") return <ContactScreen />;
+    if (activeTab === "account") return renderAccountScreen();
+    if (activeTab === "chat") return user ? <ChatScreen /> : <LoginScreen />;
     return <ContactScreen />;
   };
 
@@ -500,8 +548,16 @@ export default function App() {
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.bgSection} />
       <TopAppBar />
       <View style={styles.appBody}>{renderScreen()}</View>
-      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
+      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} showChat={Boolean(user)} />
     </SafeAreaView>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

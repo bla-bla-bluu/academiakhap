@@ -4,3 +4,7 @@ dist-check
 .expo
 .DS_Store
 *.local
+.env
+.idea
+android
+ios
