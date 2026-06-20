@@ -5,6 +5,7 @@ import WorkWithUsPage from "./pages/Work";
 import ResearchPage from "./pages/Research";
 import ContactPage from "./pages/Contact";
 import SEO from "./components/SEO";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/research" element={<ResearchPage />} />
         <Route path="/contact" element={<ContactPage />} />
       </Routes>
+      <SpeedInsights />
     </BrowserRouter>
   );
 }
