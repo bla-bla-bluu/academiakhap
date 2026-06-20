@@ -10,7 +10,6 @@ config.watchFolders = [];
 config.resolver = {
   ...config.resolver,
   assetExts: [...config.resolver.assetExts, 'db'],
-  blacklistRE: /node_modules|\.git/,
 };
 
 // Increase polling interval and use less aggressive watching
