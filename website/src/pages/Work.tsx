@@ -1,6 +1,22 @@
+import { useState, FormEvent } from "react";
 import { Link } from "react-router-dom";
 
 export default function WorkWithUsPage() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleApplySubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const subject = encodeURIComponent(`Collaboration Application from ${name}`);
+    const body = encodeURIComponent(
+      `Name: ${name}\nEmail: ${email}\n\nArea of Interest / Message:\n${message}`
+    );
+
+    window.location.href = `mailto:academiakhap@gmail.com?subject=${subject}&body=${body}`;
+  };
+
   return (
     <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
 
@@ -262,9 +278,42 @@ export default function WorkWithUsPage() {
             and long-term cultural documentation.
           </p>
 
-          <button className="px-10 py-5 rounded-full bg-white text-[#5b3419] text-lg font-semibold hover:opacity-90 transition duration-300">
-            Apply To Collaborate
-          </button>
+          <form onSubmit={handleApplySubmit} className="max-w-xl mx-auto text-left space-y-5">
+
+            <input
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full rounded-2xl bg-white text-[#3b2415] px-5 py-4 outline-none"
+              placeholder="Full Name"
+            />
+
+            <input
+              required
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-2xl bg-white text-[#3b2415] px-5 py-4 outline-none"
+              placeholder="Email Address"
+            />
+
+            <textarea
+              required
+              rows={4}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-full rounded-2xl bg-white text-[#3b2415] px-5 py-4 outline-none"
+              placeholder="Area of Interest / Message"
+            />
+
+            <button
+              type="submit"
+              className="w-full px-10 py-5 rounded-full bg-white text-[#5b3419] text-lg font-semibold hover:opacity-90 transition duration-300"
+            >
+              Apply To Collaborate
+            </button>
+
+          </form>
 
         </div>
 

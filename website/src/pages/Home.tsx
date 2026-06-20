@@ -1,3 +1,4 @@
+import { useState, FormEvent } from "react";
 import { Link } from "react-router-dom";
 function HomePage() {
   const posts = [
@@ -25,6 +26,21 @@ function HomePage() {
     "Community Representatives",
     "Social Researchers",
   ];
+
+  const [contribName, setContribName] = useState("");
+  const [contribEmail, setContribEmail] = useState("");
+  const [contribMessage, setContribMessage] = useState("");
+
+  const handleContributionSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const subject = encodeURIComponent(`Contribution Message from ${contribName}`);
+    const body = encodeURIComponent(
+      `Name: ${contribName}\nEmail: ${contribEmail}\n\nMessage:\n${contribMessage}`
+    );
+
+    window.location.href = `mailto:academiakhap@gmail.com?subject=${subject}&body=${body}`;
+  };
 
   return (
    <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
@@ -339,29 +355,42 @@ function HomePage() {
           Contribution Message
         </h3>
 
-        <div className="space-y-6">
+        <form onSubmit={handleContributionSubmit} className="space-y-6">
 
           <input
+            required
+            value={contribName}
+            onChange={(e) => setContribName(e.target.value)}
             className="w-full rounded-2xl border border-[#c8a97d] bg-white px-5 py-4 outline-none"
             placeholder="Full Name"
           />
 
           <input
+            required
+            type="email"
+            value={contribEmail}
+            onChange={(e) => setContribEmail(e.target.value)}
             className="w-full rounded-2xl border border-[#c8a97d] bg-white px-5 py-4 outline-none"
             placeholder="Email Address"
           />
 
           <textarea
+            required
             rows={4}
+            value={contribMessage}
+            onChange={(e) => setContribMessage(e.target.value)}
             className="w-full rounded-2xl border border-[#c8a97d] bg-white px-5 py-4 outline-none"
             placeholder="Contribution Message"
           />
 
-          <button className="w-full py-4 rounded-2xl bg-[#5b3419] text-white font-semibold hover:bg-[#3b2415] transition duration-300">
+          <button
+            type="submit"
+            className="w-full py-4 rounded-2xl bg-[#5b3419] text-white font-semibold hover:bg-[#3b2415] transition duration-300"
+          >
             Submit Contribution
           </button>
 
-        </div>
+        </form>
 
       </div>
 
