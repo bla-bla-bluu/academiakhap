@@ -4,20 +4,8 @@
   "outputDirectory": "website/dist",
   "rewrites": [
     {
-      "source": "/about",
-      "destination": "/"
-    },
-    {
-      "source": "/work",
-      "destination": "/"
-    },
-    {
-      "source": "/research",
-      "destination": "/"
-    },
-    {
-      "source": "/contact",
-      "destination": "/"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [

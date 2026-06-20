@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { articles } from "../data/articles";
 
-const SITE_URL = "https://academiakhap.vercel.app";
+const SITE_URL = "https://academiakhap.org";
 const SITE_NAME = "Academia Khap";
 const DEFAULT_DESCRIPTION =
   "Academia Khap is a research platform for evidence-based historical study, cultural documentation, social analysis, rural heritage, and community scholarship.";

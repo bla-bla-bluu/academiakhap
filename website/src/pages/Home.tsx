@@ -50,7 +50,7 @@ function HomePage() {
               Research • History • Culture
             </p>
 
-<p className="text-lg sm:text-xl lg:text-2xl leading-8 sm:leading-10 text-[#4b3526] text-center max-w-5xl mx-auto">
+<h1 className="text-lg sm:text-xl lg:text-2xl leading-8 sm:leading-10 text-[#4b3526] text-center max-w-5xl mx-auto font-normal">
 
   A collective platform focused on evidence-based research,
 
@@ -58,7 +58,7 @@ function HomePage() {
 
   and intellectual engagement across communities.
 
-</p>
+</h1>
 
 <div className="h-8" />
           </div>

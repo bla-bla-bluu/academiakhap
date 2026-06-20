@@ -17,9 +17,9 @@ export default function ContactPage() {
               className="w-12 h-12 object-contain"
             />
 
-            <h1 className="text-2xl font-bold tracking-wide">
+            <p className="text-2xl font-bold tracking-wide">
               Academia Khap
-            </h1>
+            </p>
 
           </div>
 
