@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://academiakhap.vercel.app/sitemap.xml
+Sitemap: https://academiakhap.org/sitemap.xml
