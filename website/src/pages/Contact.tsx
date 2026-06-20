@@ -97,41 +97,15 @@ export default function ContactPage() {
 
             <div>
               <h3 className="font-bold text-[#5b3419] text-xl mb-2">
-                General Email
+                Email
               </h3>
 
-              <p>
+              <a
+                href="mailto:academiakhap@gmail.com"
+                className="underline underline-offset-4 hover:text-[#5b3419]"
+              >
                 academiakhap@gmail.com
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-[#5b3419] text-xl mb-2">
-                Research & Publications
-              </h3>
-
-              <p>
-                research@academiakhap.org
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-[#5b3419] text-xl mb-2">
-                Collaborations
-              </h3>
-
-              <p>
-                partnerships@academiakhap.org
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-[#5b3419] text-xl mb-2">
-                Social Media
-              </h3>
-
-              <p>Instagram: @academiakhap</p>
-              <p>LinkedIn: Academia Khap</p>
+              </a>
             </div>
 
             <div>
@@ -152,35 +126,42 @@ export default function ContactPage() {
         <div className="rounded-[2.5rem] bg-[#5b3419] text-white p-12 shadow-2xl">
 
           <h2 className="text-4xl font-bold mb-8">
-            Send a Message
+            Connect With Us
           </h2>
 
-          <div className="space-y-6">
+          <p className="text-[#f5ede0] text-[17px] leading-8 mb-8">
+            Follow Academia Khap across our social channels for
+            research updates, documentation, and community initiatives.
+          </p>
 
-            <input
-              className="w-full rounded-2xl bg-white text-[#3b2415] px-5 py-4 outline-none"
-              placeholder="Full Name"
-            />
+          <div className="flex flex-col gap-4">
 
-            <input
-              className="w-full rounded-2xl bg-white text-[#3b2415] px-5 py-4 outline-none"
-              placeholder="Email Address"
-            />
+            <a
+              href="https://www.youtube.com/@academiakhap"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-4 rounded-full border border-white font-semibold text-center hover:bg-white hover:text-[#5b3419] transition duration-300"
+            >
+              YouTube
+            </a>
 
-            <input
-              className="w-full rounded-2xl bg-white text-[#3b2415] px-5 py-4 outline-none"
-              placeholder="Subject"
-            />
+            <a
+              href="https://www.instagram.com/khap.academia"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-4 rounded-full border border-white font-semibold text-center hover:bg-white hover:text-[#5b3419] transition duration-300"
+            >
+              Instagram
+            </a>
 
-            <textarea
-              rows={6}
-              className="w-full rounded-2xl bg-white text-[#3b2415] px-5 py-4 outline-none"
-              placeholder="Write your message..."
-            />
-
-            <button className="w-full py-4 rounded-2xl bg-white text-[#5b3419] font-bold hover:bg-[#efe4cf] transition duration-300">
-              Submit Message
-            </button>
+            <a
+              href="https://www.linkedin.com/in/khap-academia/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-4 rounded-full border border-white font-semibold text-center hover:bg-white hover:text-[#5b3419] transition duration-300"
+            >
+              LinkedIn
+            </a>
 
           </div>
 
