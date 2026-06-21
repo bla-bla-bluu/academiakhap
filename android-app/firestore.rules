@@ -10,9 +10,12 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function getRole() {
+      return get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.role;
+    }
+
     function isAdmin() {
-      return isSignedIn() &&
-        get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.role == 'admin';
+      return isSignedIn() && getRole() == 'admin';
     }
 
     function isSelf(uid) {
@@ -52,19 +55,33 @@ service cloud.firestore {
       allow update, delete: if isAdmin() || (isSignedIn() && resource.data.memberId == request.auth.uid);
     }
 
-    // One shared group chat -- any signed-in profile can read everything and post as themselves.
-    match /chatMessages/{id} {
+    function isValidPostBody() {
+      return request.resource.data.body is string &&
+        request.resource.data.body.size() > 0 &&
+        request.resource.data.body.size() <= 500;
+    }
+
+    // Community feed -- any signed-in profile can read every post and post as themselves.
+    // Text only, capped at 500 characters; no edit/delete once posted.
+    match /communityPosts/{id} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.authorId == request.auth.uid && isValidPostBody();
+      allow update, delete: if false;
+    }
+
+    // Comments on a community post -- same rules as posts, scoped by postId.
+    match /communityComments/{id} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.authorId == request.auth.uid && isValidPostBody();
       allow update, delete: if false;
     }
 
     // Single document holding org-wide totals (donations - org expenses - allotments).
     // Kept in sync by the admin client via batched increment() writes alongside each ledger
-    // entry -- there's no Cloud Function maintaining it, so only admin may write it, but
-    // every signed-in user (admin or member) may read the totals.
+    // entry -- there's no Cloud Function maintaining it, so only admin may write it. Every
+    // signed-in role may read the totals except scholar, who only sees their own allotment.
     match /orgSummary/{docId} {
-      allow read: if isSignedIn();
+      allow read: if isSignedIn() && getRole() != 'scholar';
       allow write: if isAdmin();
     }
 

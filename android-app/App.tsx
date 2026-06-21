@@ -4,8 +4,10 @@ import {
   Image,
   ImageBackground,
   Linking,
+  Modal,
   SafeAreaView,
   ScrollView,
+  Share,
   StatusBar,
   StyleSheet,
   Text,
@@ -19,9 +21,8 @@ import { AuthProvider, useAuth } from "./src/contexts/AuthContext";
 import LoginScreen from "./src/screens/LoginScreen";
 import AdminConsoleScreen from "./src/screens/AdminConsoleScreen";
 import MemberConsoleScreen from "./src/screens/MemberConsoleScreen";
-import ChatScreen from "./src/screens/ChatScreen";
+import CommunityScreen from "./src/screens/CommunityScreen";
 
-const logo = require("./assets/logo.png");
 const logoClean = require("./assets/logo_clean.png");
 const header = require("./assets/header.png");
 
@@ -47,7 +48,7 @@ const COLORS = {
   black: "#000000"
 };
 
-type Tab = "home" | "research" | "about" | "work" | "contact" | "account" | "chat";
+type Tab = "home" | "research" | "about" | "work" | "contact" | "account" | "community";
 
 const team = [
   {
@@ -130,12 +131,52 @@ function Card({
   );
 }
 
-function TopAppBar() {
+function TopAppBar({ onMenuPress }: { onMenuPress: () => void }) {
   return (
     <View style={styles.topBar}>
-      <Image source={logoClean} style={styles.topLogo} resizeMode="contain" />
-      <Text style={styles.topTitle}>Academia Khap</Text>
+      <View style={styles.topBarLeft}>
+        <Image source={logoClean} style={styles.topLogo} resizeMode="contain" />
+        <Text style={styles.topTitle}>Academia Khap</Text>
+      </View>
+      <TouchableOpacity style={styles.topBarMenuButton} onPress={onMenuPress} activeOpacity={0.7}>
+        <Text style={styles.topBarMenuDots}>⋮</Text>
+      </TouchableOpacity>
     </View>
+  );
+}
+
+type OverflowItem = { tab: Tab; label: string };
+
+function OverflowMenu({
+  visible,
+  onClose,
+  items,
+  onSelect
+}: {
+  visible: boolean;
+  onClose: () => void;
+  items: OverflowItem[];
+  onSelect: (tab: Tab) => void;
+}) {
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <TouchableOpacity style={styles.overflowBackdrop} activeOpacity={1} onPress={onClose}>
+        <View style={styles.overflowMenu}>
+          {items.map((item) => (
+            <TouchableOpacity
+              key={item.tab}
+              style={styles.overflowMenuItem}
+              onPress={() => {
+                onSelect(item.tab);
+                onClose();
+              }}
+            >
+              <Text style={styles.overflowMenuItemText}>{item.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </TouchableOpacity>
+    </Modal>
   );
 }
 
@@ -155,7 +196,13 @@ function NavButton({
       <View style={[styles.navIconCircle, active && styles.navIconCircleActive]}>
         <Text style={[styles.navIcon, active && styles.navIconActive]}>{icon}</Text>
       </View>
-      <Text style={[styles.navLabel, active && styles.navLabelActive]}>{label}</Text>
+      <Text
+        style={[styles.navLabel, active && styles.navLabelActive]}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+      >
+        {label}
+      </Text>
     </TouchableOpacity>
   );
 }
@@ -163,26 +210,34 @@ function NavButton({
 function BottomNav({
   activeTab,
   setActiveTab,
-  showChat
+  showCommunity
 }: {
   activeTab: Tab;
   setActiveTab: (tab: Tab) => void;
-  showChat: boolean;
+  showCommunity: boolean;
 }) {
   return (
     <View style={styles.bottomNav}>
       <NavButton icon="⌂" label="Home" active={activeTab === "home"} onPress={() => setActiveTab("home")} />
       <NavButton icon="▤" label="Research" active={activeTab === "research"} onPress={() => setActiveTab("research")} />
-      <NavButton icon="◎" label="About" active={activeTab === "about"} onPress={() => setActiveTab("about")} />
-      <NavButton icon="✦" label="Work" active={activeTab === "work"} onPress={() => setActiveTab("work")} />
-      <NavButton icon="@" label="Contact" active={activeTab === "contact"} onPress={() => setActiveTab("contact")} />
-      {showChat && (
-        <NavButton icon="✉" label="Chat" active={activeTab === "chat"} onPress={() => setActiveTab("chat")} />
+      {showCommunity && (
+        <NavButton
+          icon="☷"
+          label="Community"
+          active={activeTab === "community"}
+          onPress={() => setActiveTab("community")}
+        />
       )}
       <NavButton icon="⚙" label="Account" active={activeTab === "account"} onPress={() => setActiveTab("account")} />
     </View>
   );
 }
+
+const OVERFLOW_ITEMS: OverflowItem[] = [
+  { tab: "about", label: "About" },
+  { tab: "work", label: "Work With Us" },
+  { tab: "contact", label: "Contact" }
+];
 
 function SectionLabel({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
   return <Text style={[styles.sectionLabel, light && { color: COLORS.mutedCreamOnDark }]}>{children}</Text>;
@@ -212,11 +267,7 @@ function HomeScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
-      <ImageBackground source={header} style={styles.heroImage} resizeMode="cover">
-        <View style={styles.heroOverlay}>
-          <Image source={logo} style={styles.heroLogo} resizeMode="contain" />
-        </View>
-      </ImageBackground>
+      <ImageBackground source={header} style={styles.heroImage} resizeMode="cover" />
 
       <View style={styles.pageInner}>
         <View style={styles.centerBlock}>
@@ -333,13 +384,29 @@ function ResearchScreen({ initialArticle }: { initialArticle: Article | null }) 
     [searchQuery]
   );
 
+  const handleShare = (article: Article) => {
+    Share.share({
+      title: article.title,
+      message: `${article.title}\n\n${article.excerpt}\n\nRead the full article on the Academia Khap app.`
+    });
+  };
+
   if (selectedArticle) {
     return (
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.pageInner}>
-          <TouchableOpacity style={styles.backButton} onPress={() => setSelectedArticle(null)} activeOpacity={0.85}>
-            <Text style={styles.backButtonText}>← Back to Archive</Text>
-          </TouchableOpacity>
+          <View style={styles.detailActionsRow}>
+            <TouchableOpacity style={styles.backButton} onPress={() => setSelectedArticle(null)} activeOpacity={0.85}>
+              <Text style={styles.backButtonText}>← Back to Archive</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => handleShare(selectedArticle)}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.backButtonText}>Share ↗</Text>
+            </TouchableOpacity>
+          </View>
           <Text style={styles.detailCategory}>{selectedArticle.category}</Text>
           <Text style={styles.detailTitle}>{selectedArticle.title}</Text>
           {selectedArticle.content.map((block, index) =>
@@ -454,10 +521,6 @@ function WorkScreen({ navigateTo }: { navigateTo: (tab: Tab) => void }) {
 }
 
 function ContactScreen() {
-  const openEmail = () => {
-    Linking.openURL("mailto:academiakhap@gmail.com?subject=Academia%20Khap%20Collaboration");
-  };
-
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <View style={styles.pageInner}>
@@ -472,23 +535,31 @@ function ContactScreen() {
 
         <Card>
           <Text style={styles.cardTitle}>Contact Information</Text>
-          <Text style={styles.cardTitleSmall}>General Email</Text>
-          <Text style={styles.cardBody}>academiakhap@gmail.com</Text>
-          <Text style={styles.cardTitleSmall}>Research & Publications</Text>
-          <Text style={styles.cardBody}>research@academiakhap.org</Text>
-          <Text style={styles.cardTitleSmall}>Collaborations</Text>
-          <Text style={styles.cardBody}>partnerships@academiakhap.org</Text>
-          <Text style={styles.cardTitleSmall}>Social Media</Text>
-          <Text style={styles.cardBody}>Instagram: @academiakhap</Text>
-          <Text style={styles.cardBody}>LinkedIn: Academia Khap</Text>
+          <Text style={styles.cardTitleSmall}>Email</Text>
+          <TouchableOpacity onPress={() => Linking.openURL("mailto:academiakhap@gmail.com")}>
+            <Text style={[styles.cardBody, styles.linkText]}>academiakhap@gmail.com</Text>
+          </TouchableOpacity>
           <Text style={styles.cardTitleSmall}>Operational Region</Text>
           <Text style={styles.cardBody}>India • Community Research Network</Text>
         </Card>
 
         <Card dark>
-          <Text style={styles.darkTitleCentered}>Send a Message</Text>
-          <Text style={styles.darkBodyCentered}>Open your email app and send a message directly to Academia Khap.</Text>
-          <PrimaryButton onPress={openEmail}>Email Academia Khap</PrimaryButton>
+          <Text style={styles.darkTitleCentered}>Connect With Us</Text>
+          <Text style={styles.darkBodyCentered}>
+            Follow Academia Khap across our social channels for research updates, documentation, and community
+            initiatives.
+          </Text>
+          <View style={styles.buttonStack}>
+            <PrimaryButton onPress={() => Linking.openURL("https://www.youtube.com/@academiakhap")}>
+              Youtube
+            </PrimaryButton>
+            <PrimaryButton onPress={() => Linking.openURL("https://www.instagram.com/khap.academia")}>
+              Instagram
+            </PrimaryButton>
+            <PrimaryButton onPress={() => Linking.openURL("https://www.linkedin.com/in/khap-academia/")}>
+              LinkedIn
+            </PrimaryButton>
+          </View>
         </Card>
       </View>
     </ScrollView>
@@ -498,10 +569,11 @@ function ContactScreen() {
 function AppContent() {
   const [activeTab, setActiveTab] = useState<Tab>("home");
   const [initialArticle, setInitialArticle] = useState<Article | null>(null);
+  const [overflowOpen, setOverflowOpen] = useState(false);
   const { user, profile, loading } = useAuth();
 
   useEffect(() => {
-    if (!user && activeTab === "chat") {
+    if (!user && activeTab === "community") {
       setActiveTab("account");
     }
   }, [user, activeTab]);
@@ -521,7 +593,9 @@ function AppContent() {
     }
     if (!user) return <LoginScreen />;
     if (profile?.role === "admin") return <AdminConsoleScreen />;
-    if (profile?.role === "member") return <MemberConsoleScreen />;
+    if (profile?.role === "trustee" || profile?.role === "member" || profile?.role === "scholar") {
+      return <MemberConsoleScreen />;
+    }
     return (
       <View style={[styles.appBody, { alignItems: "center", justifyContent: "center", padding: 24 }]}>
         <Text style={styles.cardBody}>
@@ -538,7 +612,7 @@ function AppContent() {
     if (activeTab === "work") return <WorkScreen navigateTo={navigateTo} />;
     if (activeTab === "contact") return <ContactScreen />;
     if (activeTab === "account") return renderAccountScreen();
-    if (activeTab === "chat") return user ? <ChatScreen /> : <LoginScreen />;
+    if (activeTab === "community") return user ? <CommunityScreen /> : <LoginScreen />;
     return <ContactScreen />;
   };
 
@@ -546,9 +620,15 @@ function AppContent() {
     <SafeAreaView style={styles.safeArea}>
       <ExpoStatusBar style="dark" backgroundColor={COLORS.bgSection} />
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.bgSection} />
-      <TopAppBar />
+      <TopAppBar onMenuPress={() => setOverflowOpen(true)} />
       <View style={styles.appBody}>{renderScreen()}</View>
-      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} showChat={Boolean(user)} />
+      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} showCommunity={Boolean(user)} />
+      <OverflowMenu
+        visible={overflowOpen}
+        onClose={() => setOverflowOpen(false)}
+        items={OVERFLOW_ITEMS}
+        onSelect={(tab) => navigateTo(tab)}
+      />
     </SafeAreaView>
   );
 }
@@ -576,9 +656,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 12
+  },
+  topBarLeft: {
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
-    paddingHorizontal: 16
+    flexShrink: 1
   },
   topLogo: {
     width: 42,
@@ -590,20 +675,55 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "700"
   },
+  topBarMenuButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  topBarMenuDots: {
+    color: COLORS.primaryAccent,
+    fontSize: 26,
+    fontWeight: "700"
+  },
+  overflowBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.25)",
+    alignItems: "flex-end"
+  },
+  overflowMenu: {
+    marginTop: 60,
+    marginRight: 12,
+    backgroundColor: COLORS.bgCard,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "rgba(179, 139, 89, 0.3)",
+    paddingVertical: 6,
+    minWidth: 170,
+    elevation: 6
+  },
+  overflowMenuItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 18
+  },
+  overflowMenuItemText: {
+    color: COLORS.textPrimary,
+    fontSize: 16,
+    fontWeight: "600"
+  },
   bottomNav: {
     minHeight: 76,
     backgroundColor: COLORS.bgSection,
     borderTopColor: "rgba(179, 139, 89, 0.3)",
     borderTopWidth: 1,
     flexDirection: "row",
-    justifyContent: "space-around",
     paddingTop: 8,
     paddingBottom: 10
   },
   navButton: {
+    flex: 1,
     alignItems: "center",
-    justifyContent: "center",
-    width: 68
+    justifyContent: "center"
   },
   navIconCircle: {
     width: 34,
@@ -638,16 +758,6 @@ const styles = StyleSheet.create({
   heroImage: {
     width: "100%",
     height: 220
-  },
-  heroOverlay: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(59, 36, 21, 0.22)"
-  },
-  heroLogo: {
-    width: 120,
-    height: 120
   },
   pageInner: {
     padding: 16,
@@ -753,6 +863,11 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     marginBottom: 6
   },
+  linkText: {
+    color: COLORS.primaryAccent,
+    fontWeight: "700",
+    textDecorationLine: "underline"
+  },
   readLink: {
     color: COLORS.primaryAccent,
     fontSize: 16,
@@ -852,13 +967,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700"
   },
+  detailActionsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8
+  },
   backButton: {
     alignSelf: "flex-start",
     backgroundColor: COLORS.bgSection,
     borderRadius: 999,
     paddingHorizontal: 16,
-    paddingVertical: 10,
-    marginBottom: 8
+    paddingVertical: 10
   },
   backButtonText: {
     color: COLORS.primaryAccent,

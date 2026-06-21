@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   ScrollView,
   Text,
   TextInput,
@@ -15,6 +16,8 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  Timestamp,
+  where,
   writeBatch,
 } from "firebase/firestore";
 import { db, createMemberAuthAccount } from "../lib/firebase";
@@ -26,12 +29,24 @@ type AdminTab = "overview" | "donations" | "expenses" | "members";
 
 type Donation = { id: string; donorName: string; amount: number; note: string | null; donatedAt: string };
 type OrgExpense = { id: string; title: string; amount: number; note: string | null; spentAt: string };
+type Role = "admin" | "trustee" | "member" | "scholar";
+
+const ASSIGNABLE_ROLES: Role[] = ["admin", "trustee", "member", "scholar"];
+
 type MemberRow = {
   id: string;
   fullName: string;
+  role: Role;
   totalAllotted: number;
   totalSpent: number;
   remainingBalance: number;
+};
+type MemberExpenseRow = {
+  id: string;
+  amount: number;
+  description: string;
+  spentAt: string;
+  createdAt: Timestamp | null;
 };
 type OrgTotals = {
   totalDonations: number;
@@ -363,22 +378,28 @@ function MembersSection() {
   const [allotSubmitting, setAllotSubmitting] = useState(false);
   const [allotError, setAllotError] = useState<string | null>(null);
 
+  const [expandedExpenses, setExpandedExpenses] = useState<MemberExpenseRow[]>([]);
+  const [expensesLoading, setExpensesLoading] = useState(false);
+  const [deletingExpenseId, setDeletingExpenseId] = useState<string | null>(null);
+
   const [showAddMember, setShowAddMember] = useState(false);
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [newRole, setNewRole] = useState<Role>("member");
   const [addSubmitting, setAddSubmitting] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
   const [addSuccess, setAddSuccess] = useState<string | null>(null);
 
   useEffect(() => {
-    let profiles: Record<string, string> = {};
+    let profiles: Record<string, { fullName: string; role: Role }> = {};
     let summaries: Record<string, { totalAllotted: number; totalSpent: number; remainingBalance: number }> = {};
 
     const merge = () => {
       const rows = Object.keys(profiles).map((id) => ({
         id,
-        fullName: profiles[id],
+        fullName: profiles[id].fullName,
+        role: profiles[id].role,
         totalAllotted: summaries[id]?.totalAllotted ?? 0,
         totalSpent: summaries[id]?.totalSpent ?? 0,
         remainingBalance: summaries[id]?.remainingBalance ?? 0,
@@ -394,7 +415,7 @@ function MembersSection() {
         profiles = {};
         snap.docs.forEach((d) => {
           const data = d.data();
-          if (data.role === "member") profiles[d.id] = data.fullName;
+          if (data.role !== "admin") profiles[d.id] = { fullName: data.fullName, role: data.role };
         });
         merge();
       }
@@ -413,6 +434,58 @@ function MembersSection() {
       unsubSummaries();
     };
   }, []);
+
+  useEffect(() => {
+    if (!expandedId) {
+      setExpandedExpenses([]);
+      return;
+    }
+    setExpensesLoading(true);
+    // Filtered by memberId only (no orderBy) so this doesn't need a composite index --
+    // sorted client-side instead.
+    const q = query(collection(db, "memberExpenses"), where("memberId", "==", expandedId));
+    const unsubscribe = onSnapshot(q, (snap) => {
+      const items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<MemberExpenseRow, "id">) }));
+      items.sort((a, b) => (b.createdAt?.toMillis() ?? 0) - (a.createdAt?.toMillis() ?? 0));
+      setExpandedExpenses(items);
+      setExpensesLoading(false);
+    });
+    return unsubscribe;
+  }, [expandedId]);
+
+  const handleDeleteExpense = (memberId: string, expense: MemberExpenseRow) => {
+    Alert.alert(
+      "Remove this expense?",
+      `${money(expense.amount)} -- ${expense.description}\n\nThis gives the amount back to the member's remaining balance. This cannot be undone.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Remove",
+          style: "destructive",
+          onPress: async () => {
+            setDeletingExpenseId(expense.id);
+            try {
+              const batch = writeBatch(db);
+              batch.delete(doc(db, "memberExpenses", expense.id));
+              batch.set(
+                doc(db, "memberSummaries", memberId),
+                {
+                  totalSpent: increment(-expense.amount),
+                  remainingBalance: increment(expense.amount),
+                },
+                { merge: true }
+              );
+              await batch.commit();
+            } catch (err: any) {
+              Alert.alert("Could not remove expense", err.message ?? "Please try again.");
+            } finally {
+              setDeletingExpenseId(null);
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const handleAllot = async (memberId: string) => {
     setAllotError(null);
@@ -456,6 +529,54 @@ function MembersSection() {
     }
   };
 
+  const handlePullBack = async (member: MemberRow) => {
+    setAllotError(null);
+    const numericAmount = parseFloat(allotAmount);
+    if (!numericAmount || numericAmount <= 0) {
+      setAllotError("Enter a valid amount.");
+      return;
+    }
+    if (numericAmount > member.remainingBalance) {
+      setAllotError(
+        `Cannot pull back more than the unspent balance (${money(member.remainingBalance)}).`
+      );
+      return;
+    }
+    setAllotSubmitting(true);
+    try {
+      const batch = writeBatch(db);
+      const allocationRef = doc(collection(db, "memberAllocations"));
+      batch.set(allocationRef, {
+        memberId: member.id,
+        amount: -numericAmount,
+        note: allotNote.trim() || "Fund pulled back by admin",
+        allottedBy: user!.uid,
+        createdAt: serverTimestamp(),
+      });
+      batch.set(
+        doc(db, "memberSummaries", member.id),
+        {
+          totalAllotted: increment(-numericAmount),
+          remainingBalance: increment(-numericAmount),
+        },
+        { merge: true }
+      );
+      batch.set(
+        doc(db, "orgSummary", "totals"),
+        { totalAllotted: increment(-numericAmount), balance: increment(numericAmount) },
+        { merge: true }
+      );
+      await batch.commit();
+      setAllotAmount("");
+      setAllotNote("");
+      setExpandedId(null);
+    } catch (err: any) {
+      setAllotError(err.message ?? "Could not pull back the fund.");
+    } finally {
+      setAllotSubmitting(false);
+    }
+  };
+
   const handleAddMember = async () => {
     setAddError(null);
     setAddSuccess(null);
@@ -470,7 +591,7 @@ function MembersSection() {
       batch.set(doc(db, "profiles", newUid), {
         fullName: newName.trim(),
         email: newEmail.trim(),
-        role: "member",
+        role: newRole,
       });
       batch.set(doc(db, "memberSummaries", newUid), {
         totalAllotted: 0,
@@ -478,10 +599,11 @@ function MembersSection() {
         remainingBalance: 0,
       });
       await batch.commit();
-      setAddSuccess(`Member account created for ${newName.trim()}.`);
+      setAddSuccess(`${newRole.charAt(0).toUpperCase() + newRole.slice(1)} account created for ${newName.trim()}.`);
       setNewName("");
       setNewEmail("");
       setNewPassword("");
+      setNewRole("member");
     } catch (err: any) {
       setAddError(err.message ?? "Could not create member.");
     } finally {
@@ -521,6 +643,27 @@ function MembersSection() {
               onChangeText={setNewPassword}
               secureTextEntry
             />
+            <Text style={formStyles.label}>Role</Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+              {ASSIGNABLE_ROLES.map((r) => {
+                const active = newRole === r;
+                return (
+                  <TouchableOpacity
+                    key={r}
+                    onPress={() => setNewRole(r)}
+                    style={[
+                      formStyles.buttonGhost,
+                      { paddingVertical: 8, paddingHorizontal: 14, minHeight: undefined },
+                      active && { backgroundColor: COLORS.primaryAccent },
+                    ]}
+                  >
+                    <Text style={active ? formStyles.buttonText : formStyles.buttonGhostText}>
+                      {r.charAt(0).toUpperCase() + r.slice(1)}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
             {addError ? <Text style={formStyles.errorText}>{addError}</Text> : null}
             {addSuccess ? <Text style={formStyles.successText}>{addSuccess}</Text> : null}
             <TouchableOpacity
@@ -544,7 +687,10 @@ function MembersSection() {
       ) : (
         members.map((m) => (
           <View key={m.id} style={formStyles.card}>
-            <Text style={formStyles.value}>{m.fullName}</Text>
+            <View style={formStyles.rowBetween}>
+              <Text style={formStyles.value}>{m.fullName}</Text>
+              <Text style={formStyles.label}>{m.role.charAt(0).toUpperCase() + m.role.slice(1)}</Text>
+            </View>
             <View style={formStyles.rowBetween}>
               <Text style={formStyles.body}>Allotted</Text>
               <Text style={formStyles.body}>{money(m.totalAllotted)}</Text>
@@ -560,7 +706,7 @@ function MembersSection() {
 
             <TouchableOpacity onPress={() => setExpandedId(expandedId === m.id ? null : m.id)}>
               <Text style={[formStyles.buttonGhostText, { marginTop: 6 }]}>
-                {expandedId === m.id ? "Cancel" : "Allot Fund →"}
+                {expandedId === m.id ? "Cancel" : "Manage Fund →"}
               </Text>
             </TouchableOpacity>
 
@@ -591,6 +737,49 @@ function MembersSection() {
                     {allotSubmitting ? "Saving..." : "Confirm Allotment"}
                   </Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    formStyles.button,
+                    { backgroundColor: COLORS.danger },
+                    allotSubmitting && formStyles.buttonDisabled,
+                  ]}
+                  onPress={() => handlePullBack(m)}
+                  disabled={allotSubmitting}
+                >
+                  <Text style={formStyles.buttonText}>
+                    {allotSubmitting ? "Saving..." : "Pull Back Fund"}
+                  </Text>
+                </TouchableOpacity>
+
+                <View style={formStyles.divider} />
+                <Text style={formStyles.cardTitle}>{m.fullName}'s Expense History</Text>
+                <Text style={formStyles.subtitle}>
+                  If a member reports a false or mistaken entry, remove it here -- the amount is
+                  added back to their remaining balance.
+                </Text>
+                {expensesLoading ? (
+                  <ActivityIndicator color={COLORS.primaryAccent} />
+                ) : expandedExpenses.length === 0 ? (
+                  <Text style={formStyles.body}>No expenses logged yet.</Text>
+                ) : (
+                  expandedExpenses.map((expense) => (
+                    <View key={expense.id} style={formStyles.card}>
+                      <View style={formStyles.rowBetween}>
+                        <Text style={formStyles.value}>{money(expense.amount)}</Text>
+                        <Text style={formStyles.label}>{expense.spentAt}</Text>
+                      </View>
+                      <Text style={formStyles.body}>{expense.description}</Text>
+                      <TouchableOpacity
+                        onPress={() => handleDeleteExpense(m.id, expense)}
+                        disabled={deletingExpenseId === expense.id}
+                      >
+                        <Text style={[formStyles.errorText, { marginTop: 4, fontWeight: "700" }]}>
+                          {deletingExpenseId === expense.id ? "Removing..." : "Remove this entry"}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))
+                )}
               </View>
             )}
           </View>
