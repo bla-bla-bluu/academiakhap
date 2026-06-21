@@ -33,6 +33,11 @@ const staticPages: Record<string, { title: string; description: string }> = {
     description:
       "Contact Academia Khap for research collaborations, publications, institutional partnerships, historical documentation, media engagement, and community initiatives.",
   },
+  "/privacy-policy": {
+    title: "Privacy Policy | Academia Khap",
+    description:
+      "How Academia Khap collects, uses, and protects information through the Academia Khap app and website.",
+  },
 };
 
 function upsertMeta(attribute: "name" | "property", key: string, content: string) {
