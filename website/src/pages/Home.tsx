@@ -452,6 +452,20 @@ function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="border-t border-[#8b6a43]/20 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center text-sm text-[#6b5746] leading-7">
+          <p>&copy; {new Date().getFullYear()} Academia Khap. All Rights Reserved.</p>
+          <p className="mt-2 max-w-3xl mx-auto">
+            The Academia Khap name, logo, and ideology, together with all associated
+            intellectual property, are the property of Academia Khap. The founding members of
+            Academia Khap hold all rights to claim copyright on behalf of Academia Khap. No part
+            of this website's content, branding, or materials may be reproduced, copied,
+            distributed, or used in any form without prior written permission.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
