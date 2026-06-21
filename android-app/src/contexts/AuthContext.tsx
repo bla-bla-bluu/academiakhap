@@ -8,11 +8,13 @@ import {
 import { doc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
 
+export type Role = "admin" | "trustee" | "member" | "scholar";
+
 export type Profile = {
   id: string;
   fullName: string;
   email: string;
-  role: "admin" | "member";
+  role: Role;
 };
 
 type AuthState = {

@@ -17,6 +17,7 @@
     ],
     "android": {
       "package": "com.academiakhap.app",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo_clean.png",
         "backgroundColor": "#f4efe4"

@@ -2,15 +2,18 @@
 
 This is a runnable Expo React Native Android app for Academia Khap. Besides the public
 Home/Research/About/Work/Contact pages, it has a members system: an **Account** tab with
-Admin and Member login, and a **Chat** tab (visible once logged in).
+role-based login, and a **Community** tab (visible once logged in).
 
 - **Admin console**: records donations and org expenses, sees the auto-computed org balance,
-  allots funds/scholarships to members, and creates new member logins.
+  allots funds/scholarships to members, and creates new logins with a role (admin/trustee/
+  member/scholar).
 - **Member console**: sees their own allotted amount, what they've spent, and their remaining
-  balance, and logs new expenses against it.
-- **Chat**: one shared group chat for every signed-in admin and member.
+  balance, logs new expenses against it, and (for every role except scholar) sees the org-wide
+  total donations received and total expenses made.
+- **Community**: a text-only discussion feed — any signed-in role can post (up to 500
+  characters, no images/GIFs) and comment on others' posts.
 
-There is no custom backend server — auth, the database, and chat all run on
+There is no custom backend server — auth, the database, and the community feed all run on
 [Firebase](https://firebase.google.com) (Firestore + Auth), entirely on the free **Spark** plan
 (no credit card required). Security is enforced by `firestore.rules`, so the app can talk to
 Firestore directly and safely without a server in between.
@@ -26,7 +29,7 @@ Two things worth knowing about how this avoids any paid Firebase feature:
   they're kept in two small summary documents (`orgSummary/totals`, `memberSummaries/{uid}`)
   updated with atomic `increment()` writes in the same batch as every donation/expense/allotment.
 
-## One-time backend setup (do this before the login/console/chat features will work)
+## One-time backend setup (do this before the login/console/community features will work)
 
 1. **Create a Firebase project** at [console.firebase.google.com](https://console.firebase.google.com)
    (Spark/free plan, no card needed). Add an Android app inside it if prompted — the package name
@@ -101,7 +104,7 @@ Expo account needed. The output `.apk` lands under `android/app/build/outputs/ap
 - `src/screens/LoginScreen.tsx`: email/password login
 - `src/screens/AdminConsoleScreen.tsx`: donations, org expenses, members, fund allotment
 - `src/screens/MemberConsoleScreen.tsx`: a member's balance and expense logging
-- `src/screens/ChatScreen.tsx`: shared realtime group chat
+- `src/screens/CommunityScreen.tsx`: text-only community feed (posts + comments, 500 char limit)
 - `src/lib/firebase.ts`: Firebase app/auth/Firestore setup, reads config from `.env`, and the
   `createMemberAuthAccount` helper used by the admin's "Add Member" form
 - `firestore.rules`: all security rules (the Firestore equivalent of Postgres RLS)

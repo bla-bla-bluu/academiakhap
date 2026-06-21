@@ -5,9 +5,9 @@ import {
   doc,
   increment,
   onSnapshot,
-  orderBy,
   query,
   serverTimestamp,
+  Timestamp,
   where,
   writeBatch,
 } from "firebase/firestore";
@@ -27,6 +27,12 @@ type MemberExpense = {
   amount: number;
   description: string;
   spentAt: string;
+  createdAt: Timestamp | null;
+};
+
+type OrgTotals = {
+  totalDonations: number;
+  totalOrgExpenses: number;
 };
 
 const money = (n: number) => `₹${(n ?? 0).toLocaleString("en-IN")}`;
@@ -36,7 +42,10 @@ export default function MemberConsoleScreen() {
   const { profile, user, signOut } = useAuth();
   const [balance, setBalance] = useState<MemberSummary | null>(null);
   const [expenses, setExpenses] = useState<MemberExpense[]>([]);
+  const [orgTotals, setOrgTotals] = useState<OrgTotals | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const canSeeOrgTotals = profile?.role !== "scholar";
 
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
@@ -51,13 +60,13 @@ export default function MemberConsoleScreen() {
       setLoading(false);
     });
 
-    const expensesQuery = query(
-      collection(db, "memberExpenses"),
-      where("memberId", "==", user.uid),
-      orderBy("createdAt", "desc")
-    );
+    // Filtered by memberId only (no orderBy) so this doesn't need a composite index --
+    // sorted client-side instead.
+    const expensesQuery = query(collection(db, "memberExpenses"), where("memberId", "==", user.uid));
     const unsubExpenses = onSnapshot(expensesQuery, (snap) => {
-      setExpenses(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<MemberExpense, "id">) })));
+      const items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<MemberExpense, "id">) }));
+      items.sort((a, b) => (b.createdAt?.toMillis() ?? 0) - (a.createdAt?.toMillis() ?? 0));
+      setExpenses(items);
     });
 
     return () => {
@@ -65,6 +74,17 @@ export default function MemberConsoleScreen() {
       unsubExpenses();
     };
   }, [user]);
+
+  useEffect(() => {
+    if (!user || !canSeeOrgTotals) {
+      setOrgTotals(null);
+      return;
+    }
+    const unsubTotals = onSnapshot(doc(db, "orgSummary", "totals"), (snap) => {
+      setOrgTotals(snap.exists() ? (snap.data() as OrgTotals) : null);
+    });
+    return unsubTotals;
+  }, [user, canSeeOrgTotals]);
 
   const handleAdd = async () => {
     setError(null);
@@ -129,6 +149,21 @@ export default function MemberConsoleScreen() {
                 <Text style={formStyles.value}>{money(balance?.totalSpent ?? 0)}</Text>
               </View>
             </View>
+
+            {canSeeOrgTotals && (
+              <View style={formStyles.card}>
+                <Text style={formStyles.cardTitle}>Academia Khap Totals</Text>
+                <View style={formStyles.rowBetween}>
+                  <Text style={formStyles.body}>Total Donations Received</Text>
+                  <Text style={formStyles.value}>{money(orgTotals?.totalDonations ?? 0)}</Text>
+                </View>
+                <View style={formStyles.divider} />
+                <View style={formStyles.rowBetween}>
+                  <Text style={formStyles.body}>Total Expenses Made</Text>
+                  <Text style={formStyles.value}>{money(orgTotals?.totalOrgExpenses ?? 0)}</Text>
+                </View>
+              </View>
+            )}
           </>
         )}
 
