@@ -370,6 +370,19 @@ function HomeScreen({
             <PrimaryButton onPress={() => navigateTo("contact")}>Contact Us</PrimaryButton>
           </View>
         </Card>
+
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>
+            © {new Date().getFullYear()} Academia Khap. All Rights Reserved.
+          </Text>
+          <Text style={styles.footerText}>
+            The Academia Khap name, logo, and ideology, together with all associated
+            intellectual property, are the property of Academia Khap. The founding members of
+            Academia Khap hold all rights to claim copyright on behalf of Academia Khap. No part
+            of this app's content, branding, or materials may be reproduced, copied,
+            distributed, or used in any form without prior written permission.
+          </Text>
+        </View>
       </View>
     </ScrollView>
   );
@@ -952,6 +965,18 @@ const styles = StyleSheet.create({
   },
   buttonStack: {
     gap: 10
+  },
+  footer: {
+    borderTopWidth: 1,
+    borderTopColor: "rgba(139, 106, 67, 0.2)",
+    paddingTop: 20,
+    gap: 8
+  },
+  footerText: {
+    color: COLORS.mutedBrown,
+    fontSize: 13,
+    lineHeight: 20,
+    textAlign: "center"
   },
   primaryButton: {
     backgroundColor: COLORS.primaryAccent,
