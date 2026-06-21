@@ -4,6 +4,7 @@ import AboutPage from "./pages/About";
 import WorkWithUsPage from "./pages/Work";
 import ResearchPage from "./pages/Research";
 import ContactPage from "./pages/Contact";
+import PrivacyPolicyPage from "./pages/PrivacyPolicy";
 import SEO from "./components/SEO";
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/work" element={<WorkWithUsPage />} />
         <Route path="/research" element={<ResearchPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       </Routes>
     </BrowserRouter>
   );
