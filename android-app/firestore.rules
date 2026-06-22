@@ -29,8 +29,14 @@ service cloud.firestore {
     match /profiles/{uid} {
       allow read: if isSelf(uid) || isAdmin();
       allow create: if isAdmin();
-      allow update: if isSelf(uid) || isAdmin();
-      allow delete: if false;
+      // Self-updates may never change role or email -- only an admin can do that --
+      // otherwise a member could grant themselves admin via a direct SDK call.
+      allow update: if isAdmin() || (
+        isSelf(uid) &&
+        request.resource.data.role == resource.data.role &&
+        request.resource.data.email == resource.data.email
+      );
+      allow delete: if isAdmin();
     }
 
     // A self-registered user (via Google or email/password on the website) lands here with
@@ -106,6 +112,7 @@ service cloud.firestore {
       allow create: if isAdmin();
       allow update: if isAdmin() ||
         (isSelf(memberId) && request.resource.data.totalAllotted == resource.data.totalAllotted);
+      allow delete: if isAdmin();
     }
   }
 }
