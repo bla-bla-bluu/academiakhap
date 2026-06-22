@@ -13,12 +13,32 @@ import { doc, getDoc, onSnapshot, serverTimestamp, setDoc } from "firebase/fires
 import { auth, db } from "../lib/firebase";
 
 export type Role = "admin" | "trustee" | "member" | "scholar";
+export type Gender = "male" | "female";
 
 export type Profile = {
   id: string;
   fullName: string;
   email: string;
   role: Role;
+  gotr?: string;
+  age?: number;
+  village?: string;
+  district?: string;
+  state?: string;
+  eduQualification?: string;
+  gender?: Gender;
+  detailsCompleted?: boolean;
+};
+
+export type ProfileDetails = {
+  fullName: string;
+  gotr: string;
+  age: number;
+  village: string;
+  district: string;
+  state: string;
+  eduQualification: string;
+  gender: Gender;
 };
 
 export type RegistrationStatus = "pending" | "approved" | "rejected" | null;
@@ -35,6 +55,7 @@ type AuthState = {
     email: string,
     password: string
   ) => Promise<{ error: string | null }>;
+  completeProfile: (details: ProfileDetails) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 };
 
@@ -94,7 +115,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (snap.exists()) {
           const data = snap.data();
-          setProfile({ id: snap.id, fullName: data.fullName, email: data.email, role: data.role });
+          setProfile({
+            id: snap.id,
+            fullName: data.fullName,
+            email: data.email,
+            role: data.role,
+            gotr: data.gotr,
+            age: data.age,
+            village: data.village,
+            district: data.district,
+            state: data.state,
+            eduQualification: data.eduQualification,
+            gender: data.gender,
+            detailsCompleted: data.detailsCompleted ?? false,
+          });
           setRegistrationStatus(null);
           setProfileLoading(false);
           return;
@@ -170,6 +204,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const completeProfile = async (details: ProfileDetails) => {
+    if (!user) return { error: "Not signed in." };
+    try {
+      await setDoc(doc(db, "profiles", user.uid), { ...details, detailsCompleted: true }, { merge: true });
+      return { error: null };
+    } catch (err: any) {
+      return { error: err.message ?? "Could not save your details." };
+    }
+  };
+
   const signOut = async () => {
     await firebaseSignOut(auth);
   };
@@ -184,6 +228,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signIn,
         signInWithGoogle,
         registerWithEmail,
+        completeProfile,
         signOut,
       }}
     >

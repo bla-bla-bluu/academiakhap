@@ -16,6 +16,7 @@ import { AuthProvider, useAuth } from "../contexts/AuthContext";
 import { db } from "../lib/firebase";
 import AdminPanel from "../components/community/AdminPanel";
 import MemberPanel from "../components/community/MemberPanel";
+import CompleteProfileForm from "../components/community/CompleteProfileForm";
 
 const MAX_LENGTH = 500;
 
@@ -86,6 +87,10 @@ function CommunityPageContent() {
           Your account doesn't have a profile set up yet. Contact an Academia Khap admin.
         </p>
       );
+    }
+
+    if (profile.role !== "admin" && !profile.detailsCompleted) {
+      return <CompleteProfileForm />;
     }
 
     return (

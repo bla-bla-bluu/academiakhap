@@ -13,7 +13,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { db } from "../../lib/firebase";
-import { useAuth, type Role } from "../../contexts/AuthContext";
+import { useAuth, type Gender, type Role } from "../../contexts/AuthContext";
 
 const ASSIGNABLE_ROLES: Role[] = ["admin", "trustee", "member", "scholar"];
 const money = (n: number) => `₹${(n ?? 0).toLocaleString("en-IN")}`;
@@ -26,10 +26,19 @@ type OrgExpense = { id: string; title: string; amount: number; note: string | nu
 type MemberRow = {
   id: string;
   fullName: string;
+  email: string;
   role: Role;
   totalAllotted: number;
   totalSpent: number;
   remainingBalance: number;
+  gotr?: string;
+  age?: number;
+  village?: string;
+  district?: string;
+  state?: string;
+  eduQualification?: string;
+  gender?: Gender;
+  detailsCompleted?: boolean;
 };
 type MemberExpenseRow = { id: string; amount: number; description: string; spentAt: string; createdAt: Timestamp | null };
 type OrgTotals = { totalDonations: number; totalOrgExpenses: number; totalAllotted: number; balance: number };
@@ -327,15 +336,17 @@ function MembersSection() {
   const [expensesLoading, setExpensesLoading] = useState(false);
   const [deletingExpenseId, setDeletingExpenseId] = useState<string | null>(null);
 
+  const [viewDetailsId, setViewDetailsId] = useState<string | null>(null);
+  const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null);
+
   useEffect(() => {
-    let profiles: Record<string, { fullName: string; role: Role }> = {};
+    let profiles: Record<string, Omit<MemberRow, "id" | "totalAllotted" | "totalSpent" | "remainingBalance">> = {};
     let summaries: Record<string, { totalAllotted: number; totalSpent: number; remainingBalance: number }> = {};
 
     const merge = () => {
       const rows = Object.keys(profiles).map((id) => ({
         id,
-        fullName: profiles[id].fullName,
-        role: profiles[id].role,
+        ...profiles[id],
         totalAllotted: summaries[id]?.totalAllotted ?? 0,
         totalSpent: summaries[id]?.totalSpent ?? 0,
         remainingBalance: summaries[id]?.remainingBalance ?? 0,
@@ -351,7 +362,21 @@ function MembersSection() {
         profiles = {};
         snap.docs.forEach((d) => {
           const data = d.data();
-          if (data.role !== "admin") profiles[d.id] = { fullName: data.fullName, role: data.role };
+          if (data.role !== "admin") {
+            profiles[d.id] = {
+              fullName: data.fullName,
+              email: data.email,
+              role: data.role,
+              gotr: data.gotr,
+              age: data.age,
+              village: data.village,
+              district: data.district,
+              state: data.state,
+              eduQualification: data.eduQualification,
+              gender: data.gender,
+              detailsCompleted: data.detailsCompleted,
+            };
+          }
         });
         merge();
       },
@@ -505,6 +530,29 @@ function MembersSection() {
     }
   };
 
+  const handleDeleteMember = async (member: MemberRow) => {
+    if (
+      !window.confirm(
+        `Remove ${member.fullName} from the community? This revokes their access -- they'll need to be re-approved to rejoin. Their financial history stays on record.`
+      )
+    ) {
+      return;
+    }
+    setDeletingMemberId(member.id);
+    try {
+      const batch = writeBatch(db);
+      batch.delete(doc(db, "profiles", member.id));
+      batch.delete(doc(db, "memberSummaries", member.id));
+      await batch.commit();
+      setViewDetailsId(null);
+      setExpandedId(null);
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not remove this member.");
+    } finally {
+      setDeletingMemberId(null);
+    }
+  };
+
   if (loading) return <p className="text-[#4a3728]">Loading...</p>;
   if (loadError) return <p className="text-[#8c2f23]">Error: {loadError}</p>;
 
@@ -520,6 +568,9 @@ function MembersSection() {
               <span className="font-bold text-lg">{m.fullName}</span>
               <span className="text-xs uppercase tracking-wide text-[#8b6a43]">{m.role}</span>
             </div>
+            <p className="text-sm text-[#8b6a43] mb-2">
+              {m.detailsCompleted ? `${m.gender === "male" ? "M" : "F"} • ${m.age} yrs` : "Profile details not submitted yet"}
+            </p>
             <div className="flex justify-between py-1">
               <span>Allotted</span>
               <span>{money(m.totalAllotted)}</span>
@@ -533,12 +584,60 @@ function MembersSection() {
               <span>{money(m.remainingBalance)}</span>
             </div>
 
-            <button
-              onClick={() => setExpandedId(expandedId === m.id ? null : m.id)}
-              className="mt-3 text-[#5b3419] font-semibold underline underline-offset-4"
-            >
-              {expandedId === m.id ? "Cancel" : "Manage Fund →"}
-            </button>
+            <div className="flex flex-wrap gap-4 mt-3">
+              <button
+                onClick={() => setExpandedId(expandedId === m.id ? null : m.id)}
+                className="text-[#5b3419] font-semibold underline underline-offset-4"
+              >
+                {expandedId === m.id ? "Cancel" : "Manage Fund →"}
+              </button>
+              <button
+                onClick={() => setViewDetailsId(viewDetailsId === m.id ? null : m.id)}
+                className="text-[#5b3419] font-semibold underline underline-offset-4"
+              >
+                {viewDetailsId === m.id ? "Hide Details" : "View Details →"}
+              </button>
+              <a
+                href={`mailto:${m.email}?subject=${encodeURIComponent("Welcome to Academia Khap")}&body=${encodeURIComponent(
+                  `Dear ${m.fullName},\n\nWelcome to Academia Khap! Your account has been approved and you're now part of our community.\n\nRegards,\nAcademia Khap`
+                )}`}
+                className="text-[#5b3419] font-semibold underline underline-offset-4"
+              >
+                Send Joining Email
+              </a>
+              <button
+                onClick={() => handleDeleteMember(m)}
+                disabled={deletingMemberId === m.id}
+                className="text-[#8c2f23] font-semibold underline underline-offset-4 disabled:opacity-60"
+              >
+                {deletingMemberId === m.id ? "Removing..." : "Delete"}
+              </button>
+            </div>
+
+            {viewDetailsId === m.id && (
+              <div className="mt-4 space-y-1 border-t border-[#b38b59]/20 pt-4">
+                {m.detailsCompleted ? (
+                  <>
+                    <div className="flex justify-between py-1"><span>Email</span><span>{m.email}</span></div>
+                    <div className="flex justify-between py-1"><span>Gender</span><span>{m.gender === "male" ? "Male" : "Female"}</span></div>
+                    <div className="flex justify-between py-1"><span>Age</span><span>{m.age}</span></div>
+                    <div className="flex justify-between py-1"><span>Gotr</span><span>{m.gotr}</span></div>
+                    <div className="flex justify-between py-1"><span>Village</span><span>{m.village}</span></div>
+                    <div className="flex justify-between py-1"><span>District</span><span>{m.district}</span></div>
+                    <div className="flex justify-between py-1"><span>State</span><span>{m.state}</span></div>
+                    <div className="flex justify-between py-1"><span>Education</span><span>{m.eduQualification}</span></div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex justify-between py-1"><span>Email</span><span>{m.email}</span></div>
+                    <p className="text-[#4a3728] text-sm">
+                      This member hasn't submitted their profile details yet (gotr, age, village, etc.) --
+                      they'll be prompted on their next login.
+                    </p>
+                  </>
+                )}
+              </div>
+            )}
 
             {expandedId === m.id && (
               <div className="mt-4 space-y-3">
