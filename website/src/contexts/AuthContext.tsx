@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut as firebaseSignOut,
+  updateProfile,
   type User,
 } from "firebase/auth";
 import { doc, getDoc, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
@@ -100,6 +101,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         setProfile(null);
+
+        // Self-heal: a profile-less, request-less signed-in user means a previous
+        // registration attempt's request write failed (e.g. stale rules at the time).
+        // ensureRegistrationRequest is a no-op if a request already exists, so this
+        // is safe to call on every load.
+        ensureRegistrationRequest(
+          user.uid,
+          user.displayName ?? user.email ?? "Unknown",
+          user.email ?? ""
+        ).catch(() => {});
+
         unsubRequest = onSnapshot(
           doc(db, "registrationRequests", user.uid),
           (reqSnap) => {
@@ -150,6 +162,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const registerWithEmail = async (fullName: string, email: string, password: string) => {
     try {
       const credential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(credential.user, { displayName: fullName });
       await ensureRegistrationRequest(credential.user.uid, fullName, email);
       return { error: null };
     } catch (err: any) {
