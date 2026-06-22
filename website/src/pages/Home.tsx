@@ -464,6 +464,14 @@ function HomePage() {
             of this website's content, branding, or materials may be reproduced, copied,
             distributed, or used in any form without prior written permission.
           </p>
+          <div className="mt-4 flex justify-center gap-6">
+            <Link to="/community" className="underline underline-offset-4 hover:text-[#5b3419]">
+              Community
+            </Link>
+            <Link to="/privacy-policy" className="underline underline-offset-4 hover:text-[#5b3419]">
+              Read Privacy Policy
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
