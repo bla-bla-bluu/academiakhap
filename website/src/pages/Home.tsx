@@ -19,15 +19,6 @@ function HomePage() {
     },
   ];
 
-  const members = [
-    "Research Scholars",
-    "Doctorate Holders",
-    "Legal Professionals",
-    "Historians & Writers",
-    "Community Representatives",
-    "Social Researchers",
-  ];
-
   const [contribName, setContribName] = useState("");
   const [contribEmail, setContribEmail] = useState("");
   const [contribMessage, setContribMessage] = useState("");
@@ -167,107 +158,21 @@ function HomePage() {
     Community & Team
   </p>
 
-  <div className="grid lg:grid-cols-3 gap-10 items-stretch">
+  <div className="flex flex-col sm:flex-row gap-6">
 
-    {/* Left Section */}
-    <div className="border border-[#b38b59]/25 rounded-[2.5rem] p-6 sm:p-12">
+    <Link
+      to="/about"
+      className="flex-1 text-center text-2xl sm:text-3xl lg:text-4xl font-bold px-8 py-10 rounded-[2rem] border border-[#5b3419] bg-[#5b3419] text-white transition duration-300 hover:bg-[#f4efe4] hover:text-[#5b3419]"
+    >
+      Our Members
+    </Link>
 
-      <Link
-        to="/about"
-        className="inline-block text-3xl sm:text-4xl lg:text-5xl font-bold mb-8 px-6 py-3 rounded-2xl border border-[#5b3419] bg-[#5b3419] text-white transition duration-300 hover:bg-[#f4efe4] hover:text-[#5b3419]"
-      >
-        Our Members
-      </Link>
-
-      <p className="text-base sm:text-lg leading-8 sm:leading-9 text-[#4a3728] mb-10">
-        Academia Khap is built through collaboration between researchers,
-        scholars, legal experts, educators, historians, and socially aware
-        contributors dedicated to knowledge-based engagement.
-      </p>
-
-      <div className="grid sm:grid-cols-2 gap-4">
-
-        {members.map((member) => (
-          <div
-            key={member}
-            className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-2xl px-5 py-4 transition duration-300 hover:bg-[#5b3419] hover:text-white"
-          >
-            {member}
-          </div>
-        ))}
-
-      </div>
-
-    </div>
-
- {/* Right Section */}
-<div className="rounded-[2.5rem] bg-[#5b3419] text-white p-6 sm:p-12 shadow-2xl flex flex-col justify-start min-h-full">
-
-  <Link
-    to="/work"
-    className="inline-block self-start mt-2 mb-8 px-6 sm:px-8 py-3 text-2xl sm:text-3xl lg:text-4xl font-bold rounded-full border border-white text-white hover:bg-white hover:text-[#5b3419] transition duration-300"
-  >
-    Work With Us
-  </Link>
-
-  <div className="space-y-5 text-lg leading-8 text-[#f5ede0]">
-
-    <p>
-      We welcome collaborations in research, digital publishing,
-      historical documentation, translation, design, and social
-      awareness projects.
-    </p>
-
-    <p className="font-semibold text-white">
-      Contributors may include:
-    </p>
-
-    <ul className="space-y-3 list-disc pl-6 text-[#f5ede0]">
-
-      <li>Writers & Editors</li>
-      <li>Researchers & Historians</li>
-      <li>Social Analysts</li>
-      <li>Designers & Media Contributors</li>
-      <li>Students & Scholars</li>
-      <li>Legal Professionals</li>
-      <li>Policy & Strategic Analysts</li>
-
-    </ul>
-
-  </div>
-
-</div>
-
-    {/* Discussion Community Section */}
-    <div className="border border-[#b38b59]/25 rounded-[2.5rem] p-6 sm:p-12">
-
-      <Link
-        to="/community"
-        className="inline-block text-3xl sm:text-4xl lg:text-5xl font-bold mb-8 px-6 py-3 rounded-2xl border border-[#5b3419] bg-[#5b3419] text-white transition duration-300 hover:bg-[#f4efe4] hover:text-[#5b3419]"
-      >
-        Discussion Community
-      </Link>
-
-      <p className="text-base sm:text-lg leading-8 sm:leading-9 text-[#4a3728] mb-10">
-        Academia Khap members post updates and discuss research, events, and
-        community matters in a focused, text-only space -- no images or GIFs,
-        just real conversation.
-      </p>
-
-      <div className="grid sm:grid-cols-2 gap-4">
-
-        {["Post Updates", "Comment & Discuss", "Share Instantly"].map((feature) => (
-          <div
-            key={feature}
-            className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-2xl px-5 py-4 transition duration-300 hover:bg-[#5b3419] hover:text-white"
-          >
-            {feature}
-          </div>
-        ))}
-
-      </div>
-
-    </div>
+    <Link
+      to="/community"
+      className="flex-1 text-center text-2xl sm:text-3xl lg:text-4xl font-bold px-8 py-10 rounded-[2rem] border border-[#5b3419] bg-[#5b3419] text-white transition duration-300 hover:bg-[#f4efe4] hover:text-[#5b3419]"
+    >
+      Community
+    </Link>
 
   </div>
 
