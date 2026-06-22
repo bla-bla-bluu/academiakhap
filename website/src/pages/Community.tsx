@@ -112,10 +112,6 @@ function CommunityPageContent() {
           ) : (
             <PostFeed onSelectPost={(id) => setSearchParams({ post: id })} />
           ))}
-
-        <button onClick={signOut} className="mt-10 text-[#8c2f23] font-semibold underline underline-offset-4">
-          Log Out
-        </button>
       </>
     );
   };
@@ -136,7 +132,20 @@ function CommunityPageContent() {
       </section>
 
       <section className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        {loading ? <p className="text-[#4a3728]">Loading...</p> : !user ? <AuthGate /> : renderAuthenticatedContent()}
+        {loading ? (
+          <p className="text-[#4a3728]">Loading...</p>
+        ) : !user ? (
+          <AuthGate />
+        ) : (
+          <>
+            {renderAuthenticatedContent()}
+            <div className="text-center mt-10">
+              <button onClick={signOut} className="text-[#8c2f23] font-semibold underline underline-offset-4">
+                Log Out
+              </button>
+            </div>
+          </>
+        )}
       </section>
     </div>
   );
