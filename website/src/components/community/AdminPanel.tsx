@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   collection,
   doc,
+  getDoc,
   increment,
   onSnapshot,
   orderBy,
@@ -352,6 +353,8 @@ function MembersSection() {
 
   const [viewDetailsId, setViewDetailsId] = useState<string | null>(null);
   const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null);
+  const [roleEditId, setRoleEditId] = useState<string | null>(null);
+  const [roleChangingId, setRoleChangingId] = useState<string | null>(null);
 
   useEffect(() => {
     let profiles: Record<string, Omit<MemberRow, "id" | "totalAllotted" | "totalSpent" | "remainingBalance">> = {};
@@ -567,6 +570,28 @@ function MembersSection() {
     }
   };
 
+  const handleChangeRole = async (member: MemberRow, newRole: Role) => {
+    if (newRole === member.role) return;
+    if (!window.confirm(`Change ${member.fullName}'s role from ${member.role} to ${newRole}?`)) return;
+    setRoleChangingId(member.id);
+    try {
+      const batch = writeBatch(db);
+      batch.update(doc(db, "profiles", member.id), { role: newRole });
+      if (newRole !== "admin") {
+        const summarySnap = await getDoc(doc(db, "memberSummaries", member.id));
+        if (!summarySnap.exists()) {
+          batch.set(doc(db, "memberSummaries", member.id), { totalAllotted: 0, totalSpent: 0, remainingBalance: 0 });
+        }
+      }
+      await batch.commit();
+      setRoleEditId(null);
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not change role.");
+    } finally {
+      setRoleChangingId(null);
+    }
+  };
+
   if (loading) return <p className="text-[#4a3728]">Loading...</p>;
   if (loadError) return <p className="text-[#8c2f23]">Error: {loadError}</p>;
 
@@ -611,6 +636,12 @@ function MembersSection() {
               >
                 {viewDetailsId === m.id ? "Hide Details" : "View Details →"}
               </button>
+              <button
+                onClick={() => setRoleEditId(roleEditId === m.id ? null : m.id)}
+                className="text-[#5b3419] font-semibold underline underline-offset-4"
+              >
+                {roleEditId === m.id ? "Cancel" : "Change Role →"}
+              </button>
               <a
                 href={gmailComposeUrl(m.email, m.fullName, m.role)}
                 target="_blank"
@@ -627,6 +658,25 @@ function MembersSection() {
                 {deletingMemberId === m.id ? "Removing..." : "Delete"}
               </button>
             </div>
+
+            {roleEditId === m.id && (
+              <div className="mt-4 flex flex-wrap gap-2 border-t border-[#b38b59]/20 pt-4">
+                {ASSIGNABLE_ROLES.map((r) => (
+                  <button
+                    key={r}
+                    onClick={() => handleChangeRole(m, r)}
+                    disabled={roleChangingId === m.id}
+                    className={
+                      r === m.role
+                        ? "px-4 py-2 rounded-full bg-[#5b3419] text-white text-sm disabled:opacity-60"
+                        : "px-4 py-2 rounded-full border border-[#5b3419] text-[#5b3419] text-sm disabled:opacity-60"
+                    }
+                  >
+                    {r.charAt(0).toUpperCase() + r.slice(1)}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {viewDetailsId === m.id && (
               <div className="mt-4 space-y-1 border-t border-[#b38b59]/20 pt-4">
