@@ -14,6 +14,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { useAuth, type Gender, type Role } from "../../contexts/AuthContext";
+import { sendJoiningEmail } from "../../lib/email";
 
 const ASSIGNABLE_ROLES: Role[] = ["admin", "trustee", "member", "scholar"];
 const money = (n: number) => `₹${(n ?? 0).toLocaleString("en-IN")}`;
@@ -338,6 +339,8 @@ function MembersSection() {
 
   const [viewDetailsId, setViewDetailsId] = useState<string | null>(null);
   const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null);
+  const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
+  const [emailResult, setEmailResult] = useState<{ id: string; message: string } | null>(null);
 
   useEffect(() => {
     let profiles: Record<string, Omit<MemberRow, "id" | "totalAllotted" | "totalSpent" | "remainingBalance">> = {};
@@ -553,6 +556,19 @@ function MembersSection() {
     }
   };
 
+  const handleSendJoiningEmail = async (member: MemberRow) => {
+    setSendingEmailId(member.id);
+    setEmailResult(null);
+    try {
+      await sendJoiningEmail(member.fullName, member.email, member.role);
+      setEmailResult({ id: member.id, message: "Email sent." });
+    } catch (err: any) {
+      setEmailResult({ id: member.id, message: err.message ?? "Could not send the email." });
+    } finally {
+      setSendingEmailId(null);
+    }
+  };
+
   if (loading) return <p className="text-[#4a3728]">Loading...</p>;
   if (loadError) return <p className="text-[#8c2f23]">Error: {loadError}</p>;
 
@@ -597,14 +613,13 @@ function MembersSection() {
               >
                 {viewDetailsId === m.id ? "Hide Details" : "View Details →"}
               </button>
-              <a
-                href={`mailto:${m.email}?subject=${encodeURIComponent("Welcome to Academia Khap")}&body=${encodeURIComponent(
-                  `Dear ${m.fullName},\n\nWelcome to Academia Khap! Your account has been approved and you're now part of our community.\n\nRegards,\nAcademia Khap`
-                )}`}
-                className="text-[#5b3419] font-semibold underline underline-offset-4"
+              <button
+                onClick={() => handleSendJoiningEmail(m)}
+                disabled={sendingEmailId === m.id}
+                className="text-[#5b3419] font-semibold underline underline-offset-4 disabled:opacity-60"
               >
-                Send Joining Email
-              </a>
+                {sendingEmailId === m.id ? "Sending..." : "Send Joining Email"}
+              </button>
               <button
                 onClick={() => handleDeleteMember(m)}
                 disabled={deletingMemberId === m.id}
@@ -613,6 +628,12 @@ function MembersSection() {
                 {deletingMemberId === m.id ? "Removing..." : "Delete"}
               </button>
             </div>
+
+            {emailResult?.id === m.id && (
+              <p className={`text-sm mt-2 ${emailResult.message === "Email sent." ? "text-[#2f6b3a]" : "text-[#8c2f23]"}`}>
+                {emailResult.message}
+              </p>
+            )}
 
             {viewDetailsId === m.id && (
               <div className="mt-4 space-y-1 border-t border-[#b38b59]/20 pt-4">
