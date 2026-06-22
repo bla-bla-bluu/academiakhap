@@ -14,6 +14,8 @@ import {
 import Navbar from "../components/Navbar";
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
 import { db } from "../lib/firebase";
+import AdminPanel from "../components/community/AdminPanel";
+import MemberPanel from "../components/community/MemberPanel";
 
 const MAX_LENGTH = 500;
 
@@ -34,6 +36,8 @@ type CommunityComment = {
   createdAt: Timestamp | null;
 };
 
+type PortalTab = "tools" | "community";
+
 const formatTimestamp = (ts: Timestamp | null) => (ts ? ts.toDate().toLocaleString() : "Just now");
 
 export default function CommunityPage() {
@@ -45,9 +49,76 @@ export default function CommunityPage() {
 }
 
 function CommunityPageContent() {
-  const { user, profile, loading, signIn, signOut } = useAuth();
+  const { user, profile, registrationStatus, loading, signOut } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedPostId = searchParams.get("post");
+  const [tab, setTab] = useState<PortalTab>("tools");
+
+  const renderAuthenticatedContent = () => {
+    if (!profile) {
+      if (registrationStatus === "pending") {
+        return (
+          <div className="max-w-md mx-auto border border-[#b38b59]/25 rounded-[2.5rem] p-10 bg-[#faf6ef] text-center">
+            <h2 className="text-2xl font-bold mb-3">Request Pending</h2>
+            <p className="text-[#4a3728]">
+              Your registration has been sent to an Academia Khap admin for approval. You'll be
+              able to access your account once it's approved -- check back soon.
+            </p>
+          </div>
+        );
+      }
+      if (registrationStatus === "rejected") {
+        return (
+          <div className="max-w-md mx-auto border border-[#b38b59]/25 rounded-[2.5rem] p-10 bg-[#faf6ef] text-center">
+            <h2 className="text-2xl font-bold mb-3">Request Not Approved</h2>
+            <p className="text-[#4a3728]">
+              Your registration request wasn't approved. Contact{" "}
+              <a href="mailto:academiakhap@gmail.com" className="underline underline-offset-4">
+                academiakhap@gmail.com
+              </a>{" "}
+              if you believe this is a mistake.
+            </p>
+          </div>
+        );
+      }
+      return (
+        <p className="text-[#4a3728] text-center">
+          Your account doesn't have a profile set up yet. Contact an Academia Khap admin.
+        </p>
+      );
+    }
+
+    return (
+      <>
+        <div className="flex flex-wrap gap-3 mb-8 justify-center">
+          <button
+            onClick={() => setTab("tools")}
+            className={tab === "tools" ? "px-5 py-2 rounded-full bg-[#5b3419] text-white font-semibold" : "px-5 py-2 rounded-full border border-[#5b3419] text-[#5b3419] font-semibold"}
+          >
+            {profile.role === "admin" ? "Admin Tools" : "My Fund"}
+          </button>
+          <button
+            onClick={() => setTab("community")}
+            className={tab === "community" ? "px-5 py-2 rounded-full bg-[#5b3419] text-white font-semibold" : "px-5 py-2 rounded-full border border-[#5b3419] text-[#5b3419] font-semibold"}
+          >
+            Discussion
+          </button>
+        </div>
+
+        {tab === "tools" && (profile.role === "admin" ? <AdminPanel /> : <MemberPanel />)}
+        {tab === "community" &&
+          (selectedPostId ? (
+            <PostDetail postId={selectedPostId} onBack={() => setSearchParams({})} />
+          ) : (
+            <PostFeed onSelectPost={(id) => setSearchParams({ post: id })} />
+          ))}
+
+        <button onClick={signOut} className="mt-10 text-[#8c2f23] font-semibold underline underline-offset-4">
+          Log Out
+        </button>
+      </>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
@@ -58,47 +129,67 @@ function CommunityPageContent() {
           <p className="uppercase tracking-[0.35em] text-sm text-[#8b6a43] mb-4">Academia Khap</p>
           <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold leading-tight mb-6">Community</h1>
           <p className="text-[#4a3728] max-w-2xl">
-            A discussion space for Academia Khap members. Share an update or join a discussion --
-            text only, up to {MAX_LENGTH} characters, no images or GIFs. The same community feed
-            members see in the Academia Khap Android app.
+            Academia Khap's members area: track donations and fund allotments, log expenses, and
+            discuss research and community matters in a focused, text-only space.
           </p>
         </div>
       </section>
 
       <section className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        {loading ? (
-          <p className="text-[#4a3728]">Loading...</p>
-        ) : !user ? (
-          <LoginForm signIn={signIn} />
-        ) : !profile ? (
-          <p className="text-[#4a3728]">
-            Your account doesn't have a profile set up yet. Contact an Academia Khap admin.
-          </p>
-        ) : (
-          <>
-            {selectedPostId ? (
-              <PostDetail postId={selectedPostId} onBack={() => setSearchParams({})} />
-            ) : (
-              <PostFeed onSelectPost={(id) => setSearchParams({ post: id })} />
-            )}
-            <button
-              onClick={signOut}
-              className="mt-10 text-[#8c2f23] font-semibold underline underline-offset-4"
-            >
-              Log Out
-            </button>
-          </>
-        )}
+        {loading ? <p className="text-[#4a3728]">Loading...</p> : !user ? <AuthGate /> : renderAuthenticatedContent()}
       </section>
     </div>
   );
 }
 
-function LoginForm({
-  signIn,
-}: {
-  signIn: (email: string, password: string) => Promise<{ error: string | null }>;
-}) {
+function AuthGate() {
+  const [mode, setMode] = useState<"login" | "register">("login");
+
+  return (
+    <div className="max-w-md mx-auto">
+      <div className="flex gap-3 mb-6 justify-center">
+        <button
+          onClick={() => setMode("login")}
+          className={mode === "login" ? "px-5 py-2 rounded-full bg-[#5b3419] text-white font-semibold" : "px-5 py-2 rounded-full border border-[#5b3419] text-[#5b3419] font-semibold"}
+        >
+          Log In
+        </button>
+        <button
+          onClick={() => setMode("register")}
+          className={mode === "register" ? "px-5 py-2 rounded-full bg-[#5b3419] text-white font-semibold" : "px-5 py-2 rounded-full border border-[#5b3419] text-[#5b3419] font-semibold"}
+        >
+          Register
+        </button>
+      </div>
+      {mode === "login" ? <LoginForm /> : <RegisterForm />}
+    </div>
+  );
+}
+
+function GoogleButton({ onError }: { onError: (message: string) => void }) {
+  const { signInWithGoogle } = useAuth();
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleClick = async () => {
+    setSubmitting(true);
+    const { error } = await signInWithGoogle();
+    setSubmitting(false);
+    if (error) onError(error);
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={submitting}
+      className="w-full py-3 rounded-2xl border border-[#5b3419] text-[#5b3419] font-semibold hover:bg-[#5b3419] hover:text-white transition disabled:opacity-60"
+    >
+      {submitting ? "Connecting..." : "Continue with Google"}
+    </button>
+  );
+}
+
+function LoginForm() {
+  const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -118,39 +209,130 @@ function LoginForm({
   };
 
   return (
-    <div className="max-w-md mx-auto border border-[#b38b59]/25 rounded-[2.5rem] p-10 bg-[#faf6ef]">
+    <div className="border border-[#b38b59]/25 rounded-[2.5rem] p-10 bg-[#faf6ef]">
       <h2 className="text-2xl font-bold mb-3">Member &amp; Admin Login</h2>
       <p className="text-[#4a3728] mb-6">
-        Accounts are created by an Academia Khap admin. Contact{" "}
-        <a href="mailto:academiakhap@gmail.com" className="underline underline-offset-4">
-          academiakhap@gmail.com
-        </a>{" "}
-        if you need access.
+        Don't have an account yet? Switch to "Register" above -- new accounts need admin
+        approval before they're active.
       </p>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-2xl border border-[#c8a97d] bg-white px-5 py-3 outline-none"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-2xl border border-[#c8a97d] bg-white px-5 py-3 outline-none"
-        />
-        {error ? <p className="text-[#8c2f23] text-sm">{error}</p> : null}
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full py-3 rounded-2xl bg-[#5b3419] text-white font-semibold hover:bg-[#3b2415] transition disabled:opacity-60"
-        >
-          {submitting ? "Logging in..." : "Log In"}
-        </button>
-      </form>
+      <div className="space-y-4">
+        <GoogleButton onError={setError} />
+        <div className="flex items-center gap-3 text-[#8b6a43] text-sm">
+          <div className="flex-1 h-px bg-[#b38b59]/30" />
+          or
+          <div className="flex-1 h-px bg-[#b38b59]/30" />
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-2xl border border-[#c8a97d] bg-white px-5 py-3 outline-none"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-2xl border border-[#c8a97d] bg-white px-5 py-3 outline-none"
+          />
+          {error ? <p className="text-[#8c2f23] text-sm">{error}</p> : null}
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full py-3 rounded-2xl bg-[#5b3419] text-white font-semibold hover:bg-[#3b2415] transition disabled:opacity-60"
+          >
+            {submitting ? "Logging in..." : "Log In"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function RegisterForm() {
+  const { registerWithEmail } = useAuth();
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!fullName.trim() || !email.trim() || password.length < 6) {
+      setError("Full name, email, and a password of at least 6 characters are required.");
+      return;
+    }
+    setSubmitting(true);
+    const { error: registerError } = await registerWithEmail(fullName.trim(), email.trim(), password);
+    setSubmitting(false);
+    if (registerError) {
+      setError(registerError);
+    } else {
+      setSuccess(true);
+    }
+  };
+
+  if (success) {
+    return (
+      <div className="border border-[#b38b59]/25 rounded-[2.5rem] p-10 bg-[#faf6ef] text-center">
+        <h2 className="text-2xl font-bold mb-3">Request Sent</h2>
+        <p className="text-[#4a3728]">
+          Your registration has been sent to an Academia Khap admin for approval. Log back in
+          here once you've been approved.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="border border-[#b38b59]/25 rounded-[2.5rem] p-10 bg-[#faf6ef]">
+      <h2 className="text-2xl font-bold mb-3">Register</h2>
+      <p className="text-[#4a3728] mb-6">
+        New accounts are reviewed by an Academia Khap admin before they're activated.
+      </p>
+      <div className="space-y-4">
+        <GoogleButton onError={setError} />
+        <div className="flex items-center gap-3 text-[#8b6a43] text-sm">
+          <div className="flex-1 h-px bg-[#b38b59]/30" />
+          or
+          <div className="flex-1 h-px bg-[#b38b59]/30" />
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            placeholder="Full Name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            className="w-full rounded-2xl border border-[#c8a97d] bg-white px-5 py-3 outline-none"
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-2xl border border-[#c8a97d] bg-white px-5 py-3 outline-none"
+          />
+          <input
+            type="password"
+            placeholder="Password (min 6 characters)"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-2xl border border-[#c8a97d] bg-white px-5 py-3 outline-none"
+          />
+          {error ? <p className="text-[#8c2f23] text-sm">{error}</p> : null}
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full py-3 rounded-2xl bg-[#5b3419] text-white font-semibold hover:bg-[#3b2415] transition disabled:opacity-60"
+          >
+            {submitting ? "Submitting..." : "Request an Account"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

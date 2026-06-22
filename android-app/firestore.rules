@@ -23,13 +23,26 @@ service cloud.firestore {
     }
 
     // One profile doc per user, id == their auth uid.
+    // Only an admin may create one -- this is what actually grants access, so a self-registered
+    // user must go through registrationRequests (below) and wait for admin approval rather than
+    // ever being able to write their own role directly.
     match /profiles/{uid} {
       allow read: if isSelf(uid) || isAdmin();
-      // "create" covers both a brand-new user writing their own profile, and an admin
-      // writing the profile doc for a member they just created via createMemberAuthAccount.
-      allow create: if isSelf(uid) || isAdmin();
+      allow create: if isAdmin();
       allow update: if isSelf(uid) || isAdmin();
       allow delete: if false;
+    }
+
+    // A self-registered user (via Google or email/password on the website) lands here with
+    // status "pending" until an admin reviews and approves them, at which point the admin
+    // creates the matching profiles/{uid} document with a role and removes this request.
+    match /registrationRequests/{uid} {
+      allow read: if isSelf(uid) || isAdmin();
+      allow create: if isSelf(uid) &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.fullName is string &&
+        request.resource.data.email is string;
+      allow update, delete: if isAdmin();
     }
 
     // Incoming donations -- admin-only in both directions, members never see donor detail.
