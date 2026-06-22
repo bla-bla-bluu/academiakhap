@@ -14,11 +14,24 @@ import {
 } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { useAuth, type Gender, type Role } from "../../contexts/AuthContext";
-import { sendJoiningEmail } from "../../lib/email";
 
 const ASSIGNABLE_ROLES: Role[] = ["admin", "trustee", "member", "scholar"];
 const money = (n: number) => `₹${(n ?? 0).toLocaleString("en-IN")}`;
 const todayISO = () => new Date().toISOString().slice(0, 10);
+
+const ROLE_DESCRIPTIONS: Record<Role, string> = {
+  admin: "As an Admin, you have full access to manage donations, organization expenses, member fund allocations, and review new membership requests.",
+  trustee: "As a Trustee, you can view your allotted funds, log your expenses, and see the organization's overall donation and expense totals.",
+  member: "As a Member, you can view your allotted funds, log your own expenses, and take part in community discussions.",
+  scholar: "As a Scholar, you can view your allotted research funds and log your expenses, and take part in community discussions.",
+};
+
+function gmailComposeUrl(toEmail: string, toName: string, role: Role) {
+  const subject = "Welcome to Academia Khap";
+  const body = `Dear ${toName},\n\nWelcome to Academia Khap! Your registration has been approved and you've been added as a ${role.charAt(0).toUpperCase() + role.slice(1)}.\n\n${ROLE_DESCRIPTIONS[role]}\n\nYou can log in anytime at https://academiakhap.org/community using the email or Google account you registered with.\n\nWarm regards,\nAcademia Khap`;
+  const params = new URLSearchParams({ view: "cm", fs: "1", to: toEmail, su: subject, body });
+  return `https://mail.google.com/mail/?${params.toString()}`;
+}
 
 type AdminTab = "overview" | "donations" | "expenses" | "members" | "requests";
 
@@ -339,8 +352,6 @@ function MembersSection() {
 
   const [viewDetailsId, setViewDetailsId] = useState<string | null>(null);
   const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null);
-  const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
-  const [emailResult, setEmailResult] = useState<{ id: string; message: string } | null>(null);
 
   useEffect(() => {
     let profiles: Record<string, Omit<MemberRow, "id" | "totalAllotted" | "totalSpent" | "remainingBalance">> = {};
@@ -556,19 +567,6 @@ function MembersSection() {
     }
   };
 
-  const handleSendJoiningEmail = async (member: MemberRow) => {
-    setSendingEmailId(member.id);
-    setEmailResult(null);
-    try {
-      await sendJoiningEmail(member.fullName, member.email, member.role);
-      setEmailResult({ id: member.id, message: "Email sent." });
-    } catch (err: any) {
-      setEmailResult({ id: member.id, message: err.message ?? "Could not send the email." });
-    } finally {
-      setSendingEmailId(null);
-    }
-  };
-
   if (loading) return <p className="text-[#4a3728]">Loading...</p>;
   if (loadError) return <p className="text-[#8c2f23]">Error: {loadError}</p>;
 
@@ -613,13 +611,14 @@ function MembersSection() {
               >
                 {viewDetailsId === m.id ? "Hide Details" : "View Details →"}
               </button>
-              <button
-                onClick={() => handleSendJoiningEmail(m)}
-                disabled={sendingEmailId === m.id}
-                className="text-[#5b3419] font-semibold underline underline-offset-4 disabled:opacity-60"
+              <a
+                href={gmailComposeUrl(m.email, m.fullName, m.role)}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#5b3419] font-semibold underline underline-offset-4"
               >
-                {sendingEmailId === m.id ? "Sending..." : "Send Joining Email"}
-              </button>
+                Send Email
+              </a>
               <button
                 onClick={() => handleDeleteMember(m)}
                 disabled={deletingMemberId === m.id}
@@ -628,12 +627,6 @@ function MembersSection() {
                 {deletingMemberId === m.id ? "Removing..." : "Delete"}
               </button>
             </div>
-
-            {emailResult?.id === m.id && (
-              <p className={`text-sm mt-2 ${emailResult.message === "Email sent." ? "text-[#2f6b3a]" : "text-[#8c2f23]"}`}>
-                {emailResult.message}
-              </p>
-            )}
 
             {viewDetailsId === m.id && (
               <div className="mt-4 space-y-1 border-t border-[#b38b59]/20 pt-4">
