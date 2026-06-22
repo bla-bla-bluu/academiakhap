@@ -421,14 +421,22 @@ function PostFeed({ onSelectPost }: { onSelectPost: (id: string) => void }) {
   const { user, profile } = useAuth();
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [shareNotice, setShareNotice] = useState<string | null>(null);
 
   useEffect(() => {
     const q = query(collection(db, "communityPosts"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snap) => {
-      setPosts(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<CommunityPost, "id">) })));
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snap) => {
+        setPosts(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<CommunityPost, "id">) })));
+        setLoading(false);
+      },
+      (err) => {
+        setLoadError(err.message);
+        setLoading(false);
+      }
+    );
     return unsubscribe;
   }, []);
 
@@ -462,6 +470,8 @@ function PostFeed({ onSelectPost }: { onSelectPost: (id: string) => void }) {
       {shareNotice ? <p className="text-[#2f6b3a] text-sm mb-4">{shareNotice}</p> : null}
       {loading ? (
         <p className="text-[#4a3728]">Loading posts...</p>
+      ) : loadError ? (
+        <p className="text-[#8c2f23]">Error: {loadError}</p>
       ) : posts.length === 0 ? (
         <p className="text-[#4a3728]">No posts yet. Be the first to start a discussion.</p>
       ) : (
@@ -499,12 +509,20 @@ function PostDetail({ postId, onBack }: { postId: string; onBack: () => void }) 
   const [post, setPost] = useState<CommunityPost | null>(null);
   const [comments, setComments] = useState<CommunityComment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubPost = onSnapshot(doc(db, "communityPosts", postId), (snap) => {
-      setPost(snap.exists() ? { id: snap.id, ...(snap.data() as Omit<CommunityPost, "id">) } : null);
-      setLoading(false);
-    });
+    const unsubPost = onSnapshot(
+      doc(db, "communityPosts", postId),
+      (snap) => {
+        setPost(snap.exists() ? { id: snap.id, ...(snap.data() as Omit<CommunityPost, "id">) } : null);
+        setLoading(false);
+      },
+      (err) => {
+        setLoadError(err.message);
+        setLoading(false);
+      }
+    );
 
     // Filtered by postId only (no orderBy) so this doesn't need a composite index --
     // sorted client-side instead.
@@ -532,6 +550,7 @@ function PostDetail({ postId, onBack }: { postId: string; onBack: () => void }) 
   };
 
   if (loading) return <p className="text-[#4a3728]">Loading...</p>;
+  if (loadError) return <p className="text-[#8c2f23]">Error: {loadError}</p>;
   if (!post) return <p className="text-[#4a3728]">This post could not be found.</p>;
 
   return (
