@@ -1,18 +1,21 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
-  addDoc,
   collection,
+  deleteDoc,
   doc,
+  increment,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
   Timestamp,
   where,
+  writeBatch,
 } from "firebase/firestore";
 import Navbar from "../components/Navbar";
-import { AuthProvider, useAuth } from "../contexts/AuthContext";
+import { AuthProvider, useAuth, type Role } from "../contexts/AuthContext";
 import { db } from "../lib/firebase";
 import AdminPanel from "../components/community/AdminPanel";
 import MemberPanel from "../components/community/MemberPanel";
@@ -24,7 +27,9 @@ type CommunityPost = {
   id: string;
   authorId: string;
   authorName: string;
+  authorRole: Role;
   body: string;
+  commentCount: number;
   createdAt: Timestamp | null;
 };
 
@@ -33,6 +38,7 @@ type CommunityComment = {
   postId: string;
   authorId: string;
   authorName: string;
+  authorRole: Role;
   body: string;
   createdAt: Timestamp | null;
 };
@@ -40,6 +46,34 @@ type CommunityComment = {
 type PortalTab = "tools" | "community";
 
 const formatTimestamp = (ts: Timestamp | null) => (ts ? ts.toDate().toLocaleString() : "Just now");
+
+const AVATAR_COLORS = ["#5b3419", "#8b6a43", "#8c2f23", "#2f6b3a", "#3b2415", "#b38b59"];
+
+function avatarColor(name: string) {
+  const sum = name.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  return AVATAR_COLORS[sum % AVATAR_COLORS.length];
+}
+
+function Avatar({ name }: { name: string }) {
+  const initial = name.trim().charAt(0).toUpperCase() || "?";
+  return (
+    <div
+      className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0"
+      style={{ backgroundColor: avatarColor(name) }}
+    >
+      {initial}
+    </div>
+  );
+}
+
+function RoleBadge({ role }: { role: Role }) {
+  if (role === "member") return null;
+  return (
+    <span className="text-[10px] uppercase tracking-wide font-bold px-2 py-0.5 rounded-full bg-[#efe4cf] text-[#8b6a43] border border-[#b38b59]/40">
+      {role}
+    </span>
+  );
+}
 
 export default function CommunityPage() {
   return (
@@ -106,7 +140,7 @@ function CommunityPageContent() {
             onClick={() => setTab("community")}
             className={tab === "community" ? "px-5 py-2 rounded-full bg-[#5b3419] text-white font-semibold" : "px-5 py-2 rounded-full border border-[#5b3419] text-[#5b3419] font-semibold"}
           >
-            Discussion
+            Vidvat Panchayat
           </button>
         </div>
 
@@ -404,14 +438,34 @@ function Composer({
   );
 }
 
-function PostCard({ post, footer }: { post: CommunityPost; footer: ReactNode }) {
+function PostCard({
+  post,
+  footer,
+  onDelete,
+}: {
+  post: CommunityPost;
+  footer: ReactNode;
+  onDelete?: () => void;
+}) {
+  const { profile } = useAuth();
   return (
-    <div className="border border-[#b38b59]/25 rounded-[2.5rem] p-6 bg-[#faf6ef]">
-      <div className="flex items-center justify-between mb-2">
-        <span className="font-bold">{post.authorName}</span>
-        <span className="text-sm text-[#8b6a43]">{formatTimestamp(post.createdAt)}</span>
+    <div className="border border-[#b38b59]/25 rounded-[2rem] p-6 bg-[#faf6ef] shadow-sm hover:shadow-md transition">
+      <div className="flex items-start gap-3 mb-3">
+        <Avatar name={post.authorName} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-bold">{post.authorName}</span>
+            <RoleBadge role={post.authorRole} />
+          </div>
+          <span className="text-sm text-[#8b6a43]">{formatTimestamp(post.createdAt)}</span>
+        </div>
+        {profile?.role === "admin" && onDelete && (
+          <button onClick={onDelete} className="text-[#8c2f23] text-sm font-semibold underline underline-offset-4 flex-shrink-0">
+            Delete
+          </button>
+        )}
       </div>
-      <p className="text-[#4a3728] mb-4 whitespace-pre-wrap">{post.body}</p>
+      <p className="text-[#4a3728] mb-4 whitespace-pre-wrap leading-relaxed">{post.body}</p>
       {footer}
     </div>
   );
@@ -429,7 +483,7 @@ function PostFeed({ onSelectPost }: { onSelectPost: (id: string) => void }) {
     const unsubscribe = onSnapshot(
       q,
       (snap) => {
-        setPosts(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<CommunityPost, "id">) })));
+        setPosts(snap.docs.map((d) => ({ id: d.id, commentCount: 0, ...(d.data() as Omit<CommunityPost, "id">) })));
         setLoading(false);
       },
       (err) => {
@@ -441,10 +495,12 @@ function PostFeed({ onSelectPost }: { onSelectPost: (id: string) => void }) {
   }, []);
 
   const handleNewPost = async (body: string) => {
-    await addDoc(collection(db, "communityPosts"), {
+    await setDoc(doc(collection(db, "communityPosts")), {
       authorId: user!.uid,
       authorName: profile?.fullName ?? "Unknown",
+      authorRole: profile?.role ?? "member",
       body,
+      commentCount: 0,
       createdAt: serverTimestamp(),
     });
   };
@@ -453,7 +509,7 @@ function PostFeed({ onSelectPost }: { onSelectPost: (id: string) => void }) {
     const url = `${window.location.origin}/community?post=${post.id}`;
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Academia Khap Community", text: post.body, url });
+        await navigator.share({ title: "Vidvat Panchayat -- Academia Khap", text: post.body, url });
       } catch {
         // User cancelled the share sheet -- nothing to do.
       }
@@ -464,29 +520,48 @@ function PostFeed({ onSelectPost }: { onSelectPost: (id: string) => void }) {
     setTimeout(() => setShareNotice(null), 2500);
   };
 
+  const handleDelete = async (post: CommunityPost) => {
+    if (!window.confirm("Delete this post and all its replies? This cannot be undone.")) return;
+    try {
+      await deleteDoc(doc(db, "communityPosts", post.id));
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not delete this post.");
+    }
+  };
+
   return (
     <div>
-      <Composer placeholder="What's on your mind?" onSubmit={handleNewPost} />
+      <div className="mb-8">
+        <p className="uppercase tracking-[0.3em] text-xs text-[#8b6a43] mb-1">Vidvat Panchayat</p>
+        <h2 className="text-2xl font-bold mb-2">The Scholarly Assembly</h2>
+        <p className="text-[#4a3728]">
+          An open council for the Academia Khap community to raise questions, share findings, and
+          deliberate together.
+        </p>
+      </div>
+
+      <Composer placeholder="Share your thoughts with the Panchayat..." onSubmit={handleNewPost} />
       {shareNotice ? <p className="text-[#2f6b3a] text-sm mb-4">{shareNotice}</p> : null}
       {loading ? (
         <p className="text-[#4a3728]">Loading posts...</p>
       ) : loadError ? (
         <p className="text-[#8c2f23]">Error: {loadError}</p>
       ) : posts.length === 0 ? (
-        <p className="text-[#4a3728]">No posts yet. Be the first to start a discussion.</p>
+        <p className="text-[#4a3728]">No posts yet. Be the first to raise a topic.</p>
       ) : (
         <div className="space-y-5">
           {posts.map((post) => (
             <PostCard
               key={post.id}
               post={post}
+              onDelete={() => handleDelete(post)}
               footer={
-                <div className="flex gap-5">
+                <div className="flex items-center gap-5">
                   <button
                     onClick={() => onSelectPost(post.id)}
                     className="text-[#5b3419] font-semibold underline underline-offset-4"
                   >
-                    View discussion
+                    {post.commentCount > 0 ? `${post.commentCount} ${post.commentCount === 1 ? "Reply" : "Replies"} →` : "Join the discussion →"}
                   </button>
                   <button
                     onClick={() => handleShare(post)}
@@ -515,7 +590,7 @@ function PostDetail({ postId, onBack }: { postId: string; onBack: () => void }) 
     const unsubPost = onSnapshot(
       doc(db, "communityPosts", postId),
       (snap) => {
-        setPost(snap.exists() ? { id: snap.id, ...(snap.data() as Omit<CommunityPost, "id">) } : null);
+        setPost(snap.exists() ? { id: snap.id, commentCount: 0, ...(snap.data() as Omit<CommunityPost, "id">) } : null);
         setLoading(false);
       },
       (err) => {
@@ -540,13 +615,36 @@ function PostDetail({ postId, onBack }: { postId: string; onBack: () => void }) 
   }, [postId]);
 
   const handleNewComment = async (body: string) => {
-    await addDoc(collection(db, "communityComments"), {
+    const batch = writeBatch(db);
+    batch.set(doc(collection(db, "communityComments")), {
       postId,
       authorId: user!.uid,
       authorName: profile?.fullName ?? "Unknown",
+      authorRole: profile?.role ?? "member",
       body,
       createdAt: serverTimestamp(),
     });
+    batch.update(doc(db, "communityPosts", postId), { commentCount: increment(1) });
+    await batch.commit();
+  };
+
+  const handleDeletePost = async () => {
+    if (!window.confirm("Delete this post and all its replies? This cannot be undone.")) return;
+    try {
+      await deleteDoc(doc(db, "communityPosts", postId));
+      onBack();
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not delete this post.");
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (!window.confirm("Delete this reply?")) return;
+    try {
+      await deleteDoc(doc(db, "communityComments", commentId));
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not delete this reply.");
+    }
   };
 
   if (loading) return <p className="text-[#4a3728]">Loading...</p>;
@@ -556,31 +654,47 @@ function PostDetail({ postId, onBack }: { postId: string; onBack: () => void }) 
   return (
     <div>
       <button onClick={onBack} className="text-[#5b3419] font-semibold underline underline-offset-4 mb-6">
-        ← Back to Community
+        ← Back to Vidvat Panchayat
       </button>
 
       <div className="mb-8">
-        <PostCard post={post} footer={null} />
+        <PostCard post={post} footer={null} onDelete={handleDeletePost} />
       </div>
 
-      <h2 className="text-2xl font-bold mb-4">Comments</h2>
-      {comments.length === 0 ? (
-        <p className="text-[#4a3728] mb-6">No comments yet.</p>
-      ) : (
-        <div className="space-y-4 mb-8">
+      <h2 className="text-xl font-bold mb-4">
+        {comments.length === 0 ? "No replies yet" : `${comments.length} ${comments.length === 1 ? "Reply" : "Replies"}`}
+      </h2>
+      {comments.length > 0 && (
+        <div className="relative mb-8 ml-5 pl-8 border-l-2 border-[#b38b59]/30 space-y-5">
           {comments.map((comment) => (
-            <div key={comment.id} className="border border-[#b38b59]/20 rounded-2xl p-5 bg-white/60">
-              <div className="flex items-center justify-between mb-1">
-                <span className="font-bold">{comment.authorName}</span>
-                <span className="text-sm text-[#8b6a43]">{formatTimestamp(comment.createdAt)}</span>
+            <div key={comment.id} className="relative">
+              <div className="absolute -left-[42px] top-0">
+                <Avatar name={comment.authorName} />
               </div>
-              <p className="text-[#4a3728] whitespace-pre-wrap">{comment.body}</p>
+              <div className="border border-[#b38b59]/20 rounded-2xl p-5 bg-white/70">
+                <div className="flex items-start justify-between mb-1 gap-3">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-bold">{comment.authorName}</span>
+                    <RoleBadge role={comment.authorRole} />
+                  </div>
+                  <span className="text-sm text-[#8b6a43] whitespace-nowrap">{formatTimestamp(comment.createdAt)}</span>
+                </div>
+                <p className="text-[#4a3728] whitespace-pre-wrap leading-relaxed">{comment.body}</p>
+                {profile?.role === "admin" && (
+                  <button
+                    onClick={() => handleDeleteComment(comment.id)}
+                    className="text-[#8c2f23] text-sm font-semibold underline underline-offset-4 mt-2"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
       )}
 
-      <Composer placeholder="Add a comment..." onSubmit={handleNewComment} />
+      <Composer placeholder="Add your voice to this discussion..." onSubmit={handleNewComment} />
     </div>
   );
 }
