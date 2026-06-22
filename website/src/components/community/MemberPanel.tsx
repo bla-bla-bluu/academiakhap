@@ -30,6 +30,7 @@ export default function MemberPanel() {
   const [expenses, setExpenses] = useState<MemberExpense[]>([]);
   const [orgTotals, setOrgTotals] = useState<OrgTotals | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
@@ -41,10 +42,17 @@ export default function MemberPanel() {
   useEffect(() => {
     if (!user) return;
 
-    const unsubSummary = onSnapshot(doc(db, "memberSummaries", user.uid), (snap) => {
-      setBalance(snap.exists() ? (snap.data() as MemberSummary) : null);
-      setLoading(false);
-    });
+    const unsubSummary = onSnapshot(
+      doc(db, "memberSummaries", user.uid),
+      (snap) => {
+        setBalance(snap.exists() ? (snap.data() as MemberSummary) : null);
+        setLoading(false);
+      },
+      (err) => {
+        setLoadError(err.message);
+        setLoading(false);
+      }
+    );
 
     const expensesQuery = query(collection(db, "memberExpenses"), where("memberId", "==", user.uid));
     const unsubExpenses = onSnapshot(expensesQuery, (snap) => {
@@ -103,6 +111,7 @@ export default function MemberPanel() {
   };
 
   if (loading) return <p className="text-[#4a3728]">Loading...</p>;
+  if (loadError) return <p className="text-[#8c2f23]">Error: {loadError}</p>;
 
   return (
     <div className="space-y-6">

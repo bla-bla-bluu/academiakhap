@@ -69,16 +69,25 @@ export default function AdminPanel() {
 function OverviewSection() {
   const [data, setData] = useState<OrgTotals | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(doc(db, "orgSummary", "totals"), (snap) => {
-      setData(snap.exists() ? (snap.data() as OrgTotals) : null);
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      doc(db, "orgSummary", "totals"),
+      (snap) => {
+        setData(snap.exists() ? (snap.data() as OrgTotals) : null);
+        setLoading(false);
+      },
+      (err) => {
+        setError(err.message);
+        setLoading(false);
+      }
+    );
     return unsubscribe;
   }, []);
 
   if (loading) return <p className="text-[#4a3728]">Loading...</p>;
+  if (error) return <p className="text-[#8c2f23]">Error: {error}</p>;
 
   return (
     <div className="space-y-6">
@@ -108,6 +117,7 @@ function DonationsSection() {
   const { user } = useAuth();
   const [items, setItems] = useState<Donation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [donorName, setDonorName] = useState("");
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
@@ -116,10 +126,17 @@ function DonationsSection() {
 
   useEffect(() => {
     const q = query(collection(db, "donations"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snap) => {
-      setItems(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Donation, "id">) })));
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snap) => {
+        setItems(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Donation, "id">) })));
+        setLoading(false);
+      },
+      (err) => {
+        setLoadError(err.message);
+        setLoading(false);
+      }
+    );
     return unsubscribe;
   }, []);
 
@@ -175,6 +192,8 @@ function DonationsSection() {
       <h3 className="text-xl font-bold">Recent Donations</h3>
       {loading ? (
         <p className="text-[#4a3728]">Loading...</p>
+      ) : loadError ? (
+        <p className="text-[#8c2f23]">Error: {loadError}</p>
       ) : items.length === 0 ? (
         <p className="text-[#4a3728]">No donations recorded yet.</p>
       ) : (
@@ -197,6 +216,7 @@ function ExpensesSection() {
   const { user } = useAuth();
   const [items, setItems] = useState<OrgExpense[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
@@ -205,10 +225,17 @@ function ExpensesSection() {
 
   useEffect(() => {
     const q = query(collection(db, "orgExpenses"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snap) => {
-      setItems(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<OrgExpense, "id">) })));
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snap) => {
+        setItems(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<OrgExpense, "id">) })));
+        setLoading(false);
+      },
+      (err) => {
+        setLoadError(err.message);
+        setLoading(false);
+      }
+    );
     return unsubscribe;
   }, []);
 
@@ -264,6 +291,8 @@ function ExpensesSection() {
       <h3 className="text-xl font-bold">Recent Org Expenses</h3>
       {loading ? (
         <p className="text-[#4a3728]">Loading...</p>
+      ) : loadError ? (
+        <p className="text-[#8c2f23]">Error: {loadError}</p>
       ) : items.length === 0 ? (
         <p className="text-[#4a3728]">No expenses recorded yet.</p>
       ) : (
@@ -286,6 +315,7 @@ function MembersSection() {
   const { user } = useAuth();
   const [members, setMembers] = useState<MemberRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [allotAmount, setAllotAmount] = useState("");
@@ -315,22 +345,36 @@ function MembersSection() {
       setLoading(false);
     };
 
-    const unsubProfiles = onSnapshot(query(collection(db, "profiles"), orderBy("fullName")), (snap) => {
-      profiles = {};
-      snap.docs.forEach((d) => {
-        const data = d.data();
-        if (data.role !== "admin") profiles[d.id] = { fullName: data.fullName, role: data.role };
-      });
-      merge();
-    });
+    const unsubProfiles = onSnapshot(
+      query(collection(db, "profiles"), orderBy("fullName")),
+      (snap) => {
+        profiles = {};
+        snap.docs.forEach((d) => {
+          const data = d.data();
+          if (data.role !== "admin") profiles[d.id] = { fullName: data.fullName, role: data.role };
+        });
+        merge();
+      },
+      (err) => {
+        setLoadError(err.message);
+        setLoading(false);
+      }
+    );
 
-    const unsubSummaries = onSnapshot(collection(db, "memberSummaries"), (snap) => {
-      summaries = {};
-      snap.docs.forEach((d) => {
-        summaries[d.id] = d.data() as { totalAllotted: number; totalSpent: number; remainingBalance: number };
-      });
-      merge();
-    });
+    const unsubSummaries = onSnapshot(
+      collection(db, "memberSummaries"),
+      (snap) => {
+        summaries = {};
+        snap.docs.forEach((d) => {
+          summaries[d.id] = d.data() as { totalAllotted: number; totalSpent: number; remainingBalance: number };
+        });
+        merge();
+      },
+      (err) => {
+        setLoadError(err.message);
+        setLoading(false);
+      }
+    );
 
     return () => {
       unsubProfiles();
@@ -345,12 +389,18 @@ function MembersSection() {
     }
     setExpensesLoading(true);
     const q = query(collection(db, "memberExpenses"), where("memberId", "==", expandedId));
-    const unsubscribe = onSnapshot(q, (snap) => {
-      const items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<MemberExpenseRow, "id">) }));
-      items.sort((a, b) => (b.createdAt?.toMillis() ?? 0) - (a.createdAt?.toMillis() ?? 0));
-      setExpandedExpenses(items);
-      setExpensesLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snap) => {
+        const items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<MemberExpenseRow, "id">) }));
+        items.sort((a, b) => (b.createdAt?.toMillis() ?? 0) - (a.createdAt?.toMillis() ?? 0));
+        setExpandedExpenses(items);
+        setExpensesLoading(false);
+      },
+      () => {
+        setExpensesLoading(false);
+      }
+    );
     return unsubscribe;
   }, [expandedId]);
 
@@ -456,6 +506,7 @@ function MembersSection() {
   };
 
   if (loading) return <p className="text-[#4a3728]">Loading...</p>;
+  if (loadError) return <p className="text-[#8c2f23]">Error: {loadError}</p>;
 
   return (
     <div className="space-y-6">
@@ -548,6 +599,7 @@ function MembersSection() {
 function PendingRequestsSection() {
   const [requests, setRequests] = useState<RegistrationRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [role, setRole] = useState<Role>("member");
   const [submitting, setSubmitting] = useState(false);
@@ -555,10 +607,17 @@ function PendingRequestsSection() {
 
   useEffect(() => {
     const q = query(collection(db, "registrationRequests"), where("status", "==", "pending"));
-    const unsubscribe = onSnapshot(q, (snap) => {
-      setRequests(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<RegistrationRequest, "id">) })));
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snap) => {
+        setRequests(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<RegistrationRequest, "id">) })));
+        setLoading(false);
+      },
+      (err) => {
+        setLoadError(err.message);
+        setLoading(false);
+      }
+    );
     return unsubscribe;
   }, []);
 
@@ -596,6 +655,7 @@ function PendingRequestsSection() {
   };
 
   if (loading) return <p className="text-[#4a3728]">Loading...</p>;
+  if (loadError) return <p className="text-[#8c2f23]">Error: {loadError}</p>;
 
   return (
     <div className="space-y-6">
