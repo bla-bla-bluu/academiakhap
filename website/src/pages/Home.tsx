@@ -1,5 +1,6 @@
 import { useState, FormEvent } from "react";
 import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
 function HomePage() {
   const posts = [
     {
@@ -44,6 +45,17 @@ function HomePage() {
 
   return (
    <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
+
+      <Navbar
+        links={[
+          { to: "/", label: "Home", active: true },
+          { to: "/about", label: "About Us" },
+          { to: "/work", label: "Work With Us" },
+          { to: "/research", label: "Research" },
+          { to: "/community", label: "Community" },
+          { to: "/contact", label: "Contact" },
+        ]}
+      />
 
       {/* Hero Section */}
       <section className="border-b border-[#8b6a43]/20 pt-0">
@@ -155,7 +167,7 @@ function HomePage() {
     Community & Team
   </p>
 
-  <div className="grid lg:grid-cols-2 gap-10 items-stretch">
+  <div className="grid lg:grid-cols-3 gap-10 items-stretch">
 
     {/* Left Section */}
     <div className="border border-[#b38b59]/25 rounded-[2.5rem] p-6 sm:p-12">
@@ -225,6 +237,37 @@ function HomePage() {
   </div>
 
 </div>
+
+    {/* Discussion Community Section */}
+    <div className="border border-[#b38b59]/25 rounded-[2.5rem] p-6 sm:p-12">
+
+      <Link
+        to="/community"
+        className="inline-block text-3xl sm:text-4xl lg:text-5xl font-bold mb-8 px-6 py-3 rounded-2xl border border-[#5b3419] bg-[#5b3419] text-white transition duration-300 hover:bg-[#f4efe4] hover:text-[#5b3419]"
+      >
+        Discussion Community
+      </Link>
+
+      <p className="text-base sm:text-lg leading-8 sm:leading-9 text-[#4a3728] mb-10">
+        Academia Khap members post updates and discuss research, events, and
+        community matters in a focused, text-only space -- no images or GIFs,
+        just real conversation.
+      </p>
+
+      <div className="grid sm:grid-cols-2 gap-4">
+
+        {["Post Updates", "Comment & Discuss", "Share Instantly"].map((feature) => (
+          <div
+            key={feature}
+            className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-2xl px-5 py-4 transition duration-300 hover:bg-[#5b3419] hover:text-white"
+          >
+            {feature}
+          </div>
+        ))}
+
+      </div>
+
+    </div>
 
   </div>
 
@@ -465,9 +508,6 @@ function HomePage() {
             distributed, or used in any form without prior written permission.
           </p>
           <div className="mt-4 flex justify-center gap-6">
-            <Link to="/community" className="underline underline-offset-4 hover:text-[#5b3419]">
-              Community
-            </Link>
             <Link to="/privacy-policy" className="underline underline-offset-4 hover:text-[#5b3419]">
               Read Privacy Policy
             </Link>
