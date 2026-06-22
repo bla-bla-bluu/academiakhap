@@ -34,7 +34,7 @@ function gmailComposeUrl(toEmail: string, toName: string, role: Role) {
   return `https://mail.google.com/mail/?${params.toString()}`;
 }
 
-type AdminTab = "overview" | "donations" | "expenses" | "members" | "requests";
+type AdminTab = "overview" | "donations" | "expenses" | "members" | "admins" | "requests";
 
 type Donation = { id: string; donorName: string; amount: number; note: string | null; donatedAt: string };
 type OrgExpense = { id: string; title: string; amount: number; note: string | null; spentAt: string };
@@ -70,7 +70,7 @@ export default function AdminPanel() {
   return (
     <div>
       <div className="flex flex-wrap gap-3 mb-8">
-        {(["overview", "donations", "expenses", "members", "requests"] as AdminTab[]).map((t) => (
+        {(["overview", "donations", "expenses", "members", "admins", "requests"] as AdminTab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -85,6 +85,7 @@ export default function AdminPanel() {
       {tab === "donations" && <DonationsSection />}
       {tab === "expenses" && <ExpensesSection />}
       {tab === "members" && <MembersSection />}
+      {tab === "admins" && <AdminsSection />}
       {tab === "requests" && <PendingRequestsSection />}
     </div>
   );
@@ -754,6 +755,137 @@ function MembersSection() {
             )}
           </div>
         ))
+      )}
+    </div>
+  );
+}
+
+type AdminRow = { id: string; fullName: string; email: string };
+
+function AdminsSection() {
+  const { user } = useAuth();
+  const [admins, setAdmins] = useState<AdminRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [roleEditId, setRoleEditId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      query(collection(db, "profiles"), orderBy("fullName")),
+      (snap) => {
+        const rows: AdminRow[] = [];
+        snap.docs.forEach((d) => {
+          const data = d.data();
+          if (data.role === "admin") rows.push({ id: d.id, fullName: data.fullName, email: data.email });
+        });
+        setAdmins(rows);
+        setLoading(false);
+      },
+      (err) => {
+        setLoadError(err.message);
+        setLoading(false);
+      }
+    );
+    return unsubscribe;
+  }, []);
+
+  const handleChangeRole = async (admin: AdminRow, newRole: Role) => {
+    if (!window.confirm(`Change ${admin.fullName}'s role from admin to ${newRole}? They'll lose admin access immediately.`)) {
+      return;
+    }
+    setBusyId(admin.id);
+    try {
+      const batch = writeBatch(db);
+      batch.update(doc(db, "profiles", admin.id), { role: newRole });
+      const summarySnap = await getDoc(doc(db, "memberSummaries", admin.id));
+      if (!summarySnap.exists()) {
+        batch.set(doc(db, "memberSummaries", admin.id), { totalAllotted: 0, totalSpent: 0, remainingBalance: 0 });
+      }
+      await batch.commit();
+      setRoleEditId(null);
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not change role.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleRemove = async (admin: AdminRow) => {
+    if (!window.confirm(`Remove ${admin.fullName} as admin? This revokes all their access -- they'll need to be re-approved to rejoin.`)) {
+      return;
+    }
+    setBusyId(admin.id);
+    try {
+      const batch = writeBatch(db);
+      batch.delete(doc(db, "profiles", admin.id));
+      batch.delete(doc(db, "memberSummaries", admin.id));
+      await batch.commit();
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not remove this admin.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  if (loading) return <p className="text-[#4a3728]">Loading...</p>;
+  if (loadError) return <p className="text-[#8c2f23]">Error: {loadError}</p>;
+
+  return (
+    <div className="space-y-6">
+      <h3 className="text-xl font-bold">Admins</h3>
+      {admins.length === 0 ? (
+        <p className="text-[#4a3728]">No admins found.</p>
+      ) : (
+        admins.map((a) => {
+          const isSelf = a.id === user?.uid;
+          return (
+            <div key={a.id} className={cardClass}>
+              <div className="flex justify-between items-center">
+                <span className="font-bold text-lg">{a.fullName}{isSelf ? " (You)" : ""}</span>
+                <span className="text-xs uppercase tracking-wide text-[#8b6a43]">Admin</span>
+              </div>
+              <p className="text-[#4a3728] text-sm mb-2">{a.email}</p>
+
+              {isSelf ? (
+                <p className="text-sm text-[#8b6a43]">You can't change or remove your own admin access here.</p>
+              ) : (
+                <>
+                  <div className="flex flex-wrap gap-4 mt-3">
+                    <button
+                      onClick={() => setRoleEditId(roleEditId === a.id ? null : a.id)}
+                      className="text-[#5b3419] font-semibold underline underline-offset-4"
+                    >
+                      {roleEditId === a.id ? "Cancel" : "Change Role →"}
+                    </button>
+                    <button
+                      onClick={() => handleRemove(a)}
+                      disabled={busyId === a.id}
+                      className="text-[#8c2f23] font-semibold underline underline-offset-4 disabled:opacity-60"
+                    >
+                      {busyId === a.id ? "Removing..." : "Remove Admin"}
+                    </button>
+                  </div>
+
+                  {roleEditId === a.id && (
+                    <div className="mt-4 flex flex-wrap gap-2 border-t border-[#b38b59]/20 pt-4">
+                      {(["trustee", "member", "scholar"] as Role[]).map((r) => (
+                        <button
+                          key={r}
+                          onClick={() => handleChangeRole(a, r)}
+                          disabled={busyId === a.id}
+                          className="px-4 py-2 rounded-full border border-[#5b3419] text-[#5b3419] text-sm disabled:opacity-60"
+                        >
+                          {r.charAt(0).toUpperCase() + r.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })
       )}
     </div>
   );
