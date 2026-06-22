@@ -80,19 +80,40 @@ service cloud.firestore {
         request.resource.data.body.size() <= 500;
     }
 
-    // Community feed -- any signed-in profile can read every post and post as themselves.
-    // Text only, capped at 500 characters; no edit/delete once posted.
-    match /communityPosts/{id} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.authorId == request.auth.uid && isValidPostBody();
-      allow update, delete: if false;
+    // authorRole is denormalized onto every post/comment so the UI can show a role badge
+    // without an extra read -- must match the poster's real profile role or it'd let anyone
+    // forge an "admin" badge on their own post.
+    function isValidAuthorRole() {
+      return request.resource.data.authorRole == getRole();
     }
 
-    // Comments on a community post -- same rules as posts, scoped by postId.
+    // Community feed (Vidvat Panchayat) -- any signed-in profile can read every post and post
+    // as themselves. Text only, capped at 500 characters; no edit once posted. A non-admin may
+    // only ever nudge commentCount up by exactly 1 (when they add a comment); an admin can
+    // delete any post to moderate the discussion.
+    match /communityPosts/{id} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() &&
+        request.resource.data.authorId == request.auth.uid &&
+        request.resource.data.commentCount == 0 &&
+        isValidPostBody() && isValidAuthorRole();
+      allow update: if isAdmin() || (
+        isSignedIn() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['commentCount']) &&
+        request.resource.data.commentCount == resource.data.commentCount + 1
+      );
+      allow delete: if isAdmin();
+    }
+
+    // Comments on a community post -- same rules as posts, scoped by postId. An admin can
+    // delete any comment to moderate the discussion.
     match /communityComments/{id} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.authorId == request.auth.uid && isValidPostBody();
-      allow update, delete: if false;
+      allow create: if isSignedIn() &&
+        request.resource.data.authorId == request.auth.uid &&
+        isValidPostBody() && isValidAuthorRole();
+      allow update: if false;
+      allow delete: if isAdmin();
     }
 
     // Single document holding org-wide totals (donations - org expenses - allotments).
