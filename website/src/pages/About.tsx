@@ -26,7 +26,7 @@ export default function AboutPage() {
             <Link
               to="/community"
               className="px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300">
-              Community
+              Vidvat Panchayat
             </Link>
           </div>
         </div>
