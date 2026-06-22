@@ -38,7 +38,7 @@ export default function ResearchPage() {
 
   return (
     <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
-      <Navbar links={[{ to: "/", label: "Home" }, { to: "/community", label: "Community" }]} />
+      <Navbar links={[{ to: "/", label: "Home" }, { to: "/community", label: "Vidvat Panchayat" }]} />
 
       <div className="grid lg:grid-cols-[320px_1fr] xl:grid-cols-[350px_1fr] min-h-screen">
         <div className="border-r border-[#b38b59]/20 bg-[#efe4cf] p-6">

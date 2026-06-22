@@ -157,15 +157,15 @@ function CommunityPageContent() {
 
   return (
     <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
-      <Navbar links={[{ to: "/", label: "Home" }, { to: "/community", label: "Community", active: true }]} />
+      <Navbar links={[{ to: "/", label: "Home" }, { to: "/community", label: "Vidvat Panchayat", active: true }]} />
 
       <section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 pt-12 sm:pt-20 pb-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <p className="uppercase tracking-[0.35em] text-sm text-[#8b6a43] mb-4">Academia Khap</p>
-          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold leading-tight mb-6">Community</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold leading-tight mb-6">Vidvat Panchayat</h1>
           <p className="text-[#4a3728] max-w-2xl">
             Academia Khap's members area: track donations and fund allotments, log expenses, and
-            discuss research and community matters in a focused, text-only space.
+            deliberate on research and community matters in a focused, text-only assembly.
           </p>
         </div>
       </section>
@@ -532,7 +532,6 @@ function PostFeed({ onSelectPost }: { onSelectPost: (id: string) => void }) {
   return (
     <div>
       <div className="mb-8">
-        <p className="uppercase tracking-[0.3em] text-xs text-[#8b6a43] mb-1">Vidvat Panchayat</p>
         <h2 className="text-2xl font-bold mb-2">The Scholarly Assembly</h2>
         <p className="text-[#4a3728]">
           An open council for the Academia Khap community to raise questions, share findings, and

@@ -43,7 +43,7 @@ function HomePage() {
           { to: "/about", label: "About Us" },
           { to: "/work", label: "Work With Us" },
           { to: "/research", label: "Research" },
-          { to: "/community", label: "Community" },
+          { to: "/community", label: "Vidvat Panchayat" },
           { to: "/contact", label: "Contact" },
         ]}
       />
@@ -171,7 +171,7 @@ function HomePage() {
       to="/community"
       className="flex-1 text-center text-2xl sm:text-3xl lg:text-4xl font-bold px-8 py-10 rounded-[2rem] border border-[#5b3419] bg-[#5b3419] text-white transition duration-300 hover:bg-[#f4efe4] hover:text-[#5b3419]"
     >
-      Community
+      Vidvat Panchayat
     </Link>
 
   </div>
