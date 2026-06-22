@@ -596,6 +596,87 @@ function MembersSection() {
   );
 }
 
+function ManualApproveSection() {
+  const [open, setOpen] = useState(false);
+  const [uid, setUid] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState<Role>("member");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const handleApprove = async () => {
+    setError(null);
+    if (!uid.trim() || !fullName.trim() || !email.trim()) {
+      setError("Enter the user's UID, full name, and email.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const targetUid = uid.trim();
+      const batch = writeBatch(db);
+      batch.set(doc(db, "profiles", targetUid), { fullName: fullName.trim(), email: email.trim(), role });
+      if (role !== "admin") {
+        batch.set(doc(db, "memberSummaries", targetUid), {
+          totalAllotted: 0,
+          totalSpent: 0,
+          remainingBalance: 0,
+        });
+      }
+      batch.delete(doc(db, "registrationRequests", targetUid));
+      await batch.commit();
+      setUid("");
+      setFullName("");
+      setEmail("");
+      setRole("member");
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 4000);
+    } catch (err: any) {
+      setError(err.message ?? "Could not approve this account.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className={cardClass}>
+      <button onClick={() => setOpen(!open)} className="text-[#5b3419] font-semibold underline underline-offset-4">
+        {open ? "Cancel" : "Approve a stuck account by UID →"}
+      </button>
+      <p className="text-sm text-[#8b6a43] mt-2">
+        For accounts created in Firebase Authentication that never got a registration request on
+        file (e.g. signed up before a rules fix). Find the UID on the Authentication tab in the
+        Firebase Console.
+      </p>
+
+      {open && (
+        <div className="mt-4 space-y-3">
+          <input className={inputClass} placeholder="User UID" value={uid} onChange={(e) => setUid(e.target.value)} />
+          <input className={inputClass} placeholder="Full Name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+          <input className={inputClass} placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <div className="flex flex-wrap gap-2">
+            {ASSIGNABLE_ROLES.map((r) => (
+              <button
+                key={r}
+                onClick={() => setRole(r)}
+                className={role === r ? "px-4 py-2 rounded-full bg-[#5b3419] text-white text-sm" : "px-4 py-2 rounded-full border border-[#5b3419] text-[#5b3419] text-sm"}
+              >
+                {r.charAt(0).toUpperCase() + r.slice(1)}
+              </button>
+            ))}
+          </div>
+          {error ? <p className="text-[#8c2f23] text-sm">{error}</p> : null}
+          {success ? <p className="text-[#2f6b3a] text-sm">Approved.</p> : null}
+          <button onClick={handleApprove} disabled={submitting} className={buttonClass}>
+            {submitting ? "Approving..." : "Approve"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function PendingRequestsSection() {
   const [requests, setRequests] = useState<RegistrationRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -659,6 +740,8 @@ function PendingRequestsSection() {
 
   return (
     <div className="space-y-6">
+      <ManualApproveSection />
+
       <h3 className="text-xl font-bold">Pending Requests</h3>
       {requests.length === 0 ? (
         <p className="text-[#4a3728]">No pending registration requests.</p>
