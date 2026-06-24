@@ -7,6 +7,7 @@ import ResearchPage from "./pages/Research";
 import ContactPage from "./pages/Contact";
 import PrivacyPolicyPage from "./pages/PrivacyPolicy";
 import SEO from "./components/SEO";
+import ScrollToTop from "./components/ScrollToTop";
 
 // Lazy-loaded: Community pulls in the Firebase SDK, which would otherwise be downloaded by
 // every visitor even if they never use the Community feature.
@@ -15,6 +16,7 @@ const CommunityPage = lazy(() => import("./pages/Community"));
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <SEO />
       <Routes>
         <Route path="/" element={<HomePage />} />

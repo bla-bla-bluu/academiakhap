@@ -413,6 +413,83 @@ export default function AboutPage() {
 
 </section>
 
+{/* Community Structure & The Chaupal */}
+<section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 py-12 sm:py-24">
+
+  <div className="max-w-7xl mx-auto px-4 sm:px-6">
+
+    <p className="uppercase tracking-[0.35em] text-sm text-[#8b6a43] mb-4">
+      Local Roots, Living Tradition
+    </p>
+
+    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-8">
+      Our Community Structure
+    </h2>
+
+    <p className="text-[17px] leading-8 text-[#4a3728] max-w-4xl mb-12">
+      Academia Khap's day-to-day community -- the people who log in, discuss, and contribute on
+      our platform -- is organised using familiar, local terms rooted in dehat tradition, so the
+      experience feels like home rather than a corporate portal. These are community roles for
+      our online Chaupal and member tools only -- they carry no legal authority and do not alter
+      the governance of Academia Khap as a Public Charitable Educational Trust, which is set out
+      solely in the registered Deed of Trust.
+    </p>
+
+    <div className="grid lg:grid-cols-2 gap-6 mb-12">
+
+      <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+        <h3 className="text-2xl font-bold mb-1">Pardhan</h3>
+        <p className="text-[#5b3419] font-semibold mb-3 text-sm uppercase tracking-wide">Admin</p>
+        <p className="text-[16px] leading-7 text-[#4a3728]">
+          Looks after the community's day-to-day affairs -- donations, expenses, member fund
+          allotments, approving new members -- and carries the outcome of community discussions
+          forward by publishing them as articles on the main Research page.
+        </p>
+      </div>
+
+      <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+        <h3 className="text-2xl font-bold mb-1">Panchayati</h3>
+        <p className="text-[#5b3419] font-semibold mb-3 text-sm uppercase tracking-wide">Trustee</p>
+        <p className="text-[16px] leading-7 text-[#4a3728]">
+          Reviews and weighs in on discussions raised in the Chaupal, helping the community judge
+          what's worth carrying forward, alongside visibility into overall community activity.
+        </p>
+      </div>
+
+      <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+        <h3 className="text-2xl font-bold mb-1">Members</h3>
+        <p className="text-[#5b3419] font-semibold mb-3 text-sm uppercase tracking-wide">Member</p>
+        <p className="text-[16px] leading-7 text-[#4a3728]">
+          The heart of the community -- track their own allotted funds, log their expenses, and
+          take part in the Chaupal's discussions.
+        </p>
+      </div>
+
+      <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+        <h3 className="text-2xl font-bold mb-1">Scholars</h3>
+        <p className="text-[#5b3419] font-semibold mb-3 text-sm uppercase tracking-wide">Scholar</p>
+        <p className="text-[16px] leading-7 text-[#4a3728]">
+          Researchers supported with their own dedicated funds for study and fieldwork, who take
+          part in the Chaupal alongside everyone else.
+        </p>
+      </div>
+
+    </div>
+
+    <div className="bg-[#faf6ef] border border-[#b38b59]/30 rounded-[2rem] p-8 shadow-sm">
+      <h3 className="text-2xl font-bold mb-3">The Chaupal</h3>
+      <p className="text-[16px] leading-7 text-[#4a3728]">
+        Just like a village chaupal, it's an open ground where everyone in the community gathers
+        to raise and discuss matters that concern them. The Panchayati review what comes out of
+        those discussions, and the Pardhan carries the outcome forward by publishing it as an
+        article on the main Research page for the wider public to read.
+      </p>
+    </div>
+
+  </div>
+
+</section>
+
     </div>
   );
 }
