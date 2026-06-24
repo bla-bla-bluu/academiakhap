@@ -78,15 +78,14 @@ export default function WorkWithUsPage() {
           </p>
 
           <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold leading-tight mb-10">
-            Researchers, Scholars,
-            Historians & Community Contributors
+            Researchers, Historians &
+            Community Contributors
           </h1>
 
           <p className="max-w-5xl text-base sm:text-lg lg:text-xl leading-8 sm:leading-9 lg:leading-10 text-[#4a3728]">
-            Academia Khap works through collaborative research,
-            historical documentation, policy discussion,
-            digital awareness, cultural preservation,
-            and intellectual engagement across communities.
+            We research and document local community history, from the stone age to the
+            present, through fieldwork, oral tradition, archival study, and cultural
+            preservation.
           </p>
 
         </div>
@@ -112,28 +111,16 @@ export default function WorkWithUsPage() {
 
           {[
             {
-              title: "Historical Research",
-              desc: "Ancient inscriptions, regional history, tribal continuity, linguistic evolution, social systems, migration patterns, and archival analysis."
+              title: "Historical & Archaeological Research",
+              desc: "Stone age settlements, ancient inscriptions, regional history, migration patterns, and archival analysis tracing community origins to the present day."
             },
             {
-              title: "Social Analysis",
-              desc: "Research on social structure, cultural continuity, rural systems, traditions, demographics, and community-oriented discourse."
+              title: "Culture, Tradition & Oral History",
+              desc: "Village-level documentation, genealogies, oral histories, customs, and local narratives passed down through generations."
             },
             {
-              title: "Technology & AI",
-              desc: "Artificial intelligence, digital infrastructure, media systems, cyber awareness, data analysis, and defence-oriented technologies."
-            },
-            {
-              title: "Legal & Policy Studies",
-              desc: "Policy interpretation, constitutional research, governance systems, legal awareness, and social legislation."
-            },
-            {
-              title: "Media & Communication",
-              desc: "Content creation, public communication, design systems, documentaries, podcasts, and awareness campaigns."
-            },
-            {
-              title: "Community Documentation",
-              desc: "Oral histories, village-level documentation, cultural records, genealogies, local narratives, and preservation work."
+              title: "Media & Public Communication",
+              desc: "Documentaries, podcasts, and public-facing content that bring this research to a wider audience."
             }
           ].map((item) => (
             <div
@@ -179,15 +166,11 @@ export default function WorkWithUsPage() {
               </h3>
 
               <ul className="space-y-4 list-disc pl-6 text-[17px] leading-8 text-[#4a3728]">
-                <li>Research Scholars</li>
-                <li>PhD Candidates & Doctorate Holders</li>
-                <li>Historians & Archaeology Researchers</li>
-                <li>AI & Technology Experts</li>
-                <li>Defence & Strategic Analysts</li>
-                <li>Legal Professionals</li>
-                <li>Media & Communication Specialists</li>
+                <li>Research Scholars & PhD Candidates</li>
+                <li>Historians & Archaeologists</li>
                 <li>Writers & Documentation Experts</li>
-                <li>Social Researchers & Policy Analysts</li>
+                <li>Media & Communication Specialists</li>
+                <li>Social Researchers</li>
               </ul>
 
             </div>
@@ -201,14 +184,10 @@ export default function WorkWithUsPage() {
 
               <ul className="space-y-4 list-disc pl-6 text-[17px] leading-8 text-[#4a3728]">
                 <li>Educational Qualifications</li>
-                <li>Area of Expertise</li>
-                <li>Research Interests</li>
-                <li>Professional Experience</li>
-                <li>State & Regional Background</li>
-                <li>Village / District Representation</li>
+                <li>Area of Expertise / Research Interests</li>
+                <li>Village, District & Regional Background</li>
                 <li>Community & Cultural Research Interest</li>
-                <li>Social or Academic Contributions</li>
-                <li>Digital / Technical Skillset</li>
+                <li>Past Academic or Documentation Work</li>
               </ul>
 
             </div>
@@ -232,33 +211,13 @@ export default function WorkWithUsPage() {
             Purpose & Long-Term Vision
           </h2>
 
-          <div className="space-y-8 text-base sm:text-lg lg:text-xl leading-8 sm:leading-9 lg:leading-10 text-[#4a3728]">
-
-            <p>
-              Academia Khap aims to create a long-term
-              intellectual platform for documentation,
-              research, historical discourse, policy analysis,
-              and cultural understanding rooted in evidence-based work.
-            </p>
-
-            <p>
-              The objective is not limited to online content,
-              but extends toward building archives,
-              publishing research-oriented material,
-              preserving oral traditions,
-              encouraging rational dialogue,
-              and connecting scholars from diverse backgrounds.
-            </p>
-
-            <p>
-              Contributors become part of a collaborative
-              ecosystem involving researchers,
-              professionals, educators,
-              analysts, and socially aware individuals
-              across India and abroad.
-            </p>
-
-          </div>
+          <p className="text-base sm:text-lg lg:text-xl leading-8 sm:leading-9 lg:leading-10 text-[#4a3728]">
+            Academia Khap is building a long-term archive of community history and culture,
+            from the stone age to the present, through documentation, oral tradition, and
+            evidence-based research. Contributors join a growing network of historians,
+            researchers, and community voices working to preserve this history for future
+            generations.
+          </p>
 
         </div>
 
@@ -274,15 +233,12 @@ export default function WorkWithUsPage() {
           </p>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-10">
-            Research • Culture • Documentation
+            From Stone Age to Present
           </h2>
 
           <p className="text-base sm:text-lg lg:text-xl leading-8 sm:leading-9 lg:leading-10 text-[#f5ede0] mb-12">
-            We welcome individuals committed to
-            evidence-based thinking,
-            intellectual contribution,
-            social understanding,
-            and long-term cultural documentation.
+            We welcome anyone committed to documenting and preserving local community
+            history, tradition, and culture.
           </p>
 
           <form onSubmit={handleApplySubmit} className="max-w-xl mx-auto text-left space-y-5">
