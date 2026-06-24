@@ -15,7 +15,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import Navbar from "../components/Navbar";
-import { AuthProvider, useAuth, type Role } from "../contexts/AuthContext";
+import { AuthProvider, roleLabel, useAuth, type Role } from "../contexts/AuthContext";
 import { db } from "../lib/firebase";
 import AdminPanel from "../components/community/AdminPanel";
 import MemberPanel from "../components/community/MemberPanel";
@@ -70,7 +70,7 @@ function RoleBadge({ role }: { role: Role }) {
   if (role === "member") return null;
   return (
     <span className="text-[10px] uppercase tracking-wide font-bold px-2 py-0.5 rounded-full bg-[#efe4cf] text-[#8b6a43] border border-[#b38b59]/40">
-      {role}
+      {roleLabel(role)}
     </span>
   );
 }
@@ -134,7 +134,7 @@ function CommunityPageContent() {
             onClick={() => setTab("tools")}
             className={tab === "tools" ? "px-5 py-2 rounded-full bg-[#5b3419] text-white font-semibold" : "px-5 py-2 rounded-full border border-[#5b3419] text-[#5b3419] font-semibold"}
           >
-            {profile.role === "admin" ? "Admin Tools" : "My Fund"}
+            {profile.role === "admin" ? "Pardhan Tools" : "My Fund"}
           </button>
           <button
             onClick={() => setTab("community")}

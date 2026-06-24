@@ -14,22 +14,22 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { db } from "../../lib/firebase";
-import { useAuth, type Gender, type Role } from "../../contexts/AuthContext";
+import { roleLabel, useAuth, type Gender, type Role } from "../../contexts/AuthContext";
 
 const ASSIGNABLE_ROLES: Role[] = ["admin", "trustee", "member", "scholar"];
 const money = (n: number) => `₹${(n ?? 0).toLocaleString("en-IN")}`;
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 const ROLE_DESCRIPTIONS: Record<Role, string> = {
-  admin: "As an Admin, you have full access to manage donations, organization expenses, member fund allocations, and review new membership requests.",
-  trustee: "As a Trustee, you can view your allotted funds, log your expenses, and see the organization's overall donation and expense totals.",
+  admin: "As the Pardhan, you have full access to manage donations, organization expenses, member fund allocations, and review new membership requests.",
+  trustee: "As a Panchayati, you can view your allotted funds, log your expenses, and see the organization's overall donation and expense totals.",
   member: "As a Member, you can view your allotted funds, log your own expenses, and take part in community discussions.",
   scholar: "As a Scholar, you can view your allotted research funds and log your expenses, and take part in community discussions.",
 };
 
 function gmailComposeUrl(toEmail: string, toName: string, role: Role) {
   const subject = "Welcome to Academia Khap";
-  const body = `Dear ${toName},\n\nWelcome to Academia Khap! Your registration has been approved and you've been added as a ${role.charAt(0).toUpperCase() + role.slice(1)}.\n\n${ROLE_DESCRIPTIONS[role]}\n\nYou can log in anytime at https://academiakhap.org/community using the email or Google account you registered with.\n\nWarm regards,\nAcademia Khap`;
+  const body = `Dear ${toName},\n\nWelcome to Academia Khap! Your registration has been approved and you've been added as a ${roleLabel(role)}.\n\n${ROLE_DESCRIPTIONS[role]}\n\nYou can log in anytime at https://academiakhap.org/community using the email or Google account you registered with.\n\nWarm regards,\nAcademia Khap`;
   const params = new URLSearchParams({ view: "cm", fs: "1", to: toEmail, su: subject, body });
   return `https://mail.google.com/mail/?${params.toString()}`;
 }
@@ -76,7 +76,7 @@ export default function AdminPanel() {
             onClick={() => setTab(t)}
             className={tab === t ? "px-5 py-2 rounded-full bg-[#5b3419] text-white font-semibold" : ghostButtonClass}
           >
-            {t === "requests" ? "Pending Requests" : t.charAt(0).toUpperCase() + t.slice(1)}
+            {t === "requests" ? "Pending Requests" : t === "admins" ? "Pardhans" : t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
@@ -606,7 +606,7 @@ function MembersSection() {
           <div key={m.id} className={cardClass}>
             <div className="flex justify-between items-center">
               <span className="font-bold text-lg">{m.fullName}</span>
-              <span className="text-xs uppercase tracking-wide text-[#8b6a43]">{m.role}</span>
+              <span className="text-xs uppercase tracking-wide text-[#8b6a43]">{roleLabel(m.role)}</span>
             </div>
             <p className="text-sm text-[#8b6a43] mb-2">
               {m.detailsCompleted ? `${m.gender === "male" ? "M" : "F"} • ${m.age} yrs` : "Profile details not submitted yet"}
@@ -673,7 +673,7 @@ function MembersSection() {
                         : "px-4 py-2 rounded-full border border-[#5b3419] text-[#5b3419] text-sm disabled:opacity-60"
                     }
                   >
-                    {r.charAt(0).toUpperCase() + r.slice(1)}
+                    {roleLabel(r)}
                   </button>
                 ))}
               </div>
@@ -791,7 +791,7 @@ function AdminsSection() {
   }, []);
 
   const handleChangeRole = async (admin: AdminRow, newRole: Role) => {
-    if (!window.confirm(`Change ${admin.fullName}'s role from admin to ${newRole}? They'll lose admin access immediately.`)) {
+    if (!window.confirm(`Change ${admin.fullName}'s role from ${roleLabel("admin")} to ${roleLabel(newRole)}? They'll lose Pardhan access immediately.`)) {
       return;
     }
     setBusyId(admin.id);
@@ -812,7 +812,7 @@ function AdminsSection() {
   };
 
   const handleRemove = async (admin: AdminRow) => {
-    if (!window.confirm(`Remove ${admin.fullName} as admin? This revokes all their access -- they'll need to be re-approved to rejoin.`)) {
+    if (!window.confirm(`Remove ${admin.fullName} as ${roleLabel("admin")}? This revokes all their access -- they'll need to be re-approved to rejoin.`)) {
       return;
     }
     setBusyId(admin.id);
@@ -833,9 +833,9 @@ function AdminsSection() {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-xl font-bold">Admins</h3>
+      <h3 className="text-xl font-bold">Pardhans</h3>
       {admins.length === 0 ? (
-        <p className="text-[#4a3728]">No admins found.</p>
+        <p className="text-[#4a3728]">No Pardhans found.</p>
       ) : (
         admins.map((a) => {
           const isSelf = a.id === user?.uid;
@@ -843,12 +843,12 @@ function AdminsSection() {
             <div key={a.id} className={cardClass}>
               <div className="flex justify-between items-center">
                 <span className="font-bold text-lg">{a.fullName}{isSelf ? " (You)" : ""}</span>
-                <span className="text-xs uppercase tracking-wide text-[#8b6a43]">Admin</span>
+                <span className="text-xs uppercase tracking-wide text-[#8b6a43]">{roleLabel("admin")}</span>
               </div>
               <p className="text-[#4a3728] text-sm mb-2">{a.email}</p>
 
               {isSelf ? (
-                <p className="text-sm text-[#8b6a43]">You can't change or remove your own admin access here.</p>
+                <p className="text-sm text-[#8b6a43]">You can't change or remove your own Pardhan access here.</p>
               ) : (
                 <>
                   <div className="flex flex-wrap gap-4 mt-3">
@@ -863,7 +863,7 @@ function AdminsSection() {
                       disabled={busyId === a.id}
                       className="text-[#8c2f23] font-semibold underline underline-offset-4 disabled:opacity-60"
                     >
-                      {busyId === a.id ? "Removing..." : "Remove Admin"}
+                      {busyId === a.id ? "Removing..." : "Remove Pardhan"}
                     </button>
                   </div>
 
@@ -876,7 +876,7 @@ function AdminsSection() {
                           disabled={busyId === a.id}
                           className="px-4 py-2 rounded-full border border-[#5b3419] text-[#5b3419] text-sm disabled:opacity-60"
                         >
-                          {r.charAt(0).toUpperCase() + r.slice(1)}
+                          {roleLabel(r)}
                         </button>
                       ))}
                     </div>
@@ -957,7 +957,7 @@ function ManualApproveSection() {
                 onClick={() => setRole(r)}
                 className={role === r ? "px-4 py-2 rounded-full bg-[#5b3419] text-white text-sm" : "px-4 py-2 rounded-full border border-[#5b3419] text-[#5b3419] text-sm"}
               >
-                {r.charAt(0).toUpperCase() + r.slice(1)}
+                {roleLabel(r)}
               </button>
             ))}
           </div>
@@ -1063,7 +1063,7 @@ function PendingRequestsSection() {
                       onClick={() => setRole(r)}
                       className={role === r ? "px-4 py-2 rounded-full bg-[#5b3419] text-white text-sm" : "px-4 py-2 rounded-full border border-[#5b3419] text-[#5b3419] text-sm"}
                     >
-                      {r.charAt(0).toUpperCase() + r.slice(1)}
+                      {roleLabel(r)}
                     </button>
                   ))}
                 </div>
