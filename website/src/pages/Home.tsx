@@ -42,7 +42,7 @@ function HomePage() {
           { to: "/", label: "Home", active: true },
           { to: "/about", label: "About Us" },
           { to: "/work", label: "Work With Us" },
-          { to: "/research", label: "Research" },
+          { to: "/research", label: "Archive" },
           { to: "/community", label: "Chaupal" },
           { to: "/contact", label: "Contact" },
         ]}
@@ -112,7 +112,7 @@ function HomePage() {
               <p className="uppercase tracking-[0.3em] text-sm text-[#8b6a43] mb-3">
                 Publications & Posts
               </p>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold">Featured Research Topics</h2>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold">From the Archive</h2>
             </div>
 
             <Link

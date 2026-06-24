@@ -1,11 +1,21 @@
+import type { ContentType } from "../data/articles";
+
 type ArticleCardProps = {
   title: string;
   category: string;
+  type: ContentType;
   onClick: () => void;
   active?: boolean;
 };
 
-export default function ArticleCard({ title, category, onClick, active = false }: ArticleCardProps) {
+const TYPE_LABELS: Record<ContentType, string> = {
+  article: "Article",
+  discussion: "Discussion",
+  podcast: "Podcast",
+  video: "Video",
+};
+
+export default function ArticleCard({ title, category, type, onClick, active = false }: ArticleCardProps) {
   return (
     <button
       type="button"
@@ -16,9 +26,18 @@ export default function ArticleCard({ title, category, onClick, active = false }
           : "border-[#b38b59]/20 bg-[#faf6ef] hover:bg-[#5b3419] hover:text-white"
       }`}
     >
-      <p className={`text-xs uppercase tracking-[0.2em] mb-2 ${active ? "text-[#f3dfc0]" : "text-[#8b6a43]"}`}>
-        {category}
-      </p>
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <p className={`text-xs uppercase tracking-[0.2em] ${active ? "text-[#f3dfc0]" : "text-[#8b6a43]"}`}>
+          {category}
+        </p>
+        <span
+          className={`text-[10px] uppercase tracking-wide font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${
+            active ? "bg-white/20 text-white" : "bg-[#efe4cf] text-[#8b6a43]"
+          }`}
+        >
+          {TYPE_LABELS[type]}
+        </span>
+      </div>
       <h3 className="font-bold text-lg leading-7">{title}</h3>
     </button>
   );

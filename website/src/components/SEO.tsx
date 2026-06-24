@@ -5,7 +5,7 @@ import { articles } from "../data/articles";
 const SITE_URL = "https://academiakhap.org";
 const SITE_NAME = "Academia Khap";
 const DEFAULT_DESCRIPTION =
-  "Academia Khap is a research platform for evidence-based historical study, cultural documentation, social analysis, rural heritage, and community scholarship.";
+  "Academia Khap is a knowledge archive of evidence-based articles, community discussions, podcasts, and videos on local history, tradition, and culture -- from the stone age to the present.";
 const DEFAULT_IMAGE = `${SITE_URL}/header.png`;
 
 const staticPages: Record<string, { title: string; description: string }> = {
@@ -24,9 +24,9 @@ const staticPages: Record<string, { title: string; description: string }> = {
       "Collaborate with Academia Khap on historical research, rural heritage documentation, social analysis, media work, legal studies, and community initiatives.",
   },
   "/research": {
-    title: "Research Archive | Academia Khap",
+    title: "Knowledge Archive | Academia Khap",
     description:
-      "Read Academia Khap research articles on rural heritage, zamindari history, Jat history, architecture, social systems, and regional cultural documentation.",
+      "Explore Academia Khap's archive of articles, evidence-based discussions, podcasts, and videos on rural heritage, zamindari history, Jat history, architecture, and regional cultural documentation.",
   },
   "/contact": {
     title: "Contact Academia Khap | Research & Collaboration",
@@ -68,6 +68,13 @@ function getArticleKey(slug: string) {
   return slug.split("/").filter(Boolean).pop();
 }
 
+const SCHEMA_TYPES: Record<string, string> = {
+  article: "ScholarlyArticle",
+  discussion: "Article",
+  podcast: "PodcastEpisode",
+  video: "VideoObject",
+};
+
 function getArticleDescription(body: string[]) {
   return (
     body.find((paragraph) => paragraph.length > 90) ?? DEFAULT_DESCRIPTION
@@ -85,13 +92,13 @@ export default function SEO() {
       : null;
 
     const page = staticPages[location.pathname] ?? staticPages["/"];
-    const title = article ? `${article.title} | Academia Khap Research` : page.title;
+    const title = article ? `${article.title} | Academia Khap Archive` : page.title;
     const description = article ? getArticleDescription(article.body) : page.description;
     const canonicalPath = article
       ? `/research?article=${getArticleKey(article.slug)}`
       : location.pathname;
     const canonicalUrl = `${SITE_URL}${canonicalPath === "/" ? "" : canonicalPath}`;
-    const type = article ? "article" : "website";
+    const ogType = article?.type === "video" ? "video.other" : article ? "article" : "website";
 
     document.title = title;
 
@@ -101,11 +108,11 @@ export default function SEO() {
     upsertMeta(
       "name",
       "keywords",
-      "Academia Khap, Khap research, Jat history, rural heritage, zamindari history, Bulandshahr history, cultural documentation, Indian history"
+      "Academia Khap, Khap research, Jat history, rural heritage, zamindari history, Bulandshahr history, cultural documentation, Indian history, history podcast, history discussion"
     );
 
     upsertMeta("property", "og:site_name", SITE_NAME);
-    upsertMeta("property", "og:type", type);
+    upsertMeta("property", "og:type", ogType);
     upsertMeta("property", "og:title", title);
     upsertMeta("property", "og:description", description);
     upsertMeta("property", "og:url", canonicalUrl);
@@ -131,8 +138,9 @@ export default function SEO() {
       article
         ? {
             "@context": "https://schema.org",
-            "@type": "ScholarlyArticle",
+            "@type": SCHEMA_TYPES[article.type] ?? "Article",
             headline: article.title,
+            name: article.title,
             description,
             author: {
               "@type": "Organization",
@@ -149,6 +157,8 @@ export default function SEO() {
             mainEntityOfPage: canonicalUrl,
             url: canonicalUrl,
             image: DEFAULT_IMAGE,
+            thumbnailUrl: DEFAULT_IMAGE,
+            embedUrl: article.mediaUrl,
             about: article.category,
             citation: article.sources,
           }

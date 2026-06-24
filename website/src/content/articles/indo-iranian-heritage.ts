@@ -1,6 +1,6 @@
 const IndoIranianHeritage = {
 body: [
-  "Introduction",
+  "## Introduction",
 
   "Recent advances in ancient DNA analysis and population genetics have significantly expanded scholarly understanding of the demographic history of Eurasia. In particular, discussions concerning the genetic relationships between North Indian populations such as Jats and Rors and Central Asian populations such as Yaghnobis and Pamiris have received increasing attention within both academic literature and science journalism.",
 
@@ -8,7 +8,7 @@ body: [
 
   "This review examines the current state of population genetic research relevant to Indo-Iranian heritage while emphasizing the importance of interpreting genetic evidence alongside archaeology, linguistics, anthropology, and documented history.",
 
-  "Population Genetics and Ancient Eurasia",
+  "## Population Genetics and Ancient Eurasia",
 
   "Population genetics studies the distribution of genetic variation among human populations and uses statistical models to reconstruct ancestry, migration, admixture, and demographic history. Ancient DNA technologies now allow researchers to directly compare modern populations with individuals who lived thousands of years ago.",
 
@@ -16,7 +16,7 @@ body: [
 
   "One of the most influential discoveries of modern ancient DNA research is the identification of ancestry components associated with Bronze Age pastoralist populations of the Eurasian Steppe (Haak et al., 2015).",
 
-  "Steppe Ancestry and the Indo-Iranian Context",
+  "## Steppe Ancestry and the Indo-Iranian Context",
 
   "Ancient DNA evidence suggests that Steppe-related ancestry entered South and Central Asia through complex demographic processes during and after the Bronze Age. These processes contributed to the formation of numerous populations across the region.",
 
@@ -24,7 +24,7 @@ body: [
 
   "These findings support a model of population formation involving migration, admixture, and long-term regional interaction rather than simple population replacement.",
 
-  "Jats and Rors in Recent Genetic Studies",
+  "## Jats and Rors in Recent Genetic Studies",
 
   "Among modern North Indian populations, Jats and Rors have attracted particular attention in population genetic research due to their relatively elevated proportions of Steppe-related ancestry when compared with many neighbouring populations.",
 
@@ -34,7 +34,7 @@ body: [
 
   "Importantly, genetic studies do not suggest that any modern community represents an unchanged continuation of an ancient group. Rather, present-day populations preserve varying proportions of ancestry components resulting from historical migration and admixture events.",
 
-  "Yaghnobis and Pamiris",
+  "## Yaghnobis and Pamiris",
 
   "Yaghnobi and Pamiri populations of Central Asia occupy a particularly important position in population genetic research because of their relative geographic isolation and historical continuity.",
 
@@ -42,7 +42,7 @@ body: [
 
   "Recent scientific commentary and science journalism have highlighted the genetic affinities observed between certain North Indian and Central Asian populations, particularly Jats, Rors, Yaghnobis, and Pamiris, within broader discussions of Indo-Iranian population history.",
 
-  "Genetics, Archaeology and Linguistics",
+  "## Genetics, Archaeology and Linguistics",
 
   "Although genetics provides powerful tools for investigating ancestry and migration, it cannot independently explain language, culture, identity, religion, or historical experience.",
 
@@ -50,7 +50,7 @@ body: [
 
   "Genetic similarity should therefore not be interpreted as proof of cultural superiority, ethnic exclusivity, or direct continuity with any specific ancient civilization.",
 
-  "Limitations of Current Research",
+  "## Limitations of Current Research",
 
   "Population genetic research continues to evolve rapidly. New ancient DNA discoveries regularly refine, expand, and occasionally challenge previous interpretations.",
 
@@ -58,13 +58,13 @@ body: [
 
   "Consequently, population genetics should be understood as an evolving scientific discipline rather than a source of absolute historical certainty.",
 
-  "Conclusion",
+  "## Conclusion",
 
   "Recent genetic studies have contributed significantly to scholarly understanding of Indo-Iranian population history. Research involving Jats, Rors, Yaghnobis, Pamiris, and other populations has provided valuable insights into demographic processes that shaped South and Central Asia.",
 
   "The available evidence supports a complex history involving migration, admixture, cultural interaction, and regional continuity across thousands of years. Continued interdisciplinary collaboration among geneticists, archaeologists, historians, linguists, and anthropologists will further improve understanding of the Indo-Iranian heritage.",
 
-  "Disclaimer",
+  "## Disclaimer",
 
   "Population genetics investigates ancestry and migration patterns. Genetic findings do not determine cultural identity, social status, political legitimacy, ethnic superiority, or individual worth. Scientific conclusions should always be interpreted alongside evidence from archaeology, linguistics, history, and anthropology."
 ],
