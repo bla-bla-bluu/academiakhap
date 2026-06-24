@@ -57,7 +57,7 @@ export default function ContactPage() {
               to="/community"
               className="px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300"
             >
-              Vidvat Panchayat
+              Chaupal
             </Link>
 
           </div>

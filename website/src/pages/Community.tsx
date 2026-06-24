@@ -140,7 +140,7 @@ function CommunityPageContent() {
             onClick={() => setTab("community")}
             className={tab === "community" ? "px-5 py-2 rounded-full bg-[#5b3419] text-white font-semibold" : "px-5 py-2 rounded-full border border-[#5b3419] text-[#5b3419] font-semibold"}
           >
-            Vidvat Panchayat
+            Chaupal
           </button>
         </div>
 
@@ -157,12 +157,12 @@ function CommunityPageContent() {
 
   return (
     <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
-      <Navbar links={[{ to: "/", label: "Home" }, { to: "/community", label: "Vidvat Panchayat", active: true }]} />
+      <Navbar links={[{ to: "/", label: "Home" }, { to: "/community", label: "Chaupal", active: true }]} />
 
       <section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 pt-12 sm:pt-20 pb-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <p className="uppercase tracking-[0.35em] text-sm text-[#8b6a43] mb-4">Academia Khap</p>
-          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold leading-tight mb-6">Vidvat Panchayat</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold leading-tight mb-6">Chaupal</h1>
           <p className="text-[#4a3728] max-w-2xl">
             Academia Khap's members area: track donations and fund allotments, log expenses, and
             deliberate on research and community matters in a focused, text-only assembly.
@@ -509,7 +509,7 @@ function PostFeed({ onSelectPost }: { onSelectPost: (id: string) => void }) {
     const url = `${window.location.origin}/community?post=${post.id}`;
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Vidvat Panchayat -- Academia Khap", text: post.body, url });
+        await navigator.share({ title: "Chaupal -- Academia Khap", text: post.body, url });
       } catch {
         // User cancelled the share sheet -- nothing to do.
       }
@@ -653,7 +653,7 @@ function PostDetail({ postId, onBack }: { postId: string; onBack: () => void }) 
   return (
     <div>
       <button onClick={onBack} className="text-[#5b3419] font-semibold underline underline-offset-4 mb-6">
-        ← Back to Vidvat Panchayat
+        ← Back to Chaupal
       </button>
 
       <div className="mb-8">
