@@ -15,6 +15,17 @@ import { auth, db } from "../lib/firebase";
 export type Role = "admin" | "trustee" | "member" | "scholar";
 export type Gender = "male" | "female";
 
+const ROLE_LABELS: Record<Role, string> = {
+  admin: "Pardhan",
+  trustee: "Panchayati",
+  member: "Member",
+  scholar: "Scholar",
+};
+
+export function roleLabel(role: Role): string {
+  return ROLE_LABELS[role];
+}
+
 export type Profile = {
   id: string;
   fullName: string;
