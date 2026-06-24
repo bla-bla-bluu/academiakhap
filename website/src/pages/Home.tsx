@@ -52,14 +52,7 @@ function HomePage() {
       {/* Hero Section */}
       <section className="border-b border-[#8b6a43]/20 pt-0">
 
-        {/* Full Width Header Banner */}
-        <div className="w-full">
-          <img
-            src="/header.png"
-            alt="Academia Khap Header"
-            className="w-full object-cover"
-          />
-        </div>
+        {/* Full Width Header Banner -- cycles through the header image and every archive article */}
         <ArticleSlideshow />
 
         {/* Hero Content */}
