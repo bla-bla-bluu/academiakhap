@@ -1,6 +1,7 @@
 import { useState, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import ArticleSlideshow from "../components/ArticleSlideshow";
 function HomePage() {
   const posts = [
     {
@@ -52,13 +53,7 @@ function HomePage() {
       <section className="border-b border-[#8b6a43]/20 pt-0">
 
         {/* Full Width Header Banner */}
-        <div className="w-full">
-          <img
-            src="/header.png"
-            alt="Academia Khap Header"
-            className="w-full object-cover"
-          />
-        </div>
+        <ArticleSlideshow />
 
         {/* Hero Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14 text-center">
