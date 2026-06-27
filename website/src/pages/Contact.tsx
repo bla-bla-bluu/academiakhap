@@ -1,70 +1,18 @@
-import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 export default function ContactPage() {
   return (
     <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
 
-      {/* Navbar */}
-      <nav className="w-full bg-[#efe4cf] border-b border-[#8b6a43]/20">
-
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-
-          <div className="flex items-center gap-3">
-
-            <img
-              src="/logo_clean.png"
-              alt="Academia Khap Logo"
-              className="w-12 h-12 object-contain"
-            />
-
-            <p className="text-2xl font-bold tracking-wide">
-              Academia Khap
-            </p>
-
-          </div>
-
-          <div className="flex gap-4 flex-wrap">
-
-            <Link
-              to="/"
-              className="px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300"
-            >
-              Home
-            </Link>
-
-            <Link
-              to="/about"
-              className="px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300"
-            >
-              About Us
-            </Link>
-
-            <Link
-              to="/work"
-              className="px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300"
-            >
-              Work With Us
-            </Link>
-
-            <Link
-              to="/contact"
-              className="px-5 py-2 rounded-full bg-[#5b3419] text-white"
-            >
-              Contact
-            </Link>
-
-            <Link
-              to="/community"
-              className="px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300"
-            >
-              Chaupal
-            </Link>
-
-          </div>
-
-        </div>
-
-      </nav>
+      <Navbar
+        links={[
+          { to: "/", label: "Home" },
+          { to: "/about", label: "About Us" },
+          { to: "/work", label: "Work With Us" },
+          { to: "/contact", label: "Contact", active: true },
+          { to: "/community", label: "Chaupal" },
+        ]}
+      />
 
       {/* Hero */}
       <section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 pt-20 pb-10">
