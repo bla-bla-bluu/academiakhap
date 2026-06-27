@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "postbuild": "tsx scripts/prerender.ts",
+    "indexnow": "tsx scripts/indexnow.ts",
     "preview": "vite preview"
   },
   "dependencies": {
