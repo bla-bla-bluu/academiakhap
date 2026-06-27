@@ -40,18 +40,17 @@ export default function SEO() {
   const location = useLocation();
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const articleParam = params.get("article");
+    const articleParam = location.pathname.startsWith("/research/")
+      ? location.pathname.slice("/research/".length)
+      : null;
     const article = articleParam
       ? articles.find((item) => item.slug.endsWith(`/${articleParam}`))
       : null;
 
-    const page = staticPages[location.pathname] ?? staticPages["/"];
+    const page = staticPages[location.pathname] ?? staticPages["/research"] ?? staticPages["/"];
     const title = article ? `${article.title} | Academia Khap Archive` : page.title;
     const description = article ? getArticleDescription(article.body) : page.description;
-    const canonicalPath = article
-      ? `/research?article=${getArticleKey(article.slug)}`
-      : location.pathname;
+    const canonicalPath = article ? `/research/${getArticleKey(article.slug)}` : location.pathname;
     const canonicalUrl = `${SITE_URL}${canonicalPath === "/" ? "" : canonicalPath}`;
     const ogType = article?.type === "video" ? "video.other" : article ? "article" : "website";
 

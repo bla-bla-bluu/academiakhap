@@ -2,6 +2,14 @@
   "installCommand": "cd website && npm install",
   "buildCommand": "cd website && npm run build",
   "outputDirectory": "website/dist",
+  "redirects": [
+    {
+      "source": "/research",
+      "has": [{ "type": "query", "key": "article" }],
+      "destination": "/research/:article",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/__/auth/:path*",
