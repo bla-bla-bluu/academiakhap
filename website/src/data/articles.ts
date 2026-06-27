@@ -1,6 +1,7 @@
 import Kuchesar from "../content/articles/Kuchesar";
 import IndoIranianHeritage from "../content/articles/indo-iranian-heritage";
 import PilaniaZamindars from "../content/articles/PilaniaZamindars";
+import DelhiVillages from "../content/articles/DelhiVillages";
 
 export type ContentType = "article" | "discussion" | "podcast" | "video";
 
@@ -42,5 +43,14 @@ export const articles: Article[] = [
     type: "article",
     body: IndoIranianHeritage.body,
     sources: IndoIranianHeritage.sources,
+  },
+  {
+    id: 4,
+    title: "Delhi's Vanishing Villages: Khap Tradition and the Urban Village Crisis",
+    category: "Urban Heritage",
+    slug: "/research/delhi-villages",
+    type: "article",
+    body: DelhiVillages.body,
+    sources: DelhiVillages.sources,
   },
 ];
