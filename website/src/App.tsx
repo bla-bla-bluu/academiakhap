@@ -6,6 +6,7 @@ import WorkWithUsPage from "./pages/Work";
 import ResearchPage from "./pages/Research";
 import ContactPage from "./pages/Contact";
 import PrivacyPolicyPage from "./pages/PrivacyPolicy";
+import TermsOfServicePage from "./pages/TermsOfService";
 import SEO from "./components/SEO";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/research" element={<ResearchPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/terms-of-service" element={<TermsOfServicePage />} />
         <Route
           path="/community"
           element={

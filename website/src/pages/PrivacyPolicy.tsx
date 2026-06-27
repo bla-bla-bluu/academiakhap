@@ -25,6 +25,12 @@ export default function PrivacyPolicyPage() {
               Home
             </Link>
             <Link
+              to="/terms-of-service"
+              className="px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300"
+            >
+              Terms of Service
+            </Link>
+            <Link
               to="/contact"
               className="px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300"
             >

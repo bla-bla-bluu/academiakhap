@@ -411,6 +411,9 @@ function HomePage() {
             <Link to="/privacy-policy" className="underline underline-offset-4 hover:text-[#5b3419]">
               Read Privacy Policy
             </Link>
+            <Link to="/terms-of-service" className="underline underline-offset-4 hover:text-[#5b3419]">
+              Read Terms of Service
+            </Link>
           </div>
         </div>
       </footer>
