@@ -38,6 +38,11 @@ const staticPages: Record<string, { title: string; description: string }> = {
     description:
       "How Academia Khap collects, uses, and protects information through the Academia Khap app and website.",
   },
+  "/terms-of-service": {
+    title: "Terms of Service | Academia Khap",
+    description:
+      "The terms governing use of the Academia Khap app and website, including the Chaupal community tools and Archive.",
+  },
 };
 
 function upsertMeta(attribute: "name" | "property", key: string, content: string) {
