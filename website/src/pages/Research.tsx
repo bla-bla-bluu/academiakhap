@@ -1,5 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useState, type ReactNode } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ArticleCard from "../components/ArticleCard";
 import { articles } from "../data/articles";
@@ -58,34 +58,24 @@ function renderSource(source: string): ReactNode {
 }
 
 export default function ResearchPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { slug } = useParams<{ slug?: string }>();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const [selectedArticleId, setSelectedArticleId] = useState<number | null>(null);
 
   const filteredArticles = articles.filter((article) =>
     article.title.toLowerCase().includes(search.toLowerCase())
   );
-  const selectedArticle = articles.find((article) => article.id === selectedArticleId) ?? null;
-
-  useEffect(() => {
-    const articleParam = searchParams.get("article");
-    if (!articleParam) {
-      setSelectedArticleId(null);
-      return;
-    }
-
-    const matched = articles.find((article) => article.slug.endsWith(`/${articleParam}`));
-    setSelectedArticleId(matched ? matched.id : null);
-  }, [searchParams]);
+  const selectedArticle = slug
+    ? articles.find((article) => article.slug.endsWith(`/${slug}`)) ?? null
+    : null;
 
   const handleArticleSelect = (articleId: number) => {
-    setSelectedArticleId(articleId);
     const article = articles.find((item) => item.id === articleId);
     if (!article) return;
 
     const articleKey = article.slug.split("/").filter(Boolean).pop();
     if (!articleKey) return;
-    setSearchParams({ article: articleKey });
+    navigate(`/research/${articleKey}`);
   };
 
   return (
@@ -114,7 +104,7 @@ export default function ResearchPage() {
                 title={article.title}
                 category={article.category}
                 type={article.type}
-                active={article.id === selectedArticleId}
+                active={article.id === selectedArticle?.id}
                 onClick={() => handleArticleSelect(article.id)}
               />
             ))}

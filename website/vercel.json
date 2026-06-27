@@ -1,6 +1,14 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "redirects": [
+    {
+      "source": "/research",
+      "has": [{ "type": "query", "key": "article" }],
+      "destination": "/research/:article",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/__/auth/:path*",

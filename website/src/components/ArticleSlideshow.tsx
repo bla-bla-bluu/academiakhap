@@ -37,7 +37,7 @@ export default function ArticleSlideshow() {
         return (
           <Link
             key={article.id}
-            to={`/research?article=${articleKey(article.slug)}`}
+            to={`/research/${articleKey(article.slug)}`}
             className={`absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-16 transition-opacity duration-700 ${
               slideIndex === index ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
             }`}
