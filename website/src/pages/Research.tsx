@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ArticleCard from "../components/ArticleCard";
@@ -60,6 +60,7 @@ function renderSource(source: string): ReactNode {
 export default function ResearchPage() {
   const { slug } = useParams<{ slug?: string }>();
   const navigate = useNavigate();
+  const articleRef = useRef<HTMLDivElement | null>(null);
   const [search, setSearch] = useState("");
 
   const filteredArticles = articles.filter((article) =>
@@ -68,6 +69,16 @@ export default function ResearchPage() {
   const selectedArticle = slug
     ? articles.find((article) => article.slug.endsWith(`/${slug}`)) ?? null
     : null;
+
+  useEffect(() => {
+    if (!selectedArticle || !articleRef.current) return;
+
+    const scrollTimer = window.setTimeout(() => {
+      articleRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+
+    return () => window.clearTimeout(scrollTimer);
+  }, [selectedArticle]);
 
   const handleArticleSelect = (articleId: number) => {
     const article = articles.find((item) => item.id === articleId);
@@ -111,7 +122,7 @@ export default function ResearchPage() {
           </div>
         </div>
 
-        <div className="p-6 sm:p-8 lg:p-12">
+        <div ref={articleRef} className="scroll-mt-4 p-6 sm:p-8 lg:p-12">
           <p className="uppercase tracking-[0.35em] text-sm text-[#8b6a43] mb-4">
             Articles, Discussions & Media
           </p>
