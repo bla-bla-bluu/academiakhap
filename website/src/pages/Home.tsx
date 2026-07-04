@@ -16,7 +16,7 @@ function HomePage() {
       category: "History",
       slug: "/research/kuchesar",
       excerpt:
-        "A study of the Dalal family and Kuchesar Fort, examining Jat zamindari history, estate architecture, inheritance, and rural heritage preservation in Bulandshahr.",
+        "A study of the Dalal family and Kuchesar Fort, examining Vedic Jāṭ zamindari history, estate architecture, inheritance, and rural heritage preservation in Bulandshahr.",
     },
   ];
 
