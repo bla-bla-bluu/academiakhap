@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ArticleCard from "../components/ArticleCard";
-import { articles } from "../data/articles";
+import { articles, articlesNewestFirst } from "../data/articles";
 import { Search } from "lucide-react";
 
 const TYPE_LABELS: Record<string, string> = {
@@ -63,7 +63,7 @@ export default function ResearchPage() {
   const articleRef = useRef<HTMLDivElement | null>(null);
   const [search, setSearch] = useState("");
 
-  const filteredArticles = articles.filter((article) =>
+  const filteredArticles = articlesNewestFirst.filter((article) =>
     article.title.toLowerCase().includes(search.toLowerCase())
   );
   const selectedArticle = slug

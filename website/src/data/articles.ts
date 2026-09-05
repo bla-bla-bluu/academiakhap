@@ -64,3 +64,7 @@ export const articles: Article[] = [
     sources: KhapPanchayat2026.sources,
   },
 ];
+
+// Newest first. `articles` stays in publication order (id ascending) because prerendering,
+// SEO lookups and permalinks key off it; anything that DISPLAYS a list should use this.
+export const articlesNewestFirst: Article[] = [...articles].sort((a, b) => b.id - a.id);
