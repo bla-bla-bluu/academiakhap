@@ -30,11 +30,13 @@ function escapeHtml(value: string) {
 function buildHtml({
   title,
   description,
+  imageUrl,
   canonicalUrl,
   structuredData,
 }: {
   title: string;
   description: string;
+  imageUrl: string;
   canonicalUrl: string;
   structuredData: Record<string, unknown>;
 }) {
@@ -59,6 +61,8 @@ function buildHtml({
   );
   html = html.replace(/<meta\s+property="og:url"[^>]*\/>/, `<meta property="og:url" content="${canonicalUrl}" />`);
   html = mustReplace(html, /<meta\s+name="twitter:title"[^>]*\/>/, `<meta name="twitter:title" content="${safeTitle}" />`, "twitter:title");
+  html = mustReplace(html, /<meta\s+property="og:image"[^>]*\/>/, `<meta property="og:image" content="${imageUrl}" />`, "og:image");
+  html = mustReplace(html, /<meta\s+name="twitter:image"[^>]*\/>/, `<meta name="twitter:image" content="${imageUrl}" />`, "twitter:image");
   html = html.replace(
     /<meta\s+name="twitter:description"[^>]*\/>/,
     `<meta name="twitter:description" content="${safeDescription}" />`
@@ -85,6 +89,7 @@ for (const [pagePath, page] of Object.entries(staticPages)) {
   const html = buildHtml({
     title: page.title,
     description: page.description,
+    imageUrl: DEFAULT_IMAGE,
     canonicalUrl,
     structuredData: {
       "@context": "https://schema.org",
@@ -107,9 +112,12 @@ for (const article of articles) {
   const canonicalUrl = `${SITE_URL}/research/${key}`;
   const title = `${article.title} | Academia Khap Archive`;
 
+  const articleImage = `${SITE_URL}/og/${key}.png`;
+
   const html = buildHtml({
     title,
     description,
+    imageUrl: articleImage,
     canonicalUrl,
     structuredData: {
       "@context": "https://schema.org",
@@ -125,8 +133,8 @@ for (const article of articles) {
       },
       mainEntityOfPage: canonicalUrl,
       url: canonicalUrl,
-      image: DEFAULT_IMAGE,
-      thumbnailUrl: DEFAULT_IMAGE,
+      image: articleImage,
+      thumbnailUrl: articleImage,
       embedUrl: article.mediaUrl,
       about: article.category,
       citation: article.sources,
