@@ -2,6 +2,7 @@ import Kuchesar from "../content/articles/Kuchesar";
 import IndoIranianHeritage from "../content/articles/indo-iranian-heritage";
 import PilaniaZamindars from "../content/articles/PilaniaZamindars";
 import DelhiVillages from "../content/articles/DelhiVillages";
+import KhapPanchayat2026 from "../content/articles/KhapPanchayat2026";
 
 export type ContentType = "article" | "discussion" | "podcast" | "video";
 
@@ -52,5 +53,14 @@ export const articles: Article[] = [
     type: "article",
     body: DelhiVillages.body,
     sources: DelhiVillages.sources,
+  },
+  {
+    id: 5,
+    title: "Reading Khap Panchayats in Full: The Ramrai Meetings of August 2026",
+    category: "Society & Institutions",
+    slug: "/research/khap-panchayat-2026",
+    type: "article",
+    body: KhapPanchayat2026.body,
+    sources: KhapPanchayat2026.sources,
   },
 ];
