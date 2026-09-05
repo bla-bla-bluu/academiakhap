@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { articles } from "../data/articles";
+import { articlesNewestFirst as articles } from "../data/articles";
 
 const SLIDE_DURATION = 3000;
 

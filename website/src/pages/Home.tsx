@@ -2,23 +2,17 @@ import { useState, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ArticleSlideshow from "../components/ArticleSlideshow";
+import { articlesNewestFirst } from "../data/articles";
+import { getArticleDescription } from "../lib/seo-data";
 function HomePage() {
-  const posts = [
-    {
-      title: "History and Heritage of the Pilania Zamindars",
-      category: "History",
-      slug: "/research/pilania-zamindars",
-      excerpt:
-        "A historical and architectural study of Bahanpur Haveli and Unchagaon Fort, documenting the heritage of the Pilania zamindars of Bulandshahr and the contrasting trajectories of rural heritage preservation.",
-    },
-    {
-      title: "The Royal Legacy of Kuchesar",
-      category: "History",
-      slug: "/research/kuchesar",
-      excerpt:
-        "A study of the Dalal family and Kuchesar Fort, examining Vedic Jāṭ zamindari history, estate architecture, inheritance, and rural heritage preservation in Bulandshahr.",
-    },
-  ];
+  // Two most recent entries, derived from the Archive itself so this section can never
+  // drift out of date the way a hand-maintained list does.
+  const posts = articlesNewestFirst.slice(0, 2).map((article) => ({
+    title: article.title,
+    category: article.category,
+    slug: article.slug,
+    excerpt: getArticleDescription(article.body),
+  }));
 
   const [contribName, setContribName] = useState("");
   const [contribEmail, setContribEmail] = useState("");
