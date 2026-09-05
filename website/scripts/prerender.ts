@@ -63,6 +63,7 @@ function buildHtml({
   html = mustReplace(html, /<meta\s+name="twitter:title"[^>]*\/>/, `<meta name="twitter:title" content="${safeTitle}" />`, "twitter:title");
   html = mustReplace(html, /<meta\s+property="og:image"[^>]*\/>/, `<meta property="og:image" content="${imageUrl}" />`, "og:image");
   html = mustReplace(html, /<meta\s+name="twitter:image"[^>]*\/>/, `<meta name="twitter:image" content="${imageUrl}" />`, "twitter:image");
+  html = html.replace(/<meta\s+property="og:image:alt"[^>]*\/>/, `<meta property="og:image:alt" content="${safeTitle}" />`);
   html = html.replace(
     /<meta\s+name="twitter:description"[^>]*\/>/,
     `<meta name="twitter:description" content="${safeDescription}" />`
