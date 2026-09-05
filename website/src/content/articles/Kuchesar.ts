@@ -1,7 +1,7 @@
 const Kuchesar = {
 body: [
   "## Introduction",
-  "Harsh Choudhary's research paper, \"The Royal Legacy of Kuchesar: A Study of the Dalal Family and Kuchesar Fort,\" examines one of the most significant Vedic Jāṭ zamindari lineages of western Uttar Pradesh through the history, architecture, and legacy of Kuchesar Fort in Bulandshahr district. The study focuses on the Dalal clan of Vedic Jāṭs, their approximately 250-year association with the Kuchesar estate, and the transformation of their political authority through architecture, inheritance, and regional history.",
+  "Harsh Choudhary's research paper, \"The Royal Legacy of Kuchesar: A Study of the Dalal Family and Kuchesar Fort,\" examines one of the most significant Vedic Jāṭ (also written Jat, Jaat, or Jatt) zamindari lineages of western Uttar Pradesh through the history, architecture, and legacy of Kuchesar Fort in Bulandshahr district. The study focuses on the Dalal clan of Vedic Jāṭs, their approximately 250-year association with the Kuchesar estate, and the transformation of their political authority through architecture, inheritance, and regional history.",
 
   "The research treats Kuchesar Fort not merely as an architectural monument but as a historical institution embedded within the social and political history of Jatwara. Through genealogy, estate history, fieldwork, and interviews, the paper reconstructs how the Dalal Vedic Jāṭs established and maintained regional authority while adapting to Mughal, colonial, and postcolonial transitions.",
 

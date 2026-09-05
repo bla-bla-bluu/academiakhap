@@ -126,6 +126,17 @@ for (const article of articles) {
       headline: article.title,
       name: article.title,
       description,
+      // Spelling variants people actually search for. Jāṭ is the house spelling;
+      // the transliterations exist so those searches still find the Archive.
+      keywords: [
+        article.category,
+        "Jāṭ",
+        "Jat",
+        "Jaat",
+        "Jatt",
+        "khap panchayat",
+        "Academia Khap",
+      ].join(", "),
       author: { "@type": "Organization", name: SITE_NAME },
       publisher: {
         "@type": "Organization",
