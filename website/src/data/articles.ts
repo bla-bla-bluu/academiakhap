@@ -3,6 +3,7 @@ import IndoIranianHeritage from "../content/articles/indo-iranian-heritage";
 import PilaniaZamindars from "../content/articles/PilaniaZamindars";
 import DelhiVillages from "../content/articles/DelhiVillages";
 import KhapPanchayat2026 from "../content/articles/KhapPanchayat2026";
+import KhapPanchayatSystem from "../content/articles/KhapPanchayatSystem";
 
 export type ContentType = "article" | "discussion" | "podcast" | "video";
 
@@ -62,6 +63,15 @@ export const articles: Article[] = [
     type: "article",
     body: KhapPanchayat2026.body,
     sources: KhapPanchayat2026.sources,
+  },
+  {
+    id: 6,
+    title: "The Khap Panchayat: Origins, Structure, and How It Actually Works",
+    category: "Society & Institutions",
+    slug: "/research/khap-panchayat-system",
+    type: "article",
+    body: KhapPanchayatSystem.body,
+    sources: KhapPanchayatSystem.sources,
   },
 ];
 
