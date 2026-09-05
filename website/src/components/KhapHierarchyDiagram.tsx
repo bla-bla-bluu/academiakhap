@@ -74,7 +74,10 @@ export default function KhapHierarchyDiagram() {
         (Oxford University Press, 1966), with the kunbha-to-Sarv-Khap sequence as recorded by
         Om Prakash. Pradhan notes the ganwand tier rests on oral tradition and observed
         practice rather than historical evidence. The eighty-four-village khap is the
-        classical definition; actual khaps vary.
+        classical definition; actual khaps vary. Every tier shown here is a question of
+        scale. Membership runs on a separate axis: a khap is constituted on gotra, while a
+        <em> sarv jatiya</em> body extends beyond the founding clan to the other communities
+        of its villages.
       </p>
     </figure>
   );
