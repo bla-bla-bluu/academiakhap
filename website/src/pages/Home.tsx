@@ -267,22 +267,22 @@ function HomePage() {
 
             <p>
               <span className="font-bold">Bank Name:</span><br />
-              [Your Bank Name]
+              Punjab National Bank
             </p>
 
             <p>
               <span className="font-bold">Account Number:</span><br />
-              XXXXXXXXXXXX
+              4913001500040881
             </p>
 
             <p>
               <span className="font-bold">IFSC Code:</span><br />
-              XXXXXXXX
+              PUNB0769700
             </p>
 
             <p>
               <span className="font-bold">UPI ID:</span><br />
-              yourupi@bank
+              academiakhap@ybl
             </p>
 
           </div>
