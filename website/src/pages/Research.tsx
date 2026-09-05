@@ -183,9 +183,15 @@ export default function ResearchPage() {
                 </span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-8 leading-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
                 {selectedArticle.title}
               </h1>
+
+              {selectedArticle.author && (
+                <p className="mb-8 text-[15px] text-[#6b5746]">
+                  By <span className="font-bold text-[#5b3419]">{selectedArticle.author}</span>
+                </p>
+              )}
 
               {(selectedArticle.type === "podcast" || selectedArticle.type === "video") &&
                 selectedArticle.mediaUrl && (

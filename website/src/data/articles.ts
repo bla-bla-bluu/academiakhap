@@ -13,6 +13,8 @@ export type Article = {
   category: string;
   slug: string;
   type: ContentType;
+  /** Named byline. Omit for pieces authored by the Archive itself. */
+  author?: string;
   mediaUrl?: string;
   body: string[];
   sources: string[];
@@ -61,6 +63,7 @@ export const articles: Article[] = [
     category: "Society & Institutions",
     slug: "/research/khap-panchayat-2026",
     type: "article",
+    author: "Mr. Deepak Dhillon",
     body: KhapPanchayat2026.body,
     sources: KhapPanchayat2026.sources,
   },
@@ -70,6 +73,7 @@ export const articles: Article[] = [
     category: "Society & Institutions",
     slug: "/research/khap-panchayat-system",
     type: "article",
+    author: "Mr. Deepak Dhillon",
     body: KhapPanchayatSystem.body,
     sources: KhapPanchayatSystem.sources,
   },
