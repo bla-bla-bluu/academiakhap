@@ -351,9 +351,10 @@ function HomeScreen({
               <Text style={styles.mutedText}>QR placeholder</Text>
             </View>
             <Text style={styles.cardBody}>Account Name: Academia Khap</Text>
-            <Text style={styles.cardBody}>Bank Name: [Your Bank Name]</Text>
-            <Text style={styles.cardBody}>Account Number: XXXXXXXXXXXX</Text>
-            <Text style={styles.cardBody}>IFSC Code: XXXXXXXX</Text>
+            <Text style={styles.cardBody}>Bank Name: Punjab National Bank</Text>
+            <Text style={styles.cardBody}>Account Number: 4913001500040881</Text>
+            <Text style={styles.cardBody}>IFSC Code: PUNB0769700</Text>
+            <Text style={styles.cardBody}>UPI ID: academiakhap@ybl</Text>
           </Card>
         </View>
 
