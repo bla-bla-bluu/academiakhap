@@ -54,6 +54,7 @@ export const articles: Article[] = [
     category: "Urban Heritage",
     slug: "/research/delhi-villages",
     type: "article",
+    author: "Puneet Singh Singhal",
     body: DelhiVillages.body,
     sources: DelhiVillages.sources,
   },
