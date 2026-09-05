@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Every page wraps itself in bg-[#f4efe4], but the document itself had no background,
+   so overscroll (rubber-banding, or a hash jump that overshoots) flashed white against
+   the cream design. Painting it here covers those gaps. */
+html,
+body {
+  background-color: #f4efe4;
+}

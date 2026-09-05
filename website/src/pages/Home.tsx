@@ -168,7 +168,7 @@ function HomePage() {
 </section>
 
      {/* Donation */}
-<section className="bg-[#efe4cf] border-y border-[#8b6a43]/20">
+<section id="donate" className="bg-[#efe4cf] border-y border-[#8b6a43]/20 scroll-mt-6">
 
   <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 grid lg:grid-cols-2 gap-10 sm:gap-14 items-start">
 
