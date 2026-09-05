@@ -228,9 +228,8 @@ function HomePage() {
             UPI / QR Payment
           </h3>
 
-          <div className="rounded-[2rem] border border-dashed border-[#b38b59]/40 bg-[#f8f4ed] p-6 flex items-center justify-center min-h-[260px]">
+          <div className="rounded-[2rem] border border-[#b38b59]/30 bg-[#f8f4ed] p-6 flex items-center justify-center min-h-[260px]">
 
-            {/* Replace with your QR */}
             <img
               src="/upi_qr.png"
               alt="UPI QR"
