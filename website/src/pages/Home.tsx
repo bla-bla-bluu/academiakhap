@@ -228,19 +228,32 @@ function HomePage() {
             UPI / QR Payment
           </h3>
 
-          <div className="rounded-[2rem] border border-[#b38b59]/30 bg-[#f8f4ed] p-6 flex items-center justify-center min-h-[260px]">
+          <div className="flex justify-center">
 
-            <img
-              src="/upi_qr.png"
-              alt="UPI QR"
-              className="max-h-[220px] object-contain"
-            />
+            <div className="inline-block rounded-xl border border-[#b38b59]/30 bg-[#f8f4ed] p-px">
+              <img
+                src="/upi_qr.png"
+                alt="UPI QR code for paying Academia Khap at academiakhap@ybl"
+                className="block w-full max-w-[236px] rounded-[11px]"
+              />
+            </div>
 
           </div>
 
           <p className="text-sm text-[#6b5746] mt-3 text-center">
             Scan to contribute through UPI
           </p>
+
+          {/* UPI ID sits under the QR rather than in the bank list: it belongs with the
+              scan flow, and moving it evens up the two columns. */}
+          <div className="mt-4 rounded-2xl border border-[#8b6a43]/35 bg-[#efe4cf] px-5 py-3 text-center">
+            <p className="uppercase tracking-[0.18em] text-xs font-bold text-[#8b6a43] mb-1">
+              UPI ID
+            </p>
+            <p className="text-[19px] font-bold text-[#5b3419] break-all leading-7">
+              academiakhap@ybl
+            </p>
+          </div>
 
         </div>
 
@@ -271,11 +284,6 @@ function HomePage() {
             <p>
               <span className="font-bold">IFSC Code:</span><br />
               PUNB0769700
-            </p>
-
-            <p>
-              <span className="font-bold">UPI ID:</span><br />
-              academiakhap@ybl
             </p>
 
           </div>
