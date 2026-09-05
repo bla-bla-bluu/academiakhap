@@ -40,17 +40,21 @@ export default function SEO() {
   const location = useLocation();
 
   useEffect(() => {
-    const articleParam = location.pathname.startsWith("/research/")
-      ? location.pathname.slice("/research/".length)
+    // Both /research/slug and /research/slug/ are served, so normalise the trailing
+    // slash before matching -- otherwise the slug lookup misses and the page falls back
+    // to the site-wide Organization metadata.
+    const path = location.pathname.replace(/\/+$/, "") || "/";
+    const articleParam = path.startsWith("/research/")
+      ? path.slice("/research/".length)
       : null;
     const article = articleParam
       ? articles.find((item) => item.slug.endsWith(`/${articleParam}`))
       : null;
 
-    const page = staticPages[location.pathname] ?? staticPages["/research"] ?? staticPages["/"];
+    const page = staticPages[path] ?? staticPages["/research"] ?? staticPages["/"];
     const title = article ? `${article.title} | Academia Khap Archive` : page.title;
     const description = article ? getArticleDescription(article.body) : page.description;
-    const canonicalPath = article ? `/research/${getArticleKey(article.slug)}` : location.pathname;
+    const canonicalPath = article ? `/research/${getArticleKey(article.slug)}` : path;
     const canonicalUrl = `${SITE_URL}${canonicalPath === "/" ? "" : canonicalPath}`;
     const ogType = article?.type === "video" ? "video.other" : article ? "article" : "website";
 
@@ -88,6 +92,13 @@ export default function SEO() {
       document.head.appendChild(structuredData);
     }
 
+    const articleImage = article
+
+      ? `${SITE_URL}/og/${getArticleKey(article.slug)}.png`
+
+      : DEFAULT_IMAGE;
+
+
     structuredData.textContent = JSON.stringify(
       article
         ? {
@@ -96,10 +107,21 @@ export default function SEO() {
             headline: article.title,
             name: article.title,
             description,
-            author: {
-              "@type": "Organization",
-              name: SITE_NAME,
-            },
+            // Must match scripts/prerender.ts: this block replaces the prerendered
+            // JSON-LD at runtime, so any divergence silently reverts it for crawlers
+            // that execute JS.
+            author: article.author
+              ? { "@type": "Person", name: article.author }
+              : { "@type": "Organization", name: SITE_NAME },
+            keywords: [
+              article.category,
+              "Jāṭ",
+              "Jat",
+              "Jaat",
+              "Jatt",
+              "khap panchayat",
+              "Academia Khap",
+            ].join(", "),
             publisher: {
               "@type": "Organization",
               name: SITE_NAME,
@@ -110,8 +132,8 @@ export default function SEO() {
             },
             mainEntityOfPage: canonicalUrl,
             url: canonicalUrl,
-            image: DEFAULT_IMAGE,
-            thumbnailUrl: DEFAULT_IMAGE,
+            image: articleImage,
+            thumbnailUrl: articleImage,
             embedUrl: article.mediaUrl,
             about: article.category,
             citation: article.sources,
