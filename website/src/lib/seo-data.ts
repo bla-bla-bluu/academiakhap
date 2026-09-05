@@ -54,7 +54,10 @@ export function getArticleKey(slug: string) {
 
 export function getArticleDescription(body: string[]) {
   return (
-    body.find((paragraph) => !paragraph.startsWith("## ") && paragraph.length > 90) ??
+    body.find(
+      (paragraph) =>
+        !paragraph.startsWith("## ") && !paragraph.startsWith("::figure:") && paragraph.length > 90
+    ) ??
     DEFAULT_DESCRIPTION
   ).slice(0, 155);
 }

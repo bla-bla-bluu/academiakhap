@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ArticleCard from "../components/ArticleCard";
+import KhapHierarchyDiagram from "../components/KhapHierarchyDiagram";
 import { articles, articlesNewestFirst } from "../data/articles";
 import { Search } from "lucide-react";
 
@@ -11,6 +12,31 @@ const TYPE_LABELS: Record<string, string> = {
   podcast: "Podcast",
   video: "Video",
 };
+
+// Body paragraphs are plain strings, so inline cross-references are written as
+// [label](/research/slug) and turned into router links here. Only internal paths are
+// accepted -- an article should not be able to inject an arbitrary outbound link.
+function renderParagraph(text: string): ReactNode {
+  const pattern = /\[([^\]]+)\]\((\/[A-Za-z0-9\-_/]*)\)/g;
+  const out: ReactNode[] = [];
+  let last = 0;
+  let m: RegExpExecArray | null;
+  while ((m = pattern.exec(text)) !== null) {
+    if (m.index > last) out.push(text.slice(last, m.index));
+    out.push(
+      <Link
+        key={`${m.index}-${m[2]}`}
+        to={m[2]}
+        className="underline underline-offset-2 decoration-[#b38b59] hover:text-[#5b3419]"
+      >
+        {m[1]}
+      </Link>
+    );
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) out.push(text.slice(last));
+  return out.length ? out : text;
+}
 
 function renderSource(source: string): ReactNode {
   const doiMatch = source.match(/\bDOI:\s*(\S+)/i);
@@ -175,15 +201,21 @@ export default function ResearchPage() {
                 )}
 
               <div className="space-y-6 text-base sm:text-lg leading-8 sm:leading-9 text-[#4a3728]">
-                {selectedArticle.body.map((paragraph, i) =>
-                  paragraph.startsWith("## ") ? (
+                {selectedArticle.body.map((paragraph, i) => {
+                  // "::figure:<id>" renders a diagram component instead of prose. Kept as a
+                  // plain string so the body array stays serialisable for prerendering.
+                  if (paragraph.startsWith("::figure:")) {
+                    const figure = paragraph.slice("::figure:".length).trim();
+                    return figure === "khap-hierarchy" ? <KhapHierarchyDiagram key={i} /> : null;
+                  }
+                  return paragraph.startsWith("## ") ? (
                     <h2 key={i} className="text-2xl sm:text-3xl font-bold text-[#3b2415]">
                       {paragraph.slice(3)}
                     </h2>
                   ) : (
-                    <p key={i}>{paragraph}</p>
-                  )
-                )}
+                    <p key={i}>{renderParagraph(paragraph)}</p>
+                  );
+                })}
               </div>
 
               <div className="mt-12 rounded-[2rem] border border-[#b38b59]/20 bg-[#faf6ef] p-8">
