@@ -2,7 +2,7 @@ const IndoIranianHeritage = {
 body: [
   "## Introduction",
 
-  "Recent advances in ancient DNA analysis and population genetics have significantly expanded scholarly understanding of the demographic history of Eurasia. In particular, discussions concerning the genetic relationships between North Indian populations such as Jāṭs and Rors and Central Asian populations such as Yaghnobis and Pamiris have received increasing attention within both academic literature and science journalism.",
+  "Recent advances in ancient DNA analysis and population genetics have significantly expanded scholarly understanding of the demographic history of Eurasia. In particular, discussions concerning the genetic relationships between North Indian populations such as Jāṭs (also written Jat, Jaat, or Jatt) and Rors and Central Asian populations such as Yaghnobis and Pamiris have received increasing attention within both academic literature and science journalism.",
 
   "A recent article published by Down To Earth highlighted findings from modern genetic studies suggesting that Jāṭs and Rors of North India, together with Yaghnobis and Pamiris of Central Asia, may preserve ancestry components associated with ancient Indo-Iranian populations. These discussions have renewed public interest in understanding how genetics contributes to historical reconstruction.",
 

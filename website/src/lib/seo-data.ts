@@ -22,7 +22,7 @@ export const staticPages: Record<string, { title: string; description: string }>
   "/research": {
     title: "Knowledge Archive | Academia Khap",
     description:
-      "Explore Academia Khap's archive of articles, evidence-based discussions, podcasts, and videos on rural heritage, zamindari history, Vedic Jāṭ history, architecture, and regional cultural documentation.",
+      "Explore Academia Khap's archive of articles, evidence-based discussions, podcasts, and videos on rural heritage, zamindari history, Jāṭ history, architecture, and regional cultural documentation.",
   },
   "/contact": {
     title: "Contact Academia Khap | Research & Collaboration",
