@@ -42,19 +42,25 @@ function buildHtml({
   const safeDescription = escapeHtml(description);
 
   let html = template;
+  const mustReplace = (input: string, pattern: RegExp, replacement: string, label: string) => {
+    if (!pattern.test(input)) {
+      throw new Error(`prerender: no match for ${label} -- meta tag missing or reformatted in index.html`);
+    }
+    return input.replace(pattern, replacement);
+  };
   html = html.replace(/<title>.*?<\/title>/, `<title>${safeTitle}</title>`);
-  html = html.replace(/<meta name="description"[^>]*\/>/, `<meta name="description" content="${safeDescription}" />`);
-  html = html.replace(/<link rel="canonical"[^>]*\/>/, `<link rel="canonical" href="${canonicalUrl}" />`);
-  html = html.replace(/<meta property="og:type"[^>]*\/>/, `<meta property="og:type" content="article" />`);
-  html = html.replace(/<meta property="og:title"[^>]*\/>/, `<meta property="og:title" content="${safeTitle}" />`);
+  html = mustReplace(html, /<meta\s+name="description"[^>]*\/>/, `<meta name="description" content="${safeDescription}" />`, "description");
+  html = html.replace(/<link\s+rel="canonical"[^>]*\/>/, `<link rel="canonical" href="${canonicalUrl}" />`);
+  html = html.replace(/<meta\s+property="og:type"[^>]*\/>/, `<meta property="og:type" content="article" />`);
+  html = mustReplace(html, /<meta\s+property="og:title"[^>]*\/>/, `<meta property="og:title" content="${safeTitle}" />`, "og:title");
   html = html.replace(
-    /<meta property="og:description"[^>]*\/>/,
+    /<meta\s+property="og:description"[^>]*\/>/,
     `<meta property="og:description" content="${safeDescription}" />`
   );
-  html = html.replace(/<meta property="og:url"[^>]*\/>/, `<meta property="og:url" content="${canonicalUrl}" />`);
-  html = html.replace(/<meta name="twitter:title"[^>]*\/>/, `<meta name="twitter:title" content="${safeTitle}" />`);
+  html = html.replace(/<meta\s+property="og:url"[^>]*\/>/, `<meta property="og:url" content="${canonicalUrl}" />`);
+  html = mustReplace(html, /<meta\s+name="twitter:title"[^>]*\/>/, `<meta name="twitter:title" content="${safeTitle}" />`, "twitter:title");
   html = html.replace(
-    /<meta name="twitter:description"[^>]*\/>/,
+    /<meta\s+name="twitter:description"[^>]*\/>/,
     `<meta name="twitter:description" content="${safeDescription}" />`
   );
   html = html.replace(
