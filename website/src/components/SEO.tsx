@@ -62,7 +62,7 @@ export default function SEO() {
     upsertMeta(
       "name",
       "keywords",
-      "Academia Khap, Khap research, Vedic Jāṭ history, rural heritage, zamindari history, Bulandshahr history, cultural documentation, Indian history, history podcast, history discussion"
+      "Academia Khap, Khap research, Jāṭ history, Jat history, Jaat history, Jatt history, Jāṭ community, Khap panchayat, rural heritage, zamindari history, Bulandshahr history, cultural documentation, Indian history, history podcast, history discussion"
     );
 
     upsertMeta("property", "og:site_name", SITE_NAME);
