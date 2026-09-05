@@ -2,9 +2,9 @@ const IndoIranianHeritage = {
 body: [
   "## Introduction",
 
-  "Recent advances in ancient DNA analysis and population genetics have significantly expanded scholarly understanding of the demographic history of Eurasia. In particular, discussions concerning the genetic relationships between North Indian populations such as Vedic Jāṭs and Rors and Central Asian populations such as Yaghnobis and Pamiris have received increasing attention within both academic literature and science journalism.",
+  "Recent advances in ancient DNA analysis and population genetics have significantly expanded scholarly understanding of the demographic history of Eurasia. In particular, discussions concerning the genetic relationships between North Indian populations such as Jāṭs and Rors and Central Asian populations such as Yaghnobis and Pamiris have received increasing attention within both academic literature and science journalism.",
 
-  "A recent article published by Down To Earth highlighted findings from modern genetic studies suggesting that Vedic Jāṭs and Rors of North India, together with Yaghnobis and Pamiris of Central Asia, may preserve ancestry components associated with ancient Indo-Iranian populations. These discussions have renewed public interest in understanding how genetics contributes to historical reconstruction.",
+  "A recent article published by Down To Earth highlighted findings from modern genetic studies suggesting that Jāṭs and Rors of North India, together with Yaghnobis and Pamiris of Central Asia, may preserve ancestry components associated with ancient Indo-Iranian populations. These discussions have renewed public interest in understanding how genetics contributes to historical reconstruction.",
 
   "This review examines the current state of population genetic research relevant to Indo-Iranian heritage while emphasizing the importance of interpreting genetic evidence alongside archaeology, linguistics, anthropology, and documented history.",
 
@@ -24,13 +24,13 @@ body: [
 
   "These findings support a model of population formation involving migration, admixture, and long-term regional interaction rather than simple population replacement.",
 
-  "## Vedic Jāṭs and Rors in Recent Genetic Studies",
+  "## Jāṭs and Rors in Recent Genetic Studies",
 
-  "Among modern North Indian populations, Vedic Jāṭs and Rors have attracted particular attention in population genetic research due to their relatively elevated proportions of Steppe-related ancestry when compared with many neighbouring populations.",
+  "Among modern North Indian populations, Jāṭs and Rors have attracted particular attention in population genetic research due to their relatively elevated proportions of Steppe-related ancestry when compared with many neighbouring populations.",
 
-  "Studies examining genome-wide ancestry patterns have reported that Vedic Jāṭ and Ror populations preserve significant ancestry components associated with broader Indo-Iranian demographic processes that occurred over several millennia.",
+  "Studies examining genome-wide ancestry patterns have reported that Jāṭ and Ror populations preserve significant ancestry components associated with broader Indo-Iranian demographic processes that occurred over several millennia.",
 
-  "The work of Mahal and Matsoukas (2017) demonstrated that Vedic Jāṭ populations possess substantial genetic diversity and multiple ancestral lineages, indicating a complex historical formation rather than descent from a single ancestral population.",
+  "The work of Mahal and Matsoukas (2017) demonstrated that Jāṭ populations possess substantial genetic diversity and multiple ancestral lineages, indicating a complex historical formation rather than descent from a single ancestral population.",
 
   "Importantly, genetic studies do not suggest that any modern community represents an unchanged continuation of an ancient group. Rather, present-day populations preserve varying proportions of ancestry components resulting from historical migration and admixture events.",
 
@@ -40,7 +40,7 @@ body: [
 
   "The study by Cilli et al. (2019) identified Yaghnobis as preserving genetic characteristics that provide valuable insights into ancient Central Asian population structure. Such populations therefore serve as important comparative references for reconstructing demographic history across the Indo-Iranian world.",
 
-  "Recent scientific commentary and science journalism have highlighted the genetic affinities observed between certain North Indian and Central Asian populations, particularly Vedic Jāṭs, Rors, Yaghnobis, and Pamiris, within broader discussions of Indo-Iranian population history.",
+  "Recent scientific commentary and science journalism have highlighted the genetic affinities observed between certain North Indian and Central Asian populations, particularly Jāṭs, Rors, Yaghnobis, and Pamiris, within broader discussions of Indo-Iranian population history.",
 
   "## Genetics, Archaeology and Linguistics",
 
@@ -60,7 +60,7 @@ body: [
 
   "## Conclusion",
 
-  "Recent genetic studies have contributed significantly to scholarly understanding of Indo-Iranian population history. Research involving Vedic Jāṭs, Rors, Yaghnobis, Pamiris, and other populations has provided valuable insights into demographic processes that shaped South and Central Asia.",
+  "Recent genetic studies have contributed significantly to scholarly understanding of Indo-Iranian population history. Research involving Jāṭs, Rors, Yaghnobis, Pamiris, and other populations has provided valuable insights into demographic processes that shaped South and Central Asia.",
 
   "The available evidence supports a complex history involving migration, admixture, cultural interaction, and regional continuity across thousands of years. Continued interdisciplinary collaboration among geneticists, archaeologists, historians, linguists, and anthropologists will further improve understanding of the Indo-Iranian heritage.",
 
@@ -69,9 +69,9 @@ body: [
   "Population genetics investigates ancestry and migration patterns. Genetic findings do not determine cultural identity, social status, political legitimacy, ethnic superiority, or individual worth. Scientific conclusions should always be interpreted alongside evidence from archaeology, linguistics, history, and anthropology."
 ],
   sources: [
-    "Down To Earth. (2025). Like North India's Vedic Jāṭs and Rors, Central Asia's Yaghnobis and Pamiris are among the closest living genetic links to ancient Indo-Iranians. Down To Earth Magazine. https://www.downtoearth.org.in/science-technology/like-north-indias-jats-and-rors-central-asias-yaghnobis-and-pamiris-are-among-the-closest-living-genetic-links-to-ancient-indo-iranians",
+    "Down To Earth. (2025). Like North India's Jats and Rors, Central Asia's Yaghnobis and Pamiris are among the closest living genetic links to ancient Indo-Iranians. Down To Earth Magazine. https://www.downtoearth.org.in/science-technology/like-north-indias-jats-and-rors-central-asias-yaghnobis-and-pamiris-are-among-the-closest-living-genetic-links-to-ancient-indo-iranians",
     "Narasimhan, V. M., Patterson, N., Moorjani, P., Rohland, N., Bernardos, R., Mallick, S., et al. (2019). The Formation of Human Populations in South and Central Asia. Science, 365(6457), eaat7487.",
-    "Mahal, D. G., & Matsoukas, I. G. (2017). Y-STR Haplogroup Diversity in the Vedic Jāṭ Population Reveals Several Different Ancient Origins. Frontiers in Genetics, 8, 121.",
+    "Mahal, D. G., & Matsoukas, I. G. (2017). Y-STR Haplogroup Diversity in the Jat Population Reveals Several Different Ancient Origins. Frontiers in Genetics, 8, 121.",
     "Cilli, E., Serventi, P., Sarno, S., Barbieri, C., & Luiselli, D. (2019). The Genetic Legacy of the Yaghnobis: A Witness of an Ancient Eurasian Ancestry in the Historically Reshuffled Central Asian Gene Pool. American Journal of Physical Anthropology.",
     "Pathak, A. K., Kadian, A., Kushniarevich, A., Montinaro, F., Mondal, M., Ongaro, L., et al. (2018). The Genetic Ancestry of Modern Indus Valley Populations from Northwest India. American Journal of Human Genetics, 103(6), 918-929.",
     "Haak, W., Lazaridis, I., Patterson, N., Rohland, N., Mallick, S., Llamas, B., et al. (2015). Massive Migration from the Steppe was a Source for Indo-European Languages in Europe. Nature, 522(7555), 207-211.",
