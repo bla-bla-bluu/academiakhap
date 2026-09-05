@@ -137,7 +137,9 @@ for (const article of articles) {
         "khap panchayat",
         "Academia Khap",
       ].join(", "),
-      author: { "@type": "Organization", name: SITE_NAME },
+      author: article.author
+        ? { "@type": "Person", name: article.author }
+        : { "@type": "Organization", name: SITE_NAME },
       publisher: {
         "@type": "Organization",
         name: SITE_NAME,
