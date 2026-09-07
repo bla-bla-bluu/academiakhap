@@ -255,11 +255,6 @@ export default function AboutPage() {
             expertise: "Agrarian Politics",
           },
           {
-            name: "Miss Antim Chaudhary",
-            qualification: "BA, MA Modern History, PhD",
-            expertise: "Military History",
-          },
-          {
             name: "Mr. Hitesh Dahiya",
             qualification: "BA (Political Science + Philosophy), MA Political Science",
             expertise: "Philosophy, Psychology, Social Issues, Geopolitics",
