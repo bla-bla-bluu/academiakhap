@@ -56,7 +56,7 @@ export function getArticleDescription(body: string[]) {
   return (
     body.find(
       (paragraph) =>
-        !paragraph.startsWith("## ") && !paragraph.startsWith("::figure:") && paragraph.length > 90
+        !paragraph.startsWith("## ") && !paragraph.startsWith("::figure:") && !paragraph.startsWith("::list:") && paragraph.length > 90
     ) ??
     DEFAULT_DESCRIPTION
   ).slice(0, 155);

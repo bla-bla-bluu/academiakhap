@@ -214,6 +214,24 @@ export default function ResearchPage() {
                     const figure = paragraph.slice("::figure:".length).trim();
                     return figure === "khap-hierarchy" ? <KhapHierarchyDiagram key={i} /> : null;
                   }
+                  // "::list:item one|item two|item three" renders a bulleted list instead of
+                  // a run-on paragraph -- for exactly the "several resolutions in one sentence"
+                  // case that reads badly as prose. Pipe-delimited since no article body text
+                  // uses a literal "|" (checked before adopting this as the separator).
+                  if (paragraph.startsWith("::list:")) {
+                    const items = paragraph
+                      .slice("::list:".length)
+                      .split("|")
+                      .map((item) => item.trim())
+                      .filter(Boolean);
+                    return (
+                      <ul key={i} className="space-y-2 list-disc pl-6 marker:text-[#8b6a43]">
+                        {items.map((item, j) => (
+                          <li key={j}>{renderParagraph(item)}</li>
+                        ))}
+                      </ul>
+                    );
+                  }
                   return paragraph.startsWith("## ") ? (
                     <h2 key={i} className="text-2xl sm:text-3xl font-bold text-[#3b2415]">
                       {paragraph.slice(3)}
