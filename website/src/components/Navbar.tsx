@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import LanguagePills from "./LanguagePills";
 
 type NavLink = {
   to: string;
@@ -20,7 +21,7 @@ export default function Navbar({ links }: NavbarProps) {
             alt="Academia Khap Logo"
             className="w-10 h-10 sm:w-12 sm:h-12 object-contain flex-shrink-0"
           />
-          <p className="text-xl sm:text-2xl font-bold tracking-wide truncate">Academia Khap</p>
+          <p className="text-xl sm:text-2xl font-bold tracking-wide truncate notranslate">Academia Khap</p>
         </div>
 
         <div className="-mx-4 sm:mx-0 overflow-x-auto pb-1 sm:pb-0">
@@ -38,6 +39,8 @@ export default function Navbar({ links }: NavbarProps) {
                 {link.label}
               </Link>
             ))}
+            <span aria-hidden="true" className="w-px self-stretch bg-[#8b6a43]/25 mx-0.5" />
+            <LanguagePills />
           </div>
         </div>
       </div>
