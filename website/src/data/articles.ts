@@ -5,6 +5,7 @@ import DelhiVillages from "../content/articles/DelhiVillages";
 import KhapPanchayat2026 from "../content/articles/KhapPanchayat2026";
 import KhapPanchayatSystem from "../content/articles/KhapPanchayatSystem";
 import MandkolaMahapanchayat2026 from "../content/articles/MandkolaMahapanchayat2026";
+import PhogatKhapPanchayat2026 from "../content/articles/PhogatKhapPanchayat2026";
 
 export type ContentType = "article" | "discussion" | "podcast" | "video";
 
@@ -90,6 +91,16 @@ export const articles: Article[] = [
     author: "Mr. Deepak Dhillon",
     body: MandkolaMahapanchayat2026.body,
     sources: MandkolaMahapanchayat2026.sources,
+  },
+  {
+    id: 8,
+    title: "One Khap, Three Sources: Reading the Phogat Khap Panchayat of 13 September 2026",
+    category: "Society & Institutions",
+    slug: "/research/phogat-khap-panchayat-2026",
+    type: "article",
+    author: "Mr. Deepak Dhillon",
+    body: PhogatKhapPanchayat2026.body,
+    sources: PhogatKhapPanchayat2026.sources,
   },
 ];
 
