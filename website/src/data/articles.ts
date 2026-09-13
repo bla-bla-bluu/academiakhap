@@ -94,7 +94,7 @@ export const articles: Article[] = [
   },
   {
     id: 8,
-    title: "One Khap, Three Sources: Reading the Phogat Khap Panchayat of 13 September 2026",
+    title: "The Phogat Khap Panchayat at Charkhi Dadri, 13 September 2026",
     category: "Society & Institutions",
     slug: "/research/phogat-khap-panchayat-2026",
     type: "article",
