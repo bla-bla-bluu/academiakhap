@@ -2,18 +2,8 @@ import { useState, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ArticleSlideshow from "../components/ArticleSlideshow";
-import { articlesNewestFirst } from "../data/articles";
-import { getArticleDescription } from "../lib/seo-data";
+import ArticleMarquee from "../components/ArticleMarquee";
 function HomePage() {
-  // Two most recent entries, derived from the Archive itself so this section can never
-  // drift out of date the way a hand-maintained list does.
-  const posts = articlesNewestFirst.slice(0, 2).map((article) => ({
-    title: article.title,
-    category: article.category,
-    slug: article.slug,
-    excerpt: getArticleDescription(article.body),
-  }));
-
   const [contribName, setContribName] = useState("");
   const [contribEmail, setContribEmail] = useState("");
   const [contribMessage, setContribMessage] = useState("");
@@ -112,30 +102,7 @@ function HomePage() {
             </Link>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
-            {posts.map((post) => (
-              <div
-                key={post.title}
-                className="bg-[#f8f2e7] border border-[#b38b59]/30 rounded-[2rem] p-6 sm:p-8 shadow-sm hover:shadow-xl transition"
-              >
-                <div className="inline-block px-4 py-2 rounded-full bg-[#5b3419] text-white text-sm mb-5">
-                  {post.category}
-                </div>
-
-                <h3 className="text-2xl sm:text-3xl font-bold mb-4 leading-tight">
-                  {post.title}
-                </h3>
-
-                <p className="text-base sm:text-lg leading-7 sm:leading-8 text-[#4a3728] mb-6">
-                  {post.excerpt}
-                </p>
-
-                <Link to={post.slug} className="font-semibold underline underline-offset-4">
-                  Read Article
-                </Link>
-              </div>
-            ))}
-          </div>
+          <ArticleMarquee />
         </div>
       </section>
 

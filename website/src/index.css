@@ -35,3 +35,30 @@ body {
   cursor: pointer;
   vertical-align: middle;
 }
+
+/* Article marquee on the homepage (ArticleMarquee.tsx). A duplicated track slides from
+   0 to -50%, which is exactly the width of one copy, so the loop has no visible seam. */
+.marquee-viewport {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 1.5rem;
+  animation-name: marquee-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.marquee-viewport:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
