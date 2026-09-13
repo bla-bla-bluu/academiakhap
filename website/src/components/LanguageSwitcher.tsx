@@ -4,6 +4,12 @@ import { useEffect, useRef } from "react";
 // see App.tsx) so route navigation never unmounts it. Restricted to Hindi, Punjabi and
 // Urdu per the site's audience -- not the full language list Google offers.
 //
+// This component is the engine only and renders nothing visible: its container is
+// present in the DOM (Google needs a real mount point to initialise against) but kept
+// off-screen, because the themed LanguagePills control in the Navbar is what users
+// actually see and click, driving switches through the googtrans cookie in
+// lib/googleTranslate.ts rather than through this widget's own hidden UI.
+//
 // Two things Google's widget does that need active handling, not just styling:
 //
 // 1. It rewrites text nodes in place (wrapping words in <font> tags) rather than
@@ -80,13 +86,8 @@ export default function LanguageSwitcher() {
     document.body.appendChild(script);
   }, []);
 
-  return (
-    <div className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 notranslate">
-      <div
-        ref={containerRef}
-        id="google_translate_element"
-        className="rounded-full border border-[#b38b59]/40 bg-[#faf6ef] shadow-sm px-2 py-1"
-      />
-    </div>
-  );
+  // sr-only rather than display:none: Google's script still needs to be able to
+  // measure/initialise against a rendered element, and display:none has been reported
+  // to make that initialisation unreliable in some widget versions.
+  return <div ref={containerRef} id="google_translate_element" className="sr-only notranslate" />;
 }
