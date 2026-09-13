@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ArticleCard from "../components/ArticleCard";
 import KhapHierarchyDiagram from "../components/KhapHierarchyDiagram";
+import ArticleImage from "../components/ArticleImage";
 import { articles, articlesNewestFirst } from "../data/articles";
 import { Search } from "lucide-react";
 
@@ -213,6 +214,12 @@ export default function ResearchPage() {
                   if (paragraph.startsWith("::figure:")) {
                     const figure = paragraph.slice("::figure:".length).trim();
                     return figure === "khap-hierarchy" ? <KhapHierarchyDiagram key={i} /> : null;
+                  }
+                  // "::photo:<id>" renders a credited photograph -- see ArticleImage.tsx for
+                  // the attribution each id maps to.
+                  if (paragraph.startsWith("::photo:")) {
+                    const id = paragraph.slice("::photo:".length).trim();
+                    return <ArticleImage key={i} id={id} />;
                   }
                   // "::list:item one|item two|item three" renders a bulleted list instead of
                   // a run-on paragraph -- for exactly the "several resolutions in one sentence"
