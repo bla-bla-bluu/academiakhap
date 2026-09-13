@@ -50,7 +50,7 @@ body: [
   "The larger contribution of the study lies in its insistence that local history deserves rigorous academic attention. Kuchesar Fort is not only an architectural site; it is a historical archive of Jatwara, Dalal lineage memory, zamindari governance, and regional transformation. Preserving and documenting such sites is essential for building a fuller understanding of India's historical landscape."
 ],
 sources: [
-  "Choudhary, Harsh. The Royal Legacy of Kuchesar: A Study of the Dalal Family and Kuchesar Fort. Journal of Asiatic Society for Social Science Research, Vol. 7, No. 2 (2025), pp. 366–372.",
+  "Choudhary, Harsh. The Royal Legacy of Kuchesar: A Study of the Dalal Family and Kuchesar Fort. Journal of Asiatic Society for Social Science Research, Vol. 7, No. 2 (2025), pp. 366-372.",
   "DOI: 10.46700/asssr/2025/v7/i2/184",
   "Journal of Asiatic Society for Social Science Research (JASSSR)",
   "Field interviews and architectural documentation referenced in the study",
