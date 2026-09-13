@@ -9,3 +9,29 @@ html,
 body {
   background-color: #f4efe4;
 }
+
+/* Google Translate widget (see LanguageSwitcher.tsx). Google injects a full-width
+   iframe banner at the top of <body> and forces body { top: 40px } to make room for
+   it -- suppressed here so translating never shifts the page layout. The widget's own
+   trigger keeps rendering inline where we placed it. */
+iframe.skiptranslate {
+  display: none !important;
+}
+body {
+  top: 0 !important;
+}
+#google_translate_element .goog-te-gadget {
+  font-family: inherit;
+  font-size: 0;
+  line-height: 1;
+}
+#google_translate_element .goog-te-gadget .goog-te-combo {
+  font-size: 13px;
+  font-family: inherit;
+  color: #5b3419;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  vertical-align: middle;
+}

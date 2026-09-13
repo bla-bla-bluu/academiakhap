@@ -9,6 +9,7 @@ import PrivacyPolicyPage from "./pages/PrivacyPolicy";
 import TermsOfServicePage from "./pages/TermsOfService";
 import SEO from "./components/SEO";
 import ScrollToTop from "./components/ScrollToTop";
+import LanguageSwitcher from "./components/LanguageSwitcher";
 
 // Lazy-loaded: Community pulls in the Firebase SDK, which would otherwise be downloaded by
 // every visitor even if they never use the Community feature.
@@ -19,6 +20,7 @@ export default function App() {
     <BrowserRouter>
       <ScrollToTop />
       <SEO />
+      <LanguageSwitcher />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
