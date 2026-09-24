@@ -87,6 +87,7 @@ type AuthState = {
     password: string
   ) => Promise<{ error: string | null }>;
   completeProfile: (details: ProfileDetails) => Promise<{ error: string | null }>;
+  updateFullName: (fullName: string) => Promise<{ error: string | null }>;
   updateProfileExtras: (extras: Partial<ProfileExtras>) => Promise<{ error: string | null }>;
   updateNetworkStatus: (status: NetworkStatus) => Promise<{ error: string | null }>;
   syncPublicProfile: () => Promise<void>;
@@ -285,6 +286,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateFullName = async (fullName: string) => {
+    if (!user) return { error: "Not signed in." };
+    const trimmed = fullName.trim();
+    if (!trimmed) return { error: "Name cannot be empty." };
+    try {
+      await setDoc(doc(db, "profiles", user.uid), { fullName: trimmed }, { merge: true });
+      await syncPublicProfileDoc(user.uid, profile, { fullName: trimmed });
+      await updateProfile(user, { displayName: trimmed }).catch(() => {});
+      return { error: null };
+    } catch (err: any) {
+      return { error: err.message ?? "Could not update your name." };
+    }
+  };
+
   const updateProfileExtras = async (extras: Partial<ProfileExtras>) => {
     if (!user) return { error: "Not signed in." };
     try {
@@ -330,6 +345,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWithGoogle,
         registerWithEmail,
         completeProfile,
+        updateFullName,
         updateProfileExtras,
         updateNetworkStatus,
         syncPublicProfile,
