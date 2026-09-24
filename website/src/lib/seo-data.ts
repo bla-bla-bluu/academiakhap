@@ -24,6 +24,11 @@ export const staticPages: Record<string, { title: string; description: string }>
     description:
       "Explore Academia Khap's archive of articles, evidence-based discussions, podcasts, and videos on rural heritage, zamindari history, Jāṭ history, architecture, and regional cultural documentation.",
   },
+  "/heritage-network": {
+    title: "Village Heritage Research Network | Academia Khap",
+    description:
+      "Village origin, gotra and marriage traditions, old buildings, folk memory, and genealogical records, documented village by village by Academia Khap's researcher network.",
+  },
   "/contact": {
     title: "Contact Academia Khap | Research & Collaboration",
     description:
