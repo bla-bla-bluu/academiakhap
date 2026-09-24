@@ -762,6 +762,7 @@ function MembersSection() {
       const batch = writeBatch(db);
       batch.delete(doc(db, "profiles", member.id));
       batch.delete(doc(db, "memberSummaries", member.id));
+      batch.delete(doc(db, "publicProfiles", member.id));
       await batch.commit();
       setViewDetailsId(null);
       setExpandedId(null);
@@ -1047,6 +1048,7 @@ function AdminsSection() {
       const batch = writeBatch(db);
       batch.delete(doc(db, "profiles", admin.id));
       batch.delete(doc(db, "memberSummaries", admin.id));
+      batch.delete(doc(db, "publicProfiles", admin.id));
       await batch.commit();
     } catch (err: any) {
       window.alert(err.message ?? "Could not remove this admin.");

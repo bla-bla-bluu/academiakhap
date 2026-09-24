@@ -20,6 +20,7 @@ import { db } from "../lib/firebase";
 import AdminPanel from "../components/community/AdminPanel";
 import MemberPanel from "../components/community/MemberPanel";
 import CompleteProfileForm from "../components/community/CompleteProfileForm";
+import MemberNetwork from "../components/community/MemberNetwork";
 
 const MAX_LENGTH = 500;
 
@@ -43,7 +44,7 @@ type CommunityComment = {
   createdAt: Timestamp | null;
 };
 
-type PortalTab = "tools" | "community";
+type PortalTab = "tools" | "community" | "network";
 
 const formatTimestamp = (ts: Timestamp | null) => (ts ? ts.toDate().toLocaleString() : "Just now");
 
@@ -142,6 +143,12 @@ function CommunityPageContent() {
           >
             Chaupal
           </button>
+          <button
+            onClick={() => setTab("network")}
+            className={tab === "network" ? "px-5 py-2 rounded-full bg-[#5b3419] text-white font-semibold" : "px-5 py-2 rounded-full border border-[#5b3419] text-[#5b3419] font-semibold"}
+          >
+            Member Network
+          </button>
         </div>
 
         {tab === "tools" && (profile.role === "admin" ? <AdminPanel /> : <MemberPanel />)}
@@ -151,6 +158,7 @@ function CommunityPageContent() {
           ) : (
             <PostFeed onSelectPost={(id) => setSearchParams({ post: id })} />
           ))}
+        {tab === "network" && <MemberNetwork />}
       </>
     );
   };

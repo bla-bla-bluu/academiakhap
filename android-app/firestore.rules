@@ -62,6 +62,46 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // A trimmed, non-sensitive mirror of certain profiles/{uid} fields (name, role, memberId,
+    // district/state, professional and research fields, network status) that the Member
+    // Network directory reads from, so browsing members never requires opening up the private
+    // profiles collection itself. Email, phone, age, gotra and exact village never appear
+    // here. The owner keeps their own mirror in sync; an admin may also fix or remove one.
+    match /publicProfiles/{uid} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin() || isSelf(uid);
+    }
+
+    function targetNetworkStatus(uid) {
+      return get(/databases/$(database)/documents/profiles/$(uid)).data.get('networkStatus', 'by_request');
+    }
+
+    // A connection request between two members. Only the two parties (or an admin) can ever
+    // read one -- this is also where each side's email gets shared once accepted (toEmail is
+    // added only on accept), so a request document is the one place contact information moves
+    // between two members outside admin's own view. Creating one is blocked if the target has
+    // set themselves to "closed"; a request may not be answered twice, and only the recipient
+    // may accept or decline it. The sender may withdraw their own request while it's still
+    // pending.
+    match /connectionRequests/{id} {
+      allow read: if isAdmin() || (isSignedIn() &&
+        (resource.data.fromUid == request.auth.uid || resource.data.toUid == request.auth.uid));
+      allow create: if isSignedIn() &&
+        request.resource.data.fromUid == request.auth.uid &&
+        request.resource.data.toUid is string &&
+        request.resource.data.toUid != request.auth.uid &&
+        request.resource.data.status == 'pending' &&
+        targetNetworkStatus(request.resource.data.toUid) != 'closed';
+      allow update: if isAdmin() || (
+        isSignedIn() && resource.data.toUid == request.auth.uid &&
+        resource.data.status == 'pending' &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'respondedAt', 'toEmail']) &&
+        (request.resource.data.status == 'accepted' || request.resource.data.status == 'declined')
+      );
+      allow delete: if isAdmin() ||
+        (isSignedIn() && resource.data.fromUid == request.auth.uid && resource.data.status == 'pending');
+    }
+
     // Incoming donations -- admin-only in both directions, members never see donor detail.
     match /donations/{id} {
       allow read, write: if isAdmin();

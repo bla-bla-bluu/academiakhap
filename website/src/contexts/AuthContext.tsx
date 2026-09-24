@@ -12,6 +12,7 @@ import {
 import { doc, getDoc, onSnapshot, serverTimestamp, setDoc, type Timestamp } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
 import type { MembershipStatus } from "../lib/membership";
+import { DEFAULT_NETWORK_STATUS, type NetworkStatus } from "../lib/network";
 
 export type Role = "admin" | "trustee" | "member" | "scholar";
 export type Gender = "male" | "female";
@@ -49,6 +50,7 @@ export type Profile = {
   researchInterests?: string;
   languages?: string;
   bio?: string;
+  networkStatus?: NetworkStatus;
 };
 
 export type ProfileExtras = {
@@ -86,6 +88,8 @@ type AuthState = {
   ) => Promise<{ error: string | null }>;
   completeProfile: (details: ProfileDetails) => Promise<{ error: string | null }>;
   updateProfileExtras: (extras: Partial<ProfileExtras>) => Promise<{ error: string | null }>;
+  updateNetworkStatus: (status: NetworkStatus) => Promise<{ error: string | null }>;
+  syncPublicProfile: () => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -107,6 +111,32 @@ async function ensureRegistrationRequest(uid: string, fullName: string, email: s
     status: "pending",
     requestedAt: serverTimestamp(),
   });
+}
+
+// Mirrors the non-sensitive subset of a profile into publicProfiles/{uid}, the document the
+// Member Network directory actually reads from -- profiles/{uid} itself stays locked to the
+// owner and admins. Email, phone, age, gotra and exact village never go into this mirror.
+// `overrides` carries whatever this particular save is changing, since `current` (the Profile
+// already in React state) may not yet reflect a write that's happening in this same call.
+async function syncPublicProfileDoc(uid: string, current: Profile | null, overrides: Partial<Profile>) {
+  const merged = { ...current, ...overrides };
+  await setDoc(
+    doc(db, "publicProfiles", uid),
+    {
+      fullName: merged.fullName ?? null,
+      role: merged.role ?? null,
+      memberId: merged.memberId ?? null,
+      district: merged.district ?? null,
+      state: merged.state ?? null,
+      profession: merged.profession ?? null,
+      expertise: merged.expertise ?? null,
+      researchInterests: merged.researchInterests ?? null,
+      languages: merged.languages ?? null,
+      bio: merged.bio ?? null,
+      networkStatus: merged.networkStatus ?? DEFAULT_NETWORK_STATUS,
+    },
+    { merge: true }
+  );
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -167,6 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             researchInterests: data.researchInterests,
             languages: data.languages,
             bio: data.bio,
+            networkStatus: data.networkStatus,
           });
           setRegistrationStatus(null);
           setProfileLoading(false);
@@ -247,6 +278,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) return { error: "Not signed in." };
     try {
       await setDoc(doc(db, "profiles", user.uid), { ...details, detailsCompleted: true }, { merge: true });
+      await syncPublicProfileDoc(user.uid, profile, details);
       return { error: null };
     } catch (err: any) {
       return { error: err.message ?? "Could not save your details." };
@@ -257,10 +289,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) return { error: "Not signed in." };
     try {
       await setDoc(doc(db, "profiles", user.uid), extras, { merge: true });
+      await syncPublicProfileDoc(user.uid, profile, extras);
       return { error: null };
     } catch (err: any) {
       return { error: err.message ?? "Could not save your details." };
     }
+  };
+
+  const updateNetworkStatus = async (status: NetworkStatus) => {
+    if (!user) return { error: "Not signed in." };
+    try {
+      await setDoc(doc(db, "profiles", user.uid), { networkStatus: status }, { merge: true });
+      await syncPublicProfileDoc(user.uid, profile, { networkStatus: status });
+      return { error: null };
+    } catch (err: any) {
+      return { error: err.message ?? "Could not update your network status." };
+    }
+  };
+
+  // Self-heal, mirroring ensureRegistrationRequest above: lets a profile created before the
+  // Member Network existed appear in the directory the first time its owner opens that tab,
+  // without needing an admin backfill pass.
+  const syncPublicProfile = async () => {
+    if (!user || !profile) return;
+    await syncPublicProfileDoc(user.uid, profile, {});
   };
 
   const signOut = async () => {
@@ -279,6 +331,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         registerWithEmail,
         completeProfile,
         updateProfileExtras,
+        updateNetworkStatus,
+        syncPublicProfile,
         signOut,
       }}
     >
