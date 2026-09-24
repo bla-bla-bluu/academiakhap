@@ -51,7 +51,7 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
-    // Global sequence counter for issuing permanent Member IDs (AKYYYYMMXXXX). Only the
+    // Global sequence counter for issuing permanent Member IDs (AKYYMMXXXXX). Only the
     // admin-only approval/backfill flows ever touch this -- never exposed to ordinary members.
     match /counters/{counterId} {
       allow read, write: if isAdmin();

@@ -73,7 +73,7 @@ function AssignMemberId({ uid }: { uid: string }) {
     setError(null);
     const trimmed = manualId.trim().toUpperCase();
     if (!MEMBER_ID_PATTERN.test(trimmed)) {
-      setError("Format must be AKYYYYMMXXXX, e.g. AK2026070001.");
+      setError("Format must be AKYYMMXXXXX, e.g. AK260700001.");
       return;
     }
     setBusy(true);
@@ -94,7 +94,7 @@ function AssignMemberId({ uid }: { uid: string }) {
       <div className="mt-2 flex flex-wrap items-center gap-2">
         <input
           className="rounded-xl border border-[#c8a97d] bg-white px-3 py-1.5 text-sm font-mono outline-none w-48"
-          placeholder="AK2026070001"
+          placeholder="AK260700001"
           value={manualId}
           onChange={(e) => setManualId(e.target.value)}
         />
