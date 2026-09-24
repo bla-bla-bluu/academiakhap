@@ -76,13 +76,20 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/profiles/$(uid)).data.get('networkStatus', 'by_request');
     }
 
+    // uid1 has blocked uid2, checked by the fixed id "<blocker>_<blocked>" rather than a
+    // query, so it can be tested with a single exists() in the connectionRequests create rule.
+    function isBlockedBy(blockerUid, blockedUid) {
+      return exists(/databases/$(database)/documents/blocks/$(blockerUid + '_' + blockedUid));
+    }
+
     // A connection request between two members. Only the two parties (or an admin) can ever
     // read one -- this is also where each side's email gets shared once accepted (toEmail is
     // added only on accept), so a request document is the one place contact information moves
     // between two members outside admin's own view. Creating one is blocked if the target has
-    // set themselves to "closed"; a request may not be answered twice, and only the recipient
-    // may accept or decline it. The sender may withdraw their own request while it's still
-    // pending.
+    // set themselves to "closed" or has blocked the sender; a request may not be answered
+    // twice, and only the recipient may accept or decline it. Either party may delete an
+    // accepted connection to remove it; the sender alone may withdraw their own still-pending
+    // request.
     match /connectionRequests/{id} {
       allow read: if isAdmin() || (isSignedIn() &&
         (resource.data.fromUid == request.auth.uid || resource.data.toUid == request.auth.uid));
@@ -91,7 +98,8 @@ service cloud.firestore {
         request.resource.data.toUid is string &&
         request.resource.data.toUid != request.auth.uid &&
         request.resource.data.status == 'pending' &&
-        targetNetworkStatus(request.resource.data.toUid) != 'closed';
+        targetNetworkStatus(request.resource.data.toUid) != 'closed' &&
+        !isBlockedBy(request.resource.data.toUid, request.auth.uid);
       allow update: if isAdmin() || (
         isSignedIn() && resource.data.toUid == request.auth.uid &&
         resource.data.status == 'pending' &&
@@ -99,7 +107,34 @@ service cloud.firestore {
         (request.resource.data.status == 'accepted' || request.resource.data.status == 'declined')
       );
       allow delete: if isAdmin() ||
-        (isSignedIn() && resource.data.fromUid == request.auth.uid && resource.data.status == 'pending');
+        (isSignedIn() && resource.data.fromUid == request.auth.uid && resource.data.status == 'pending') ||
+        (isSignedIn() && resource.data.status == 'accepted' &&
+          (resource.data.fromUid == request.auth.uid || resource.data.toUid == request.auth.uid));
+    }
+
+    // uid on its own blocks a member: prevents that person from ever sending a new connection
+    // request (checked above) and lets the blocker filter them out of their own directory view.
+    // Only the blocker can see or remove their own block list; the blocked person is never told.
+    match /blocks/{id} {
+      allow read, delete: if isAdmin() || (isSignedIn() && resource.data.blockerUid == request.auth.uid);
+      allow create: if isSignedIn() &&
+        request.resource.data.blockerUid == request.auth.uid &&
+        request.resource.data.blockedUid is string &&
+        request.resource.data.blockedUid != request.auth.uid &&
+        id == request.resource.data.blockerUid + '_' + request.resource.data.blockedUid;
+    }
+
+    // A member reporting another member for admin attention. Only the reporter and an admin
+    // ever need to touch this -- read/review/close is admin-only, matching how donations and
+    // org expenses are handled elsewhere in this file.
+    match /memberReports/{id} {
+      allow read, update, delete: if isAdmin();
+      allow create: if isSignedIn() &&
+        request.resource.data.reporterUid == request.auth.uid &&
+        request.resource.data.reportedUid is string &&
+        request.resource.data.reason is string &&
+        request.resource.data.reason.size() > 0 &&
+        request.resource.data.status == 'open';
     }
 
     // Incoming donations -- admin-only in both directions, members never see donor detail.

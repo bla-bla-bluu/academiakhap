@@ -30,11 +30,14 @@ type DirectoryRow = {
   networkStatus?: NetworkStatus;
 };
 
+type BlockRow = { id: string; blockedUid: string };
+
 export default function MemberNetwork() {
   const { user, profile, updateNetworkStatus, syncPublicProfile } = useAuth();
   const [directory, setDirectory] = useState<DirectoryRow[]>([]);
   const [outgoing, setOutgoing] = useState<ConnectionRequest[]>([]);
   const [incoming, setIncoming] = useState<ConnectionRequest[]>([]);
+  const [blocks, setBlocks] = useState<BlockRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Self-heal: make sure this member's own public mirror exists/is current the moment they
@@ -61,9 +64,13 @@ export default function MemberNetwork() {
     const unsubIn = onSnapshot(query(collection(db, "connectionRequests"), where("toUid", "==", user.uid)), (snap) => {
       setIncoming(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<ConnectionRequest, "id">) })));
     });
+    const unsubBlocks = onSnapshot(query(collection(db, "blocks"), where("blockerUid", "==", user.uid)), (snap) => {
+      setBlocks(snap.docs.map((d) => ({ id: d.id, blockedUid: d.data().blockedUid as string })));
+    });
     return () => {
       unsubOut();
       unsubIn();
+      unsubBlocks();
     };
   }, [user]);
 
@@ -73,7 +80,40 @@ export default function MemberNetwork() {
     await setDoc(doc(db, "connectionRequests", request.id), payload, { merge: true });
   };
 
+  const handleBlock = async (blockedUid: string) => {
+    if (!user) return;
+    await setDoc(doc(db, "blocks", `${user.uid}_${blockedUid}`), {
+      blockerUid: user.uid,
+      blockedUid,
+      createdAt: serverTimestamp(),
+    });
+    // A block also ends any existing connection between the two, in either direction.
+    await Promise.all([
+      deleteDoc(doc(db, "connectionRequests", `${user.uid}_${blockedUid}`)).catch(() => {}),
+      deleteDoc(doc(db, "connectionRequests", `${blockedUid}_${user.uid}`)).catch(() => {}),
+    ]);
+  };
+
+  const handleUnblock = async (blockRowId: string) => {
+    await deleteDoc(doc(db, "blocks", blockRowId));
+  };
+
+  const handleReport = async (reportedUid: string, reportedName: string, reason: string) => {
+    if (!user || !profile) return;
+    await setDoc(doc(collection(db, "memberReports")), {
+      reporterUid: user.uid,
+      reporterName: profile.fullName,
+      reportedUid,
+      reportedName,
+      reason,
+      status: "open",
+      createdAt: serverTimestamp(),
+    });
+  };
+
   const pendingIncoming = incoming.filter((r) => r.status === "pending");
+  const blockedIds = new Set(blocks.map((b) => b.blockedUid));
+  const blockedMembers = directory.filter((m) => blockedIds.has(m.id));
 
   if (!user || !profile) return null;
 
@@ -122,6 +162,25 @@ export default function MemberNetwork() {
         </div>
       )}
 
+      {blockedMembers.length > 0 && (
+        <div className={cardClass}>
+          <h3 className="text-lg font-bold mb-4">Blocked Members</h3>
+          <div className="space-y-3">
+            {blockedMembers.map((m) => (
+              <div key={m.id} className="flex items-center justify-between gap-3">
+                <span>{m.fullName}</span>
+                <button
+                  onClick={() => handleUnblock(`${user.uid}_${m.id}`)}
+                  className="text-[#5b3419] font-semibold text-sm underline underline-offset-4"
+                >
+                  Unblock
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div>
         <h3 className="text-xl font-bold mb-4">Member Directory</h3>
         {loading ? (
@@ -129,7 +188,7 @@ export default function MemberNetwork() {
         ) : (
           <div className="space-y-4">
             {directory
-              .filter((m) => m.id !== user.uid)
+              .filter((m) => m.id !== user.uid && !blockedIds.has(m.id))
               .map((m) => (
                 <DirectoryCard
                   key={m.id}
@@ -139,6 +198,8 @@ export default function MemberNetwork() {
                   myEmail={profile.email}
                   outgoing={outgoing.find((r) => r.toUid === m.id)}
                   incoming={incoming.find((r) => r.fromUid === m.id)}
+                  onBlock={() => handleBlock(m.id)}
+                  onReport={(reason) => handleReport(m.id, m.fullName, reason)}
                 />
               ))}
           </div>
@@ -155,6 +216,8 @@ function DirectoryCard({
   myEmail,
   outgoing,
   incoming,
+  onBlock,
+  onReport,
 }: {
   member: DirectoryRow;
   myUid: string;
@@ -162,9 +225,14 @@ function DirectoryCard({
   myEmail: string;
   outgoing?: ConnectionRequest;
   incoming?: ConnectionRequest;
+  onBlock: () => Promise<void>;
+  onReport: (reason: string) => Promise<void>;
 }) {
   const [composing, setComposing] = useState(false);
   const [message, setMessage] = useState("");
+  const [reporting, setReporting] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportSent, setReportSent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -204,6 +272,46 @@ function DirectoryCard({
     }
   };
 
+  const handleRemoveConnection = async (requestId: string) => {
+    if (!window.confirm(`Remove your connection with ${member.fullName}?`)) return;
+    setBusy(true);
+    try {
+      await deleteDoc(doc(db, "connectionRequests", requestId));
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not remove this connection.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleBlockClick = async () => {
+    if (!window.confirm(`Block ${member.fullName}? This also removes any existing connection with them.`)) return;
+    setBusy(true);
+    try {
+      await onBlock();
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not block this member.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleSubmitReport = async () => {
+    if (!reportReason.trim()) return;
+    setBusy(true);
+    try {
+      await onReport(reportReason.trim());
+      setReporting(false);
+      setReportReason("");
+      setReportSent(true);
+      setTimeout(() => setReportSent(false), 3000);
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not send report.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const details = [member.profession, member.expertise, member.researchInterests, member.languages].filter(Boolean);
   const location = [member.district, member.state].filter(Boolean).join(", ");
 
@@ -228,7 +336,16 @@ function DirectoryCard({
         {incoming?.status === "pending" ? (
           <p className="text-sm text-[#8b6a43]">Sent you a request -- respond above.</p>
         ) : incoming?.status === "accepted" ? (
-          <p className="text-sm text-[#2f6b3a] font-semibold">Connected -- {incoming.fromEmail}</p>
+          <div className="flex items-center gap-4 flex-wrap">
+            <p className="text-sm text-[#2f6b3a] font-semibold">Connected -- {incoming.fromEmail}</p>
+            <button
+              onClick={() => handleRemoveConnection(incoming.id)}
+              disabled={busy}
+              className="text-[#8c2f23] text-sm underline underline-offset-4 disabled:opacity-60"
+            >
+              Remove Connection
+            </button>
+          </div>
         ) : outgoing?.status === "pending" ? (
           <div className="flex items-center gap-4">
             <span className="text-sm text-[#8b6a43]">Request sent</span>
@@ -237,7 +354,16 @@ function DirectoryCard({
             </button>
           </div>
         ) : outgoing?.status === "accepted" ? (
-          <p className="text-sm text-[#2f6b3a] font-semibold">Connected -- {outgoing.toEmail}</p>
+          <div className="flex items-center gap-4 flex-wrap">
+            <p className="text-sm text-[#2f6b3a] font-semibold">Connected -- {outgoing.toEmail}</p>
+            <button
+              onClick={() => handleRemoveConnection(outgoing.id)}
+              disabled={busy}
+              className="text-[#8c2f23] text-sm underline underline-offset-4 disabled:opacity-60"
+            >
+              Remove Connection
+            </button>
+          </div>
         ) : outgoing?.status === "declined" ? (
           <p className="text-sm text-[#8b6a43]">Request declined.</p>
         ) : member.networkStatus === "closed" ? (
@@ -265,6 +391,38 @@ function DirectoryCard({
           <button onClick={() => setComposing(true)} className="text-[#5b3419] font-semibold underline underline-offset-4">
             Send Connection Request →
           </button>
+        )}
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-4 text-sm">
+        {reporting ? (
+          <div className="w-full space-y-2">
+            <textarea
+              className={inputClass}
+              placeholder="Why are you reporting this member?"
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+              rows={2}
+            />
+            <div className="flex gap-3">
+              <button onClick={handleSubmitReport} disabled={busy || !reportReason.trim()} className="text-[#8c2f23] font-semibold underline underline-offset-4 disabled:opacity-60">
+                Submit Report
+              </button>
+              <button onClick={() => setReporting(false)} className="text-[#8b6a43] underline underline-offset-4">
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <button onClick={handleBlockClick} disabled={busy} className="text-[#8b6a43] underline underline-offset-4 disabled:opacity-60">
+              Block
+            </button>
+            <button onClick={() => setReporting(true)} className="text-[#8b6a43] underline underline-offset-4">
+              Report
+            </button>
+            {reportSent && <span className="text-[#2f6b3a]">Report sent.</span>}
+          </>
         )}
       </div>
     </div>

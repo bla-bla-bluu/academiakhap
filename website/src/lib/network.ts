@@ -29,3 +29,13 @@ export type ConnectionRequest = {
   message?: string;
   status: ConnectionRequestStatus;
 };
+
+export type MemberReport = {
+  id: string;
+  reporterUid: string;
+  reporterName: string;
+  reportedUid: string;
+  reportedName: string;
+  reason: string;
+  status: "open" | "reviewed";
+};

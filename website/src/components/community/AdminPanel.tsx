@@ -219,7 +219,7 @@ function AssignMemberId({ uid }: { uid: string }) {
   );
 }
 
-type AdminTab = "overview" | "donations" | "expenses" | "members" | "admins" | "requests";
+type AdminTab = "overview" | "donations" | "expenses" | "members" | "admins" | "requests" | "reports";
 
 type Donation = { id: string; donorName: string; amount: number; note: string | null; donatedAt: string };
 type OrgExpense = { id: string; title: string; amount: number; note: string | null; spentAt: string };
@@ -263,13 +263,13 @@ export default function AdminPanel() {
   return (
     <div>
       <div className="flex flex-wrap gap-3 mb-8">
-        {(["overview", "donations", "expenses", "members", "admins", "requests"] as AdminTab[]).map((t) => (
+        {(["overview", "donations", "expenses", "members", "admins", "requests", "reports"] as AdminTab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={tab === t ? "px-5 py-2 rounded-full bg-[#5b3419] text-white font-semibold" : ghostButtonClass}
           >
-            {t === "requests" ? "Pending Requests" : t === "admins" ? "Pardhans" : t.charAt(0).toUpperCase() + t.slice(1)}
+            {t === "requests" ? "Pending Requests" : t === "admins" ? "Pardhans" : t === "reports" ? "Reports" : t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
@@ -280,6 +280,7 @@ export default function AdminPanel() {
       {tab === "members" && <MembersSection />}
       {tab === "admins" && <AdminsSection />}
       {tab === "requests" && <PendingRequestsSection />}
+      {tab === "reports" && <ReportsSection />}
     </div>
   );
 }
@@ -1330,6 +1331,59 @@ function PendingRequestsSection() {
                 </div>
               </div>
             )}
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
+
+type MemberReportRow = { id: string; reporterName: string; reportedName: string; reason: string };
+
+function ReportsSection() {
+  const [reports, setReports] = useState<MemberReportRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // No orderBy -- an equality filter plus a sort on a different field needs a composite
+    // index, same reason PendingRequestsSection above leaves its query unsorted.
+    const q = query(collection(db, "memberReports"), where("status", "==", "open"));
+    const unsubscribe = onSnapshot(
+      q,
+      (snap) => {
+        setReports(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<MemberReportRow, "id">) })));
+        setLoading(false);
+      },
+      (err) => {
+        setLoadError(err.message);
+        setLoading(false);
+      }
+    );
+    return unsubscribe;
+  }, []);
+
+  const handleResolve = async (id: string) => {
+    await setDoc(doc(db, "memberReports", id), { status: "reviewed" }, { merge: true });
+  };
+
+  if (loading) return <p className="text-[#4a3728]">Loading...</p>;
+  if (loadError) return <p className="text-[#8c2f23]">Error: {loadError}</p>;
+
+  return (
+    <div className="space-y-6">
+      <h3 className="text-xl font-bold">Open Reports</h3>
+      {reports.length === 0 ? (
+        <p className="text-[#4a3728]">No open reports.</p>
+      ) : (
+        reports.map((r) => (
+          <div key={r.id} className={cardClass}>
+            <p className="font-bold">{r.reportedName}</p>
+            <p className="text-sm text-[#8b6a43] mb-2">Reported by {r.reporterName}</p>
+            <p className="text-[#4a3728]">{r.reason}</p>
+            <button onClick={() => handleResolve(r.id)} className="mt-3 text-[#5b3419] font-semibold underline underline-offset-4">
+              Mark Reviewed
+            </button>
           </div>
         ))
       )}
