@@ -9,7 +9,7 @@ import {
   updateProfile,
   type User,
 } from "firebase/auth";
-import { doc, getDoc, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, serverTimestamp, setDoc, type Timestamp } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
 
 export type Role = "admin" | "trustee" | "member" | "scholar";
@@ -31,6 +31,8 @@ export type Profile = {
   fullName: string;
   email: string;
   role: Role;
+  memberId?: string;
+  joinedAt?: Timestamp | null;
   gotr?: string;
   age?: number;
   village?: string;
@@ -131,6 +133,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             fullName: data.fullName,
             email: data.email,
             role: data.role,
+            memberId: data.memberId,
+            joinedAt: data.joinedAt ?? null,
             gotr: data.gotr,
             age: data.age,
             village: data.village,

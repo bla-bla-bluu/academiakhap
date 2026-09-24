@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { roleLabel, useAuth, type Gender, type Role } from "../../contexts/AuthContext";
+import { claimNextMemberId, MEMBER_ID_PATTERN, parseMemberIdJoinDate } from "../../lib/memberId";
 
 const ASSIGNABLE_ROLES: Role[] = ["admin", "trustee", "member", "scholar"];
 const money = (n: number) => `₹${(n ?? 0).toLocaleString("en-IN")}`;
@@ -34,6 +35,94 @@ function gmailComposeUrl(toEmail: string, toName: string, role: Role) {
   return `https://mail.google.com/mail/?${params.toString()}`;
 }
 
+function MemberIdBadge({ memberId }: { memberId?: string }) {
+  if (!memberId) return null;
+  return (
+    <span className="font-mono text-xs px-2 py-1 rounded-full bg-[#efe4cf] text-[#8b6a43] border border-[#b38b59]/40">
+      {memberId}
+    </span>
+  );
+}
+
+// Assigns a Member ID to a profile that doesn't have one yet: either the next sequential
+// number (ordinary backfill for members approved before this feature existed), or a
+// hand-typed ID for the three reserved founding-leadership slots (0001-0003), which this
+// system deliberately never auto-issues. The join year/month is read back out of a manually
+// typed ID rather than stamped as "now", since for a reserved slot the ID's own year/month
+// is the actual source of truth for when that person's membership began.
+function AssignMemberId({ uid }: { uid: string }) {
+  const [mode, setMode] = useState<"closed" | "manual">("closed");
+  const [manualId, setManualId] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleAuto = async () => {
+    setError(null);
+    setBusy(true);
+    try {
+      const memberId = await claimNextMemberId(db);
+      await setDoc(doc(db, "profiles", uid), { memberId, joinedAt: serverTimestamp() }, { merge: true });
+    } catch (err: any) {
+      setError(err.message ?? "Could not assign a Member ID.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleManual = async () => {
+    setError(null);
+    const trimmed = manualId.trim().toUpperCase();
+    if (!MEMBER_ID_PATTERN.test(trimmed)) {
+      setError("Format must be AK-YYYY-MM-XXXX, e.g. AK-2026-07-0001.");
+      return;
+    }
+    setBusy(true);
+    try {
+      const joinedAt = parseMemberIdJoinDate(trimmed);
+      await setDoc(doc(db, "profiles", uid), { memberId: trimmed, joinedAt }, { merge: true });
+      setMode("closed");
+      setManualId("");
+    } catch (err: any) {
+      setError(err.message ?? "Could not assign a Member ID.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (mode === "manual") {
+    return (
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <input
+          className="rounded-xl border border-[#c8a97d] bg-white px-3 py-1.5 text-sm font-mono outline-none w-48"
+          placeholder="AK-2026-07-0001"
+          value={manualId}
+          onChange={(e) => setManualId(e.target.value)}
+        />
+        <button onClick={handleManual} disabled={busy} className="text-[#5b3419] font-semibold text-sm underline underline-offset-4 disabled:opacity-60">
+          {busy ? "Saving..." : "Save"}
+        </button>
+        <button onClick={() => setMode("closed")} className="text-[#8b6a43] text-sm underline underline-offset-4">
+          Cancel
+        </button>
+        {error ? <span className="text-[#8c2f23] text-sm">{error}</span> : null}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-3">
+      <span className="text-xs text-[#8b6a43]">No Member ID yet --</span>
+      <button onClick={handleAuto} disabled={busy} className="text-[#5b3419] font-semibold text-sm underline underline-offset-4 disabled:opacity-60">
+        {busy ? "Assigning..." : "Auto-assign next ID"}
+      </button>
+      <button onClick={() => setMode("manual")} className="text-[#5b3419] font-semibold text-sm underline underline-offset-4">
+        Enter reserved ID (0001-0003)
+      </button>
+      {error ? <span className="text-[#8c2f23] text-sm">{error}</span> : null}
+    </div>
+  );
+}
+
 type AdminTab = "overview" | "donations" | "expenses" | "members" | "admins" | "requests";
 
 type Donation = { id: string; donorName: string; amount: number; note: string | null; donatedAt: string };
@@ -43,6 +132,7 @@ type MemberRow = {
   fullName: string;
   email: string;
   role: Role;
+  memberId?: string;
   totalAllotted: number;
   totalSpent: number;
   remainingBalance: number;
@@ -385,6 +475,7 @@ function MembersSection() {
               fullName: data.fullName,
               email: data.email,
               role: data.role,
+              memberId: data.memberId,
               gotr: data.gotr,
               age: data.age,
               village: data.village,
@@ -605,12 +696,16 @@ function MembersSection() {
         members.map((m) => (
           <div key={m.id} className={cardClass}>
             <div className="flex justify-between items-center">
-              <span className="font-bold text-lg">{m.fullName}</span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-bold text-lg">{m.fullName}</span>
+                <MemberIdBadge memberId={m.memberId} />
+              </div>
               <span className="text-xs uppercase tracking-wide text-[#8b6a43]">{roleLabel(m.role)}</span>
             </div>
             <p className="text-sm text-[#8b6a43] mb-2">
               {m.detailsCompleted ? `${m.gender === "male" ? "M" : "F"} • ${m.age} yrs` : "Profile details not submitted yet"}
             </p>
+            {!m.memberId && <AssignMemberId uid={m.id} />}
             <div className="flex justify-between py-1">
               <span>Allotted</span>
               <span>{money(m.totalAllotted)}</span>
@@ -760,7 +855,7 @@ function MembersSection() {
   );
 }
 
-type AdminRow = { id: string; fullName: string; email: string };
+type AdminRow = { id: string; fullName: string; email: string; memberId?: string };
 
 function AdminsSection() {
   const { user } = useAuth();
@@ -777,7 +872,7 @@ function AdminsSection() {
         const rows: AdminRow[] = [];
         snap.docs.forEach((d) => {
           const data = d.data();
-          if (data.role === "admin") rows.push({ id: d.id, fullName: data.fullName, email: data.email });
+          if (data.role === "admin") rows.push({ id: d.id, fullName: data.fullName, email: data.email, memberId: data.memberId });
         });
         setAdmins(rows);
         setLoading(false);
@@ -842,10 +937,14 @@ function AdminsSection() {
           return (
             <div key={a.id} className={cardClass}>
               <div className="flex justify-between items-center">
-                <span className="font-bold text-lg">{a.fullName}{isSelf ? " (You)" : ""}</span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-bold text-lg">{a.fullName}{isSelf ? " (You)" : ""}</span>
+                  <MemberIdBadge memberId={a.memberId} />
+                </div>
                 <span className="text-xs uppercase tracking-wide text-[#8b6a43]">{roleLabel("admin")}</span>
               </div>
               <p className="text-[#4a3728] text-sm mb-2">{a.email}</p>
+              {!a.memberId && <AssignMemberId uid={a.id} />}
 
               {isSelf ? (
                 <p className="text-sm text-[#8b6a43]">You can't change or remove your own Pardhan access here.</p>
@@ -910,8 +1009,15 @@ function ManualApproveSection() {
     setSubmitting(true);
     try {
       const targetUid = uid.trim();
+      const memberId = await claimNextMemberId(db);
       const batch = writeBatch(db);
-      batch.set(doc(db, "profiles", targetUid), { fullName: fullName.trim(), email: email.trim(), role });
+      batch.set(doc(db, "profiles", targetUid), {
+        fullName: fullName.trim(),
+        email: email.trim(),
+        role,
+        memberId,
+        joinedAt: serverTimestamp(),
+      });
       if (role !== "admin") {
         batch.set(doc(db, "memberSummaries", targetUid), {
           totalAllotted: 0,
@@ -1001,11 +1107,14 @@ function PendingRequestsSection() {
     setError(null);
     setSubmitting(true);
     try {
+      const memberId = await claimNextMemberId(db);
       const batch = writeBatch(db);
       batch.set(doc(db, "profiles", request.id), {
         fullName: request.fullName,
         email: request.email,
         role,
+        memberId,
+        joinedAt: serverTimestamp(),
       });
       if (role !== "admin") {
         batch.set(doc(db, "memberSummaries", request.id), {
