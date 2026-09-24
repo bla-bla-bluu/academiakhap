@@ -21,6 +21,7 @@ import AdminPanel from "../components/community/AdminPanel";
 import MemberPanel from "../components/community/MemberPanel";
 import CompleteProfileForm from "../components/community/CompleteProfileForm";
 import MemberNetwork from "../components/community/MemberNetwork";
+import HeritageResearch from "../components/community/HeritageResearch";
 
 const MAX_LENGTH = 500;
 
@@ -44,7 +45,7 @@ type CommunityComment = {
   createdAt: Timestamp | null;
 };
 
-type PortalTab = "tools" | "community" | "network";
+type PortalTab = "tools" | "community" | "network" | "heritage";
 
 const formatTimestamp = (ts: Timestamp | null) => (ts ? ts.toDate().toLocaleString() : "Just now");
 
@@ -149,6 +150,12 @@ function CommunityPageContent() {
           >
             Member Network
           </button>
+          <button
+            onClick={() => setTab("heritage")}
+            className={tab === "heritage" ? "px-5 py-2 rounded-full bg-[#5b3419] text-white font-semibold" : "px-5 py-2 rounded-full border border-[#5b3419] text-[#5b3419] font-semibold"}
+          >
+            Heritage Research
+          </button>
         </div>
 
         {tab === "tools" && (profile.role === "admin" ? <AdminPanel /> : <MemberPanel />)}
@@ -159,13 +166,20 @@ function CommunityPageContent() {
             <PostFeed onSelectPost={(id) => setSearchParams({ post: id })} />
           ))}
         {tab === "network" && <MemberNetwork />}
+        {tab === "heritage" && <HeritageResearch />}
       </>
     );
   };
 
   return (
     <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
-      <Navbar links={[{ to: "/", label: "Home" }, { to: "/community", label: "Chaupal", active: true }]} />
+      <Navbar
+        links={[
+          { to: "/", label: "Home" },
+          { to: "/heritage-network", label: "Heritage Network" },
+          { to: "/community", label: "Chaupal", active: true },
+        ]}
+      />
 
       <section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 pt-12 sm:pt-20 pb-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">

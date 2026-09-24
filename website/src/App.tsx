@@ -11,9 +11,10 @@ import SEO from "./components/SEO";
 import ScrollToTop from "./components/ScrollToTop";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 
-// Lazy-loaded: Community pulls in the Firebase SDK, which would otherwise be downloaded by
-// every visitor even if they never use the Community feature.
+// Lazy-loaded: Community and Heritage Network both pull in the Firebase SDK, which would
+// otherwise be downloaded by every visitor even if they never use either feature.
 const CommunityPage = lazy(() => import("./pages/Community"));
+const HeritageNetworkPage = lazy(() => import("./pages/HeritageNetwork"));
 
 export default function App() {
   return (
@@ -35,6 +36,14 @@ export default function App() {
           element={
             <Suspense fallback={<div className="min-h-screen bg-[#f4efe4]" />}>
               <CommunityPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/heritage-network"
+          element={
+            <Suspense fallback={<div className="min-h-screen bg-[#f4efe4]" />}>
+              <HeritageNetworkPage />
             </Suspense>
           }
         />

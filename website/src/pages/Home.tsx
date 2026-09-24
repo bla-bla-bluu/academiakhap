@@ -28,6 +28,7 @@ function HomePage() {
           { to: "/about", label: "About Us" },
           { to: "/work", label: "Work With Us" },
           { to: "/research", label: "Archive" },
+          { to: "/heritage-network", label: "Heritage Network" },
           { to: "/community", label: "Chaupal" },
           { to: "/contact", label: "Contact" },
         ]}

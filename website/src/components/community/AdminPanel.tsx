@@ -23,6 +23,13 @@ import {
   nextRenewalDate,
   type MembershipStatus,
 } from "../../lib/membership";
+import {
+  VERIFICATION_STATUSES,
+  VERIFICATION_STATUS_LABELS,
+  RESEARCH_LEVEL_LABELS,
+  type HeritageSubmission,
+  type VerificationStatus,
+} from "../../lib/heritage";
 
 const ASSIGNABLE_ROLES: Role[] = ["admin", "trustee", "member", "scholar"];
 const money = (n: number) => `₹${(n ?? 0).toLocaleString("en-IN")}`;
@@ -220,7 +227,7 @@ function AssignMemberId({ uid }: { uid: string }) {
   );
 }
 
-type AdminTab = "overview" | "donations" | "expenses" | "members" | "admins" | "requests" | "reports";
+type AdminTab = "overview" | "donations" | "expenses" | "members" | "admins" | "requests" | "reports" | "heritage";
 
 type Donation = { id: string; donorName: string; amount: number; note: string | null; donatedAt: string };
 type OrgExpense = { id: string; title: string; amount: number; note: string | null; spentAt: string };
@@ -264,13 +271,13 @@ export default function AdminPanel() {
   return (
     <div>
       <div className="flex flex-wrap gap-3 mb-8">
-        {(["overview", "donations", "expenses", "members", "admins", "requests", "reports"] as AdminTab[]).map((t) => (
+        {(["overview", "donations", "expenses", "members", "admins", "requests", "reports", "heritage"] as AdminTab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={tab === t ? "px-5 py-2 rounded-full bg-[#5b3419] text-white font-semibold" : ghostButtonClass}
           >
-            {t === "requests" ? "Pending Requests" : t === "admins" ? "Pardhans" : t === "reports" ? "Reports" : t.charAt(0).toUpperCase() + t.slice(1)}
+            {t === "requests" ? "Pending Requests" : t === "admins" ? "Pardhans" : t === "reports" ? "Reports" : t === "heritage" ? "Heritage" : t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
@@ -282,6 +289,7 @@ export default function AdminPanel() {
       {tab === "admins" && <AdminsSection />}
       {tab === "requests" && <PendingRequestsSection />}
       {tab === "reports" && <ReportsSection />}
+      {tab === "heritage" && <HeritageReviewSection />}
     </div>
   );
 }
@@ -1390,6 +1398,196 @@ function ReportsSection() {
             </button>
           </div>
         ))
+      )}
+    </div>
+  );
+}
+
+function HeritageSubmissionCard({ entry, published }: { entry: HeritageSubmission; published: boolean }) {
+  const [verification, setVerification] = useState<VerificationStatus>(entry.verificationStatus ?? "oral_history");
+  const [note, setNote] = useState(entry.editorialNote ?? "");
+  const [busy, setBusy] = useState(false);
+
+  const handlePublish = async () => {
+    setBusy(true);
+    try {
+      await setDoc(
+        doc(db, "heritageSubmissions", entry.id),
+        { publicationStatus: "published", verificationStatus: verification, editorialNote: note.trim() || null, reviewedAt: serverTimestamp() },
+        { merge: true }
+      );
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not publish this entry.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleReject = async () => {
+    setBusy(true);
+    try {
+      await setDoc(
+        doc(db, "heritageSubmissions", entry.id),
+        { publicationStatus: "rejected", editorialNote: note.trim() || null, reviewedAt: serverTimestamp() },
+        { merge: true }
+      );
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not reject this entry.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleUnpublish = async () => {
+    if (!window.confirm("Unpublish this entry? It returns to the review queue and disappears from the public site.")) return;
+    setBusy(true);
+    try {
+      await setDoc(doc(db, "heritageSubmissions", entry.id), { publicationStatus: "submitted" }, { merge: true });
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not unpublish this entry.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const field = (label: string, value?: string | number | null) =>
+    value ? (
+      <div className="py-1">
+        <span className="text-[#8b6a43] text-sm">{label}: </span>
+        <span className="text-[#4a3728]">{value}</span>
+      </div>
+    ) : null;
+
+  return (
+    <div className={cardClass}>
+      <div className="flex justify-between items-start gap-3 flex-wrap">
+        <div>
+          <p className="font-bold text-lg">{entry.subject}</p>
+          <p className="text-sm text-[#8b6a43]">{[entry.village, entry.tehsil, entry.district, entry.state].filter(Boolean).join(", ")}</p>
+        </div>
+        <span className="text-[10px] uppercase tracking-wide font-bold px-2 py-0.5 rounded-full bg-[#efe4cf] text-[#8b6a43] border border-[#b38b59]/40">
+          {RESEARCH_LEVEL_LABELS[entry.researchLevel]}
+        </span>
+      </div>
+      <p className="text-sm text-[#8b6a43] mt-2">
+        Researcher: {entry.researcherName}
+        {entry.researcherMemberId ? ` (${entry.researcherMemberId})` : ""}
+      </p>
+
+      <div className="mt-3 border-t border-[#b38b59]/20 pt-3">
+        {field("Date", entry.date)}
+        {field("Location", entry.location)}
+        <div className="py-1">
+          <span className="text-[#8b6a43] text-sm">Historical Claim: </span>
+          <span className="text-[#4a3728] whitespace-pre-wrap">{entry.historicalClaim}</span>
+        </div>
+        <div className="py-1">
+          <span className="text-[#8b6a43] text-sm">Source: </span>
+          <span className="text-[#4a3728] whitespace-pre-wrap">{entry.source}</span>
+        </div>
+        {field("Interviewee", entry.interviewee && entry.intervieweeAge ? `${entry.interviewee}, ${entry.intervieweeAge}` : entry.interviewee)}
+        {field("Photo/document notes", entry.photoNotes)}
+        {field("Researcher's Observations", entry.researcherObservations)}
+        {field("Independent Verification", entry.independentVerification)}
+        {field("Current Condition", entry.currentCondition)}
+        {field("References", entry.references)}
+      </div>
+
+      {published ? (
+        <div className="mt-4 border-t border-[#b38b59]/20 pt-4 flex items-center justify-between flex-wrap gap-3">
+          <p className="text-sm text-[#8b6a43]">Classified as: {entry.verificationStatus ? VERIFICATION_STATUS_LABELS[entry.verificationStatus] : "--"}</p>
+          <button onClick={handleUnpublish} disabled={busy} className="text-[#8c2f23] text-sm underline underline-offset-4 disabled:opacity-60">
+            Unpublish
+          </button>
+        </div>
+      ) : (
+        <div className="mt-4 border-t border-[#b38b59]/20 pt-4 space-y-3">
+          <p className="text-sm text-[#8b6a43]">Editorial classification (spec section 19):</p>
+          <div className="flex flex-wrap gap-2">
+            {VERIFICATION_STATUSES.map((v) => (
+              <button
+                key={v}
+                onClick={() => setVerification(v)}
+                className={
+                  verification === v
+                    ? "px-3 py-1.5 rounded-full bg-[#5b3419] text-white text-xs"
+                    : "px-3 py-1.5 rounded-full border border-[#5b3419] text-[#5b3419] text-xs"
+                }
+              >
+                {VERIFICATION_STATUS_LABELS[v]}
+              </button>
+            ))}
+          </div>
+          <textarea
+            className={inputClass}
+            placeholder="Editorial note (optional, shown to the researcher)"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            rows={2}
+          />
+          <div className="flex gap-3">
+            <button onClick={handlePublish} disabled={busy} className={buttonClass}>
+              {busy ? "Working..." : "Publish"}
+            </button>
+            <button
+              onClick={handleReject}
+              disabled={busy}
+              className="px-6 py-3 rounded-full border border-[#8c2f23] text-[#8c2f23] font-semibold disabled:opacity-60"
+            >
+              Reject
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function HeritageReviewSection() {
+  const [submitted, setSubmitted] = useState<HeritageSubmission[]>([]);
+  const [published, setPublished] = useState<HeritageSubmission[]>([]);
+  const [showPublished, setShowPublished] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // No orderBy -- same composite-index reasoning as PendingRequestsSection/ReportsSection.
+    const unsubSubmitted = onSnapshot(query(collection(db, "heritageSubmissions"), where("publicationStatus", "==", "submitted")), (snap) => {
+      setSubmitted(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<HeritageSubmission, "id">) })));
+      setLoading(false);
+    });
+    const unsubPublished = onSnapshot(query(collection(db, "heritageSubmissions"), where("publicationStatus", "==", "published")), (snap) => {
+      setPublished(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<HeritageSubmission, "id">) })));
+    });
+    return () => {
+      unsubSubmitted();
+      unsubPublished();
+    };
+  }, []);
+
+  if (loading) return <p className="text-[#4a3728]">Loading...</p>;
+
+  return (
+    <div className="space-y-6">
+      <h3 className="text-xl font-bold">Submissions Awaiting Review</h3>
+      {submitted.length === 0 ? (
+        <p className="text-[#4a3728]">No submissions waiting for review.</p>
+      ) : (
+        <div className="space-y-4">
+          {submitted.map((entry) => (
+            <HeritageSubmissionCard key={entry.id} entry={entry} published={false} />
+          ))}
+        </div>
+      )}
+
+      <button onClick={() => setShowPublished((v) => !v)} className="text-[#5b3419] font-semibold underline underline-offset-4">
+        {showPublished ? "Hide Published Entries" : `Show Published Entries (${published.length}) →`}
+      </button>
+      {showPublished && (
+        <div className="space-y-4">
+          {published.map((entry) => (
+            <HeritageSubmissionCard key={entry.id} entry={entry} published={true} />
+          ))}
+        </div>
       )}
     </div>
   );
