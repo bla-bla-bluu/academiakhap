@@ -1,6 +1,6 @@
 import { doc, runTransaction, type Firestore } from "firebase/firestore";
 
-// AK-2026-08-0047: 0001-0003 are reserved permanently for founding/institutional leadership
+// AK20260800047: 0001-0003 are reserved permanently for founding/institutional leadership
 // and must be assigned by hand in the admin panel, never auto-issued.
 export const RESERVED_MEMBER_SLOTS = 3;
 
@@ -8,16 +8,16 @@ export function formatMemberId(sequence: number, joinDate: Date): string {
   const year = joinDate.getFullYear();
   const month = String(joinDate.getMonth() + 1).padStart(2, "0");
   const num = String(sequence).padStart(4, "0");
-  return `AK-${year}-${month}-${num}`;
+  return `AK${year}${month}${num}`;
 }
 
-export const MEMBER_ID_PATTERN = /^AK-\d{4}-(0[1-9]|1[0-2])-\d{4}$/;
+export const MEMBER_ID_PATTERN = /^AK\d{4}(0[1-9]|1[0-2])\d{4}$/;
 
 // Reads the join year/month back out of a Member ID string, e.g. for a manually-assigned
 // reserved ID (0001-0003) where the ID itself, not "now", is the source of truth for when
 // that person's membership began.
 export function parseMemberIdJoinDate(memberId: string): Date | null {
-  const match = memberId.match(/^AK-(\d{4})-(\d{2})-\d{4}$/);
+  const match = memberId.match(/^AK(\d{4})(0[1-9]|1[0-2])\d{4}$/);
   if (!match) return null;
   return new Date(Number(match[1]), Number(match[2]) - 1, 1);
 }
