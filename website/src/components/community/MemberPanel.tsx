@@ -115,6 +115,13 @@ export default function MemberPanel() {
 
   return (
     <div className="space-y-6">
+      {profile?.memberId && (
+        <div className={cardClass}>
+          <p className="text-sm text-[#8b6a43] uppercase tracking-wide mb-1">Your Member ID</p>
+          <p className="text-2xl font-bold font-mono tracking-wide">{profile.memberId}</p>
+        </div>
+      )}
+
       <div className="rounded-[2rem] bg-[#5b3419] text-white p-8">
         <p className="uppercase tracking-[0.25em] text-sm text-[#e7d6be] mb-2">Remaining Balance</p>
         <p className="text-4xl font-bold">{money(balance?.remainingBalance ?? 0)}</p>
