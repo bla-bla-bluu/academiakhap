@@ -29,12 +29,17 @@ service cloud.firestore {
     match /profiles/{uid} {
       allow read: if isSelf(uid) || isAdmin();
       allow create: if isAdmin();
-      // Self-updates may never change role or email -- only an admin can do that --
-      // otherwise a member could grant themselves admin via a direct SDK call.
+      // Self-updates may never change role, email, membership status, or renewal date --
+      // only an admin can change those -- otherwise a member could grant themselves admin,
+      // or mark their own lapsed membership active, via a direct SDK call bypassing the
+      // app's UI. The latter two use get() with a default since older profiles predate
+      // those fields and wouldn't have them set at all.
       allow update: if isAdmin() || (
         isSelf(uid) &&
         request.resource.data.role == resource.data.role &&
-        request.resource.data.email == resource.data.email
+        request.resource.data.email == resource.data.email &&
+        request.resource.data.get('membershipStatus', null) == resource.data.get('membershipStatus', null) &&
+        request.resource.data.get('renewalDate', null) == resource.data.get('renewalDate', null)
       );
       allow delete: if isAdmin();
     }

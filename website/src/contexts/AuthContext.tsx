@@ -11,6 +11,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, onSnapshot, serverTimestamp, setDoc, type Timestamp } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
+import type { MembershipStatus } from "../lib/membership";
 
 export type Role = "admin" | "trustee" | "member" | "scholar";
 export type Gender = "male" | "female";
@@ -33,6 +34,8 @@ export type Profile = {
   role: Role;
   memberId?: string;
   joinedAt?: Timestamp | null;
+  membershipStatus?: MembershipStatus;
+  renewalDate?: string;
   gotr?: string;
   age?: number;
   village?: string;
@@ -41,6 +44,19 @@ export type Profile = {
   eduQualification?: string;
   gender?: Gender;
   detailsCompleted?: boolean;
+  profession?: string;
+  expertise?: string;
+  researchInterests?: string;
+  languages?: string;
+  bio?: string;
+};
+
+export type ProfileExtras = {
+  profession: string;
+  expertise: string;
+  researchInterests: string;
+  languages: string;
+  bio: string;
 };
 
 export type ProfileDetails = {
@@ -69,6 +85,7 @@ type AuthState = {
     password: string
   ) => Promise<{ error: string | null }>;
   completeProfile: (details: ProfileDetails) => Promise<{ error: string | null }>;
+  updateProfileExtras: (extras: Partial<ProfileExtras>) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 };
 
@@ -135,6 +152,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             role: data.role,
             memberId: data.memberId,
             joinedAt: data.joinedAt ?? null,
+            membershipStatus: data.membershipStatus,
+            renewalDate: data.renewalDate,
             gotr: data.gotr,
             age: data.age,
             village: data.village,
@@ -143,6 +162,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             eduQualification: data.eduQualification,
             gender: data.gender,
             detailsCompleted: data.detailsCompleted ?? false,
+            profession: data.profession,
+            expertise: data.expertise,
+            researchInterests: data.researchInterests,
+            languages: data.languages,
+            bio: data.bio,
           });
           setRegistrationStatus(null);
           setProfileLoading(false);
@@ -229,6 +253,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateProfileExtras = async (extras: Partial<ProfileExtras>) => {
+    if (!user) return { error: "Not signed in." };
+    try {
+      await setDoc(doc(db, "profiles", user.uid), extras, { merge: true });
+      return { error: null };
+    } catch (err: any) {
+      return { error: err.message ?? "Could not save your details." };
+    }
+  };
+
   const signOut = async () => {
     await firebaseSignOut(auth);
   };
@@ -244,6 +278,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWithGoogle,
         registerWithEmail,
         completeProfile,
+        updateProfileExtras,
         signOut,
       }}
     >

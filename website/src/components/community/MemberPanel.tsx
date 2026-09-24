@@ -11,7 +11,8 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { db } from "../../lib/firebase";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth, type Profile, type ProfileExtras } from "../../contexts/AuthContext";
+import { MEMBERSHIP_STATUS_LABELS } from "../../lib/membership";
 
 const money = (n: number) => `₹${(n ?? 0).toLocaleString("en-IN")}`;
 const todayISO = () => new Date().toISOString().slice(0, 10);
@@ -25,7 +26,7 @@ const inputClass = "w-full rounded-2xl border border-[#c8a97d] bg-white px-4 py-
 const buttonClass = "px-6 py-3 rounded-full bg-[#5b3419] text-white font-semibold hover:bg-[#3b2415] transition disabled:opacity-60";
 
 export default function MemberPanel() {
-  const { user, profile } = useAuth();
+  const { user, profile, updateProfileExtras } = useAuth();
   const [balance, setBalance] = useState<MemberSummary | null>(null);
   const [expenses, setExpenses] = useState<MemberExpense[]>([]);
   const [orgTotals, setOrgTotals] = useState<OrgTotals | null>(null);
@@ -119,8 +120,22 @@ export default function MemberPanel() {
         <div className={cardClass}>
           <p className="text-sm text-[#8b6a43] uppercase tracking-wide mb-1">Your Member ID</p>
           <p className="text-2xl font-bold font-mono tracking-wide">{profile.memberId}</p>
+          {profile.membershipStatus && (
+            <div className="flex flex-wrap gap-x-6 gap-y-1 mt-3 pt-3 border-t border-[#b38b59]/20 text-sm">
+              <span>
+                Status: <span className="font-bold">{MEMBERSHIP_STATUS_LABELS[profile.membershipStatus]}</span>
+              </span>
+              {profile.renewalDate && (
+                <span>
+                  Renews: <span className="font-bold">{profile.renewalDate}</span>
+                </span>
+              )}
+            </div>
+          )}
         </div>
       )}
+
+      <ProfileExtrasCard profile={profile} updateProfileExtras={updateProfileExtras} />
 
       <div className="rounded-[2rem] bg-[#5b3419] text-white p-8">
         <p className="uppercase tracking-[0.25em] text-sm text-[#e7d6be] mb-2">Remaining Balance</p>
@@ -187,6 +202,82 @@ export default function MemberPanel() {
           </div>
         ))
       )}
+    </div>
+  );
+}
+
+const EXTRAS_FIELDS: { key: keyof ProfileExtras; label: string; multiline?: boolean }[] = [
+  { key: "profession", label: "Profession / Occupation" },
+  { key: "expertise", label: "Areas of Expertise" },
+  { key: "researchInterests", label: "Research Interests" },
+  { key: "languages", label: "Languages" },
+  { key: "bio", label: "Short Biography", multiline: true },
+];
+
+function ProfileExtrasCard({
+  profile,
+  updateProfileExtras,
+}: {
+  profile: Profile | null;
+  updateProfileExtras: (extras: Partial<ProfileExtras>) => Promise<{ error: string | null }>;
+}) {
+  const [values, setValues] = useState<Partial<ProfileExtras>>({
+    profession: profile?.profession ?? "",
+    expertise: profile?.expertise ?? "",
+    researchInterests: profile?.researchInterests ?? "",
+    languages: profile?.languages ?? "",
+    bio: profile?.bio ?? "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = async () => {
+    setError(null);
+    setSubmitting(true);
+    const { error: saveError } = await updateProfileExtras(values);
+    setSubmitting(false);
+    if (saveError) {
+      setError(saveError);
+    } else {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    }
+  };
+
+  return (
+    <div className={cardClass}>
+      <h3 className="text-lg font-bold mb-2">Your Profile</h3>
+      <p className="text-sm text-[#8b6a43] mb-4">
+        Optional -- share as much or as little as you like. Visible to other Academia Khap members.
+      </p>
+      <div className="space-y-3">
+        {EXTRAS_FIELDS.map(({ key, label, multiline }) =>
+          multiline ? (
+            <textarea
+              key={key}
+              className={inputClass}
+              placeholder={label}
+              value={values[key] ?? ""}
+              onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
+              rows={3}
+            />
+          ) : (
+            <input
+              key={key}
+              className={inputClass}
+              placeholder={label}
+              value={values[key] ?? ""}
+              onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
+            />
+          )
+        )}
+        {error ? <p className="text-[#8c2f23] text-sm">{error}</p> : null}
+        {saved ? <p className="text-[#2f6b3a] text-sm">Saved.</p> : null}
+        <button onClick={handleSave} disabled={submitting} className={buttonClass}>
+          {submitting ? "Saving..." : "Save Details"}
+        </button>
+      </div>
     </div>
   );
 }

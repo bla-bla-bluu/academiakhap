@@ -16,6 +16,12 @@ import {
 import { db } from "../../lib/firebase";
 import { roleLabel, useAuth, type Gender, type Role } from "../../contexts/AuthContext";
 import { claimNextMemberId, MEMBER_ID_PATTERN, parseMemberIdJoinDate } from "../../lib/memberId";
+import {
+  MEMBERSHIP_STATUSES,
+  MEMBERSHIP_STATUS_LABELS,
+  nextRenewalDate,
+  type MembershipStatus,
+} from "../../lib/membership";
 
 const ASSIGNABLE_ROLES: Role[] = ["admin", "trustee", "member", "scholar"];
 const money = (n: number) => `₹${(n ?? 0).toLocaleString("en-IN")}`;
@@ -41,6 +47,96 @@ function MemberIdBadge({ memberId }: { memberId?: string }) {
     <span className="font-mono text-xs px-2 py-1 rounded-full bg-[#efe4cf] text-[#8b6a43] border border-[#b38b59]/40">
       {memberId}
     </span>
+  );
+}
+
+const STATUS_COLORS: Record<MembershipStatus, string> = {
+  pending: "bg-[#efe4cf] text-[#8b6a43] border-[#b38b59]/40",
+  active: "bg-[#e5efe0] text-[#2f6b3a] border-[#2f6b3a]/30",
+  expired: "bg-[#f3e2dc] text-[#8c2f23] border-[#8c2f23]/30",
+  suspended: "bg-[#f3e2dc] text-[#8c2f23] border-[#8c2f23]/30",
+  cancelled: "bg-[#eee] text-[#6b5746] border-[#6b5746]/30",
+};
+
+function StatusBadge({ status }: { status?: MembershipStatus }) {
+  if (!status) return null;
+  return (
+    <span className={`text-[10px] uppercase tracking-wide font-bold px-2 py-0.5 rounded-full border ${STATUS_COLORS[status]}`}>
+      {MEMBERSHIP_STATUS_LABELS[status]}
+    </span>
+  );
+}
+
+// Lets an admin change a member's status (Pending/Active/Expired/Suspended/Cancelled) and,
+// separately, renew them for another year. Renewal extends from the later of the current
+// renewal date or today (see nextRenewalDate), and also flips status back to Active, since
+// renewing a lapsed or suspended membership is how it becomes current again.
+function MembershipControls({
+  uid,
+  status,
+  renewalDate,
+}: {
+  uid: string;
+  status?: MembershipStatus;
+  renewalDate?: string;
+}) {
+  const [editingStatus, setEditingStatus] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const handleSetStatus = async (newStatus: MembershipStatus) => {
+    setBusy(true);
+    try {
+      await setDoc(doc(db, "profiles", uid), { membershipStatus: newStatus }, { merge: true });
+      setEditingStatus(false);
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not change membership status.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleRenew = async () => {
+    setBusy(true);
+    try {
+      const renewedTo = nextRenewalDate(renewalDate);
+      await setDoc(doc(db, "profiles", uid), { membershipStatus: "active", renewalDate: renewedTo }, { merge: true });
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not renew membership.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="mt-2">
+      <div className="flex flex-wrap items-center gap-4 text-sm">
+        {renewalDate && <span className="text-[#8b6a43]">Renews: {renewalDate}</span>}
+        <button onClick={() => setEditingStatus((v) => !v)} className="text-[#5b3419] font-semibold underline underline-offset-4">
+          {editingStatus ? "Cancel" : "Change Status →"}
+        </button>
+        <button onClick={handleRenew} disabled={busy} className="text-[#5b3419] font-semibold underline underline-offset-4 disabled:opacity-60">
+          {busy ? "Working..." : "Renew (+1 Year)"}
+        </button>
+      </div>
+      {editingStatus && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {MEMBERSHIP_STATUSES.map((s) => (
+            <button
+              key={s}
+              onClick={() => handleSetStatus(s)}
+              disabled={busy}
+              className={
+                s === status
+                  ? "px-4 py-2 rounded-full bg-[#5b3419] text-white text-sm disabled:opacity-60"
+                  : "px-4 py-2 rounded-full border border-[#5b3419] text-[#5b3419] text-sm disabled:opacity-60"
+              }
+            >
+              {MEMBERSHIP_STATUS_LABELS[s]}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -133,6 +229,8 @@ type MemberRow = {
   email: string;
   role: Role;
   memberId?: string;
+  membershipStatus?: MembershipStatus;
+  renewalDate?: string;
   totalAllotted: number;
   totalSpent: number;
   remainingBalance: number;
@@ -144,6 +242,11 @@ type MemberRow = {
   eduQualification?: string;
   gender?: Gender;
   detailsCompleted?: boolean;
+  profession?: string;
+  expertise?: string;
+  researchInterests?: string;
+  languages?: string;
+  bio?: string;
 };
 type MemberExpenseRow = { id: string; amount: number; description: string; spentAt: string; createdAt: Timestamp | null };
 type OrgTotals = { totalDonations: number; totalOrgExpenses: number; totalAllotted: number; balance: number };
@@ -476,6 +579,8 @@ function MembersSection() {
               email: data.email,
               role: data.role,
               memberId: data.memberId,
+              membershipStatus: data.membershipStatus,
+              renewalDate: data.renewalDate,
               gotr: data.gotr,
               age: data.age,
               village: data.village,
@@ -484,6 +589,11 @@ function MembersSection() {
               eduQualification: data.eduQualification,
               gender: data.gender,
               detailsCompleted: data.detailsCompleted,
+              profession: data.profession,
+              expertise: data.expertise,
+              researchInterests: data.researchInterests,
+              languages: data.languages,
+              bio: data.bio,
             };
           }
         });
@@ -699,6 +809,7 @@ function MembersSection() {
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-bold text-lg">{m.fullName}</span>
                 <MemberIdBadge memberId={m.memberId} />
+                <StatusBadge status={m.membershipStatus} />
               </div>
               <span className="text-xs uppercase tracking-wide text-[#8b6a43]">{roleLabel(m.role)}</span>
             </div>
@@ -706,6 +817,7 @@ function MembersSection() {
               {m.detailsCompleted ? `${m.gender === "male" ? "M" : "F"} • ${m.age} yrs` : "Profile details not submitted yet"}
             </p>
             {!m.memberId && <AssignMemberId uid={m.id} />}
+            <MembershipControls uid={m.id} status={m.membershipStatus} renewalDate={m.renewalDate} />
             <div className="flex justify-between py-1">
               <span>Allotted</span>
               <span>{money(m.totalAllotted)}</span>
@@ -786,6 +898,11 @@ function MembersSection() {
                     <div className="flex justify-between py-1"><span>District</span><span>{m.district}</span></div>
                     <div className="flex justify-between py-1"><span>State</span><span>{m.state}</span></div>
                     <div className="flex justify-between py-1"><span>Education</span><span>{m.eduQualification}</span></div>
+                    {m.profession && <div className="flex justify-between py-1"><span>Profession</span><span>{m.profession}</span></div>}
+                    {m.expertise && <div className="flex justify-between py-1"><span>Expertise</span><span>{m.expertise}</span></div>}
+                    {m.researchInterests && <div className="flex justify-between py-1"><span>Research Interests</span><span>{m.researchInterests}</span></div>}
+                    {m.languages && <div className="flex justify-between py-1"><span>Languages</span><span>{m.languages}</span></div>}
+                    {m.bio && <div className="py-1"><span className="block mb-1">Bio</span><span className="text-[#4a3728]">{m.bio}</span></div>}
                   </>
                 ) : (
                   <>
@@ -855,7 +972,14 @@ function MembersSection() {
   );
 }
 
-type AdminRow = { id: string; fullName: string; email: string; memberId?: string };
+type AdminRow = {
+  id: string;
+  fullName: string;
+  email: string;
+  memberId?: string;
+  membershipStatus?: MembershipStatus;
+  renewalDate?: string;
+};
 
 function AdminsSection() {
   const { user } = useAuth();
@@ -872,7 +996,15 @@ function AdminsSection() {
         const rows: AdminRow[] = [];
         snap.docs.forEach((d) => {
           const data = d.data();
-          if (data.role === "admin") rows.push({ id: d.id, fullName: data.fullName, email: data.email, memberId: data.memberId });
+          if (data.role === "admin")
+            rows.push({
+              id: d.id,
+              fullName: data.fullName,
+              email: data.email,
+              memberId: data.memberId,
+              membershipStatus: data.membershipStatus,
+              renewalDate: data.renewalDate,
+            });
         });
         setAdmins(rows);
         setLoading(false);
@@ -940,11 +1072,13 @@ function AdminsSection() {
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-bold text-lg">{a.fullName}{isSelf ? " (You)" : ""}</span>
                   <MemberIdBadge memberId={a.memberId} />
+                  <StatusBadge status={a.membershipStatus} />
                 </div>
                 <span className="text-xs uppercase tracking-wide text-[#8b6a43]">{roleLabel("admin")}</span>
               </div>
               <p className="text-[#4a3728] text-sm mb-2">{a.email}</p>
               {!a.memberId && <AssignMemberId uid={a.id} />}
+              <MembershipControls uid={a.id} status={a.membershipStatus} renewalDate={a.renewalDate} />
 
               {isSelf ? (
                 <p className="text-sm text-[#8b6a43]">You can't change or remove your own Pardhan access here.</p>
@@ -1017,6 +1151,8 @@ function ManualApproveSection() {
         role,
         memberId,
         joinedAt: serverTimestamp(),
+        membershipStatus: "active",
+        renewalDate: nextRenewalDate(undefined),
       });
       if (role !== "admin") {
         batch.set(doc(db, "memberSummaries", targetUid), {
@@ -1115,6 +1251,8 @@ function PendingRequestsSection() {
         role,
         memberId,
         joinedAt: serverTimestamp(),
+        membershipStatus: "active",
+        renewalDate: nextRenewalDate(undefined),
       });
       if (role !== "admin") {
         batch.set(doc(db, "memberSummaries", request.id), {
