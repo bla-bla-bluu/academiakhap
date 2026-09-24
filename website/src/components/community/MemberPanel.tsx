@@ -13,6 +13,7 @@ import {
 import { db } from "../../lib/firebase";
 import { useAuth, type Profile, type ProfileExtras } from "../../contexts/AuthContext";
 import { MEMBERSHIP_STATUS_LABELS } from "../../lib/membership";
+import EditableName from "./EditableName";
 
 const money = (n: number) => `₹${(n ?? 0).toLocaleString("en-IN")}`;
 const todayISO = () => new Date().toISOString().slice(0, 10);
@@ -118,7 +119,10 @@ export default function MemberPanel() {
     <div className="space-y-6">
       {profile?.memberId && (
         <div className={cardClass}>
-          <p className="text-sm text-[#8b6a43] uppercase tracking-wide mb-1">Your Member ID</p>
+          <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
+            <p className="text-sm text-[#8b6a43] uppercase tracking-wide">Your Member ID</p>
+            <EditableName currentName={profile.fullName} />
+          </div>
           <p className="text-2xl font-bold font-mono tracking-wide">{profile.memberId}</p>
           {profile.membershipStatus && (
             <div className="flex flex-wrap gap-x-6 gap-y-1 mt-3 pt-3 border-t border-[#b38b59]/20 text-sm">

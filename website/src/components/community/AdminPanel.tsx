@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { roleLabel, useAuth, type Gender, type Role } from "../../contexts/AuthContext";
+import EditableName from "./EditableName";
 import { claimNextMemberId, MEMBER_ID_PATTERN, parseMemberIdJoinDate } from "../../lib/memberId";
 import {
   MEMBERSHIP_STATUSES,
@@ -1084,7 +1085,10 @@ function AdminsSection() {
               <MembershipControls uid={a.id} status={a.membershipStatus} renewalDate={a.renewalDate} />
 
               {isSelf ? (
-                <p className="text-sm text-[#8b6a43]">You can't change or remove your own Pardhan access here.</p>
+                <>
+                  <p className="text-sm text-[#8b6a43]">You can't change or remove your own Pardhan access here.</p>
+                  <EditableName currentName={a.fullName} />
+                </>
               ) : (
                 <>
                   <div className="flex flex-wrap gap-4 mt-3">
