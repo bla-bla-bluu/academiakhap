@@ -6,6 +6,7 @@ import KhapPanchayat2026 from "../content/articles/KhapPanchayat2026";
 import KhapPanchayatSystem from "../content/articles/KhapPanchayatSystem";
 import MandkolaMahapanchayat2026 from "../content/articles/MandkolaMahapanchayat2026";
 import PhogatKhapPanchayat2026 from "../content/articles/PhogatKhapPanchayat2026";
+import AryanagarPanchayat2026 from "../content/articles/AryanagarPanchayat2026";
 
 export type ContentType = "article" | "discussion" | "podcast" | "video" | "book";
 
@@ -102,6 +103,16 @@ export const articles: Article[] = [
     author: "Mr. Deepak Dhillon",
     body: PhogatKhapPanchayat2026.body,
     sources: PhogatKhapPanchayat2026.sources,
+  },
+  {
+    id: 9,
+    title: "Aryanagar's Panchayat Resolution: Same-Village Marriage, Not All Love Marriage",
+    category: "Society & Institutions",
+    slug: "/research/aryanagar-panchayat-2026",
+    type: "article",
+    author: "Mr. Deepak Dhillon",
+    body: AryanagarPanchayat2026.body,
+    sources: AryanagarPanchayat2026.sources,
   },
 ];
 
