@@ -37,7 +37,12 @@ export default function Navbar() {
         </div>
 
         <div className="-mx-4 sm:mx-0 overflow-x-auto pb-1 sm:pb-0">
-          <div className="flex w-max sm:w-auto flex-nowrap gap-2 sm:gap-3 px-4 sm:px-0 sm:justify-end">
+          {/* No justify-end here: when this row is wider than the space next to the logo (it
+              now regularly is, with 7 links plus the language pills), flexbox end-aligning an
+              overflowing row pushes its start -- Home -- off to the left of the scrollable area,
+              unreachable by scrolling back. Left-aligned overflow always keeps Home visible
+              first, pushing any overflow off the right instead, which scrolling can reach. */}
+          <div className="flex w-max sm:w-auto flex-nowrap gap-2 sm:gap-3 px-4 sm:px-0">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.to}
