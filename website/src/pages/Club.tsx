@@ -1,4 +1,5 @@
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const BENEFITS = [
   "Verified member profile",
@@ -22,14 +23,7 @@ const cardClass = "border border-[#b38b59]/25 rounded-[2rem] p-6 bg-[#faf6ef]";
 export default function ClubPage() {
   return (
     <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
-      <Navbar
-        links={[
-          { to: "/", label: "Home" },
-          { to: "/heritage-network", label: "Heritage Network" },
-          { to: "/club", label: "Club", active: true },
-          { to: "/community", label: "Chaupal" },
-        ]}
-      />
+      <Navbar />
 
       <section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 pt-12 sm:pt-20 pb-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
@@ -77,6 +71,7 @@ export default function ClubPage() {
           </a>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

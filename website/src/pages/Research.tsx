@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import ArticleCard from "../components/ArticleCard";
 import KhapHierarchyDiagram from "../components/KhapHierarchyDiagram";
 import ArticleImage from "../components/ArticleImage";
@@ -12,6 +13,7 @@ const TYPE_LABELS: Record<string, string> = {
   discussion: "Discussion",
   podcast: "Podcast",
   video: "Video",
+  book: "Book",
 };
 
 // Body paragraphs are plain strings, so inline cross-references are written as
@@ -121,14 +123,7 @@ export default function ResearchPage() {
 
   return (
     <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
-      <Navbar
-        links={[
-          { to: "/", label: "Home" },
-          { to: "/heritage-network", label: "Heritage Network" },
-          { to: "/community", label: "Chaupal" },
-          { to: "/club", label: "Club" },
-        ]}
-      />
+      <Navbar />
 
       <div className="grid lg:grid-cols-[320px_1fr] xl:grid-cols-[350px_1fr] min-h-screen">
         <div className="border-r border-[#b38b59]/20 bg-[#efe4cf] p-6">
@@ -146,7 +141,7 @@ export default function ResearchPage() {
           </div>
 
           <div className="flex flex-wrap gap-2 mb-6">
-            {[null, "article", "podcast", "video"].map((t) => (
+            {[null, "article", "book", "podcast", "video"].map((t) => (
               <button
                 key={t ?? "all"}
                 onClick={() => setSearchParams(t ? { type: t } : {})}
@@ -233,6 +228,17 @@ export default function ResearchPage() {
                   </div>
                 )}
 
+              {selectedArticle.type === "book" && selectedArticle.mediaUrl && (
+                <a
+                  href={selectedArticle.mediaUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mb-10 inline-block px-8 py-4 rounded-full bg-[#5b3419] text-white font-semibold hover:bg-[#3b2415] transition"
+                >
+                  Read / Download the Book →
+                </a>
+              )}
+
               <div className="space-y-6 text-base sm:text-lg leading-8 sm:leading-9 text-[#4a3728]">
                 {selectedArticle.body.map((paragraph, i) => {
                   // "::figure:<id>" renders a diagram component instead of prose. Kept as a
@@ -287,6 +293,7 @@ export default function ResearchPage() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

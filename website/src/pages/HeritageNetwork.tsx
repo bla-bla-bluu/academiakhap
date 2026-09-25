@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { RESEARCH_LEVEL_LABELS, VERIFICATION_STATUS_LABELS, type HeritageSubmission } from "../lib/heritage";
 
 const cardClass = "border border-[#b38b59]/25 rounded-[2rem] p-6 bg-[#faf6ef]";
@@ -56,15 +57,7 @@ export default function HeritageNetworkPage() {
 
   return (
     <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
-      <Navbar
-        links={[
-          { to: "/", label: "Home" },
-          { to: "/research", label: "Archive" },
-          { to: "/heritage-network", label: "Heritage Network", active: true },
-          { to: "/community", label: "Chaupal" },
-          { to: "/club", label: "Club" },
-        ]}
-      />
+      <Navbar />
 
       <section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 pt-12 sm:pt-20 pb-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
@@ -194,6 +187,7 @@ export default function HeritageNetworkPage() {
           </>
         )}
       </section>
+      <Footer />
     </div>
   );
 }

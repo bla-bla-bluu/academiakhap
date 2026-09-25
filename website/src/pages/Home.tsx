@@ -1,6 +1,7 @@
 import { useState, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import ArticleSlideshow from "../components/ArticleSlideshow";
 import ArticleMarquee from "../components/ArticleMarquee";
 function HomePage() {
@@ -22,17 +23,7 @@ function HomePage() {
   return (
    <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
 
-      <Navbar
-        links={[
-          { to: "/", label: "Home", active: true },
-          { to: "/about", label: "About Us" },
-          { to: "/work", label: "Work With Us" },
-          { to: "/research", label: "Archive" },
-          { to: "/heritage-network", label: "Heritage Network" },
-          { to: "/community", label: "Chaupal" },
-          { to: "/club", label: "Club" },
-        ]}
-      />
+      <Navbar />
 
       {/* Hero Section */}
       <section className="border-b border-[#8b6a43]/20 pt-0">
@@ -365,27 +356,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-[#8b6a43]/20 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center text-sm text-[#6b5746] leading-7">
-          <p>&copy; {new Date().getFullYear()} Academia Khap. All Rights Reserved.</p>
-          <p className="mt-2 max-w-3xl mx-auto">
-            The Academia Khap name, logo, and ideology, together with all associated
-            intellectual property, are the property of Academia Khap. The founding members of
-            Academia Khap hold all rights to claim copyright on behalf of Academia Khap. No part
-            of this website's content, branding, or materials may be reproduced, copied,
-            distributed, or used in any form without prior written permission.
-          </p>
-          <div className="mt-4 flex justify-center gap-6">
-            <Link to="/privacy-policy" className="underline underline-offset-4 hover:text-[#5b3419]">
-              Read Privacy Policy
-            </Link>
-            <Link to="/terms-of-service" className="underline underline-offset-4 hover:text-[#5b3419]">
-              Read Terms of Service
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

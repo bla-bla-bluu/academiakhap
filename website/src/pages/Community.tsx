@@ -15,6 +15,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { AuthProvider, roleLabel, useAuth, type Role } from "../contexts/AuthContext";
 import { db } from "../lib/firebase";
 import AdminPanel from "../components/community/AdminPanel";
@@ -173,14 +174,7 @@ function CommunityPageContent() {
 
   return (
     <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
-      <Navbar
-        links={[
-          { to: "/", label: "Home" },
-          { to: "/heritage-network", label: "Heritage Network" },
-          { to: "/community", label: "Chaupal", active: true },
-          { to: "/club", label: "Club" },
-        ]}
-      />
+      <Navbar />
 
       <section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 pt-12 sm:pt-20 pb-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
@@ -209,6 +203,7 @@ function CommunityPageContent() {
           </>
         )}
       </section>
+      <Footer />
     </div>
   );
 }

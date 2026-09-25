@@ -7,7 +7,7 @@ import KhapPanchayatSystem from "../content/articles/KhapPanchayatSystem";
 import MandkolaMahapanchayat2026 from "../content/articles/MandkolaMahapanchayat2026";
 import PhogatKhapPanchayat2026 from "../content/articles/PhogatKhapPanchayat2026";
 
-export type ContentType = "article" | "discussion" | "podcast" | "video";
+export type ContentType = "article" | "discussion" | "podcast" | "video" | "book";
 
 export type Article = {
   id: number;
@@ -17,6 +17,7 @@ export type Article = {
   type: ContentType;
   /** Named byline. Omit for pieces authored by the Archive itself. */
   author?: string;
+  /** Podcast/video: embed URL rendered in an iframe. Book: a link to read/download it -- rendered as a plain button, not embedded. */
   mediaUrl?: string;
   body: string[];
   sources: string[];
