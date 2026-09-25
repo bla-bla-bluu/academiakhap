@@ -1,7 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { collection, doc, deleteDoc, onSnapshot, query, serverTimestamp, setDoc, where } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../../lib/firebase";
+import { db } from "../../lib/firebase";
 import { useAuth } from "../../contexts/AuthContext";
 import {
   RESEARCH_LEVELS,
@@ -22,9 +21,6 @@ const STATUS_COLORS: Record<string, string> = {
   published: "bg-[#e5efe0] text-[#2f6b3a] border-[#2f6b3a]/30",
   rejected: "bg-[#f3e2dc] text-[#8c2f23] border-[#8c2f23]/30",
 };
-
-const MAX_PHOTOS = 5;
-const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 
 const emptyForm = {
   state: "",
@@ -53,8 +49,6 @@ export default function HeritageResearch() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [mine, setMine] = useState<HeritageSubmission[]>([]);
-  const [photos, setPhotos] = useState<File[]>([]);
-  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -67,29 +61,6 @@ export default function HeritageResearch() {
   const setField = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [key]: e.target.value }));
 
-  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? []);
-    setError(null);
-    if (photos.length + files.length > MAX_PHOTOS) {
-      setError(`Up to ${MAX_PHOTOS} photos per submission.`);
-      return;
-    }
-    const oversized = files.find((f) => f.size > MAX_PHOTO_BYTES);
-    if (oversized) {
-      setError(`"${oversized.name}" is over 5MB.`);
-      return;
-    }
-    const notImage = files.find((f) => !f.type.startsWith("image/"));
-    if (notImage) {
-      setError(`"${notImage.name}" isn't an image.`);
-      return;
-    }
-    setPhotos((p) => [...p, ...files]);
-    e.target.value = "";
-  };
-
-  const removePhoto = (index: number) => setPhotos((p) => p.filter((_, i) => i !== index));
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -100,20 +71,7 @@ export default function HeritageResearch() {
     }
     setSubmitting(true);
     try {
-      // Generated up front so photos can be uploaded to a path scoped to this exact
-      // submission before the Firestore document itself exists.
-      const submissionRef = doc(collection(db, "heritageSubmissions"));
-      const photoUrls: string[] = [];
-      for (let i = 0; i < photos.length; i++) {
-        setUploadProgress(`Uploading photo ${i + 1} of ${photos.length}...`);
-        const photo = photos[i];
-        const photoRef = ref(storage, `heritage-photos/${user.uid}/${submissionRef.id}/${i}-${photo.name}`);
-        await uploadBytes(photoRef, photo);
-        photoUrls.push(await getDownloadURL(photoRef));
-      }
-      setUploadProgress(null);
-
-      await setDoc(submissionRef, {
+      await setDoc(doc(collection(db, "heritageSubmissions")), {
         researcherUid: user.uid,
         researcherName: profile.fullName,
         researcherMemberId: profile.memberId ?? null,
@@ -131,7 +89,6 @@ export default function HeritageResearch() {
         interviewee: form.interviewee.trim() || null,
         intervieweeAge: form.intervieweeAge ? parseInt(form.intervieweeAge, 10) : null,
         photoNotes: form.photoNotes.trim() || null,
-        photoUrls,
         researcherObservations: form.researcherObservations.trim() || null,
         independentVerification: form.independentVerification.trim() || null,
         currentCondition: form.currentCondition.trim() || null,
@@ -142,13 +99,11 @@ export default function HeritageResearch() {
         createdAt: serverTimestamp(),
       });
       setForm(emptyForm);
-      setPhotos([]);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {
       setError(err.message ?? "Could not submit your research.");
     } finally {
-      setUploadProgress(null);
       setSubmitting(false);
     }
   };
@@ -193,28 +148,6 @@ export default function HeritageResearch() {
             <input className={inputClass} placeholder="Interviewee Age" type="number" value={form.intervieweeAge} onChange={setField("intervieweeAge")} />
           </div>
           <input className={inputClass} placeholder="Photo/document notes (e.g. where originals are kept)" value={form.photoNotes} onChange={setField("photoNotes")} />
-          <div>
-            <p className="text-sm text-[#8b6a43] mb-2">Photos (up to {MAX_PHOTOS}, 5MB each)</p>
-            {photos.length > 0 && (
-              <div className="flex flex-wrap gap-3 mb-3">
-                {photos.map((p, i) => (
-                  <div key={i} className="relative">
-                    <img src={URL.createObjectURL(p)} alt={p.name} className="w-20 h-20 object-cover rounded-xl border border-[#b38b59]/30" />
-                    <button
-                      type="button"
-                      onClick={() => removePhoto(i)}
-                      className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-[#8c2f23] text-white text-xs font-bold"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-            {photos.length < MAX_PHOTOS && (
-              <input type="file" accept="image/*" multiple onChange={handlePhotoSelect} className="text-sm" />
-            )}
-          </div>
           <textarea className={inputClass} placeholder="Researcher's Observations" value={form.researcherObservations} onChange={setField("researcherObservations")} rows={2} />
           <textarea
             className={inputClass}
@@ -249,7 +182,7 @@ export default function HeritageResearch() {
           {error && <p className="text-[#8c2f23] text-sm">{error}</p>}
           {success && <p className="text-[#2f6b3a] text-sm">Submitted for review.</p>}
           <button type="submit" disabled={submitting} className={buttonClass}>
-            {uploadProgress ?? (submitting ? "Submitting..." : "Submit for Review")}
+            {submitting ? "Submitting..." : "Submit for Review"}
           </button>
         </form>
       </div>
@@ -277,13 +210,6 @@ export default function HeritageResearch() {
                   <p className="text-sm text-[#8b6a43] mt-2">Classified as: {VERIFICATION_STATUS_LABELS[m.verificationStatus]}</p>
                 )}
                 {m.editorialNote && <p className="text-[#4a3728] mt-2 text-sm">Editor's note: {m.editorialNote}</p>}
-                {m.photoUrls && m.photoUrls.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {m.photoUrls.map((url) => (
-                      <img key={url} src={url} alt="" className="w-16 h-16 object-cover rounded-lg border border-[#b38b59]/30" />
-                    ))}
-                  </div>
-                )}
                 {m.publicationStatus !== "published" && (
                   <button onClick={() => handleWithdraw(m.id)} className="mt-3 text-[#8c2f23] text-sm underline underline-offset-4">
                     Withdraw
