@@ -15,9 +15,9 @@ export const staticPages: Record<string, { title: string; description: string }>
       "Meet the Academia Khap team working on research publications, historical documentation, policy discussion, cultural preservation, and community knowledge.",
   },
   "/work": {
-    title: "Work With Academia Khap | Research & Heritage Collaboration",
+    title: "Work With Academia Khap | Research, Heritage & Contact",
     description:
-      "Collaborate with Academia Khap on historical research, rural heritage documentation, social analysis, media work, legal studies, and community initiatives.",
+      "Collaborate with Academia Khap on historical research, rural heritage documentation, social analysis, and media work, or get in touch directly by email or social media.",
   },
   "/research": {
     title: "Knowledge Archive | Academia Khap",
@@ -33,11 +33,6 @@ export const staticPages: Record<string, { title: string; description: string }>
     title: "Academia Khap Club | Member Benefits",
     description:
       "Additional benefits for active annual Academia Khap members -- networking, research participation, heritage projects, podcasts, events, and recognition.",
-  },
-  "/contact": {
-    title: "Contact Academia Khap | Research & Collaboration",
-    description:
-      "Contact Academia Khap for research collaborations, publications, institutional partnerships, historical documentation, media engagement, and community initiatives.",
   },
   "/privacy-policy": {
     title: "Privacy Policy | Academia Khap",
