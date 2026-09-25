@@ -1,20 +1,11 @@
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
 
-      <Navbar
-        links={[
-          { to: "/", label: "Home" },
-          { to: "/about", label: "About Us", active: true },
-          { to: "/work", label: "Work With Us" },
-          { to: "/research", label: "Archive" },
-          { to: "/heritage-network", label: "Heritage Network" },
-          { to: "/community", label: "Chaupal" },
-          { to: "/club", label: "Club" },
-        ]}
-      />
+      <Navbar />
 
       {/* Hero */}
       <section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 pt-12 sm:pt-20 pb-8">
@@ -469,6 +460,7 @@ export default function AboutPage() {
 
 </section>
 
+      <Footer />
     </div>
   );
 }

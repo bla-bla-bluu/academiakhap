@@ -51,6 +51,7 @@ export const SCHEMA_TYPES: Record<string, string> = {
   discussion: "Article",
   podcast: "PodcastEpisode",
   video: "VideoObject",
+  book: "Book",
 };
 
 export function getArticleKey(slug: string) {

@@ -13,6 +13,7 @@ const TYPE_LABELS: Record<ContentType, string> = {
   discussion: "Discussion",
   podcast: "Podcast",
   video: "Video",
+  book: "Book",
 };
 
 export default function ArticleCard({ title, category, type, onClick, active = false }: ArticleCardProps) {

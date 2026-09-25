@@ -1,5 +1,6 @@
 import { useState, FormEvent } from "react";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 export default function WorkWithUsPage() {
   const [name, setName] = useState("");
@@ -19,17 +20,7 @@ export default function WorkWithUsPage() {
 
   return (
     <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
-      <Navbar
-        links={[
-          { to: "/", label: "Home" },
-          { to: "/about", label: "About Us" },
-          { to: "/work", label: "Work With Us", active: true },
-          { to: "/research", label: "Archive" },
-          { to: "/heritage-network", label: "Heritage Network" },
-          { to: "/community", label: "Chaupal" },
-          { to: "/club", label: "Club" },
-        ]}
-      />
+      <Navbar />
 
       {/* Hero */}
       <section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 py-12 sm:py-24">
@@ -261,6 +252,7 @@ export default function WorkWithUsPage() {
           </form>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }
