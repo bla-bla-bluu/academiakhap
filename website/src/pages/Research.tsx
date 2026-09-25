@@ -141,7 +141,7 @@ export default function ResearchPage() {
           </div>
 
           <div className="flex flex-wrap gap-2 mb-6">
-            {[null, "article", "book", "podcast", "video"].map((t) => (
+            {[null, "article", "book", "podcast"].map((t) => (
               <button
                 key={t ?? "all"}
                 onClick={() => setSearchParams(t ? { type: t } : {})}
