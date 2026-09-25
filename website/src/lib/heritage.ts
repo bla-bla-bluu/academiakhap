@@ -46,6 +46,8 @@ export type HeritageSubmission = {
   researcherUid: string;
   researcherName: string;
   researcherMemberId?: string;
+  researcherDesignation?: string;
+  researcherArea?: string;
   state: string;
   district: string;
   tehsil?: string;
@@ -58,6 +60,7 @@ export type HeritageSubmission = {
   interviewee?: string;
   intervieweeAge?: number;
   photoNotes?: string;
+  photoUrls?: string[];
   researcherObservations?: string;
   independentVerification?: string;
   currentCondition?: string;

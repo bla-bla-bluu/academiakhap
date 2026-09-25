@@ -7,6 +7,7 @@ import ResearchPage from "./pages/Research";
 import ContactPage from "./pages/Contact";
 import PrivacyPolicyPage from "./pages/PrivacyPolicy";
 import TermsOfServicePage from "./pages/TermsOfService";
+import ClubPage from "./pages/Club";
 import SEO from "./components/SEO";
 import ScrollToTop from "./components/ScrollToTop";
 import LanguageSwitcher from "./components/LanguageSwitcher";
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+        <Route path="/club" element={<ClubPage />} />
         <Route
           path="/community"
           element={

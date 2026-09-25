@@ -10,6 +10,14 @@ import {
   type ConnectionRequest,
   type NetworkStatus,
 } from "../../lib/network";
+import { HERITAGE_DESIGNATION_LABELS, type HeritageDesignation } from "../../lib/researcher";
+import {
+  DEFAULT_MARRIAGE_STATUS,
+  MARRIAGE_STATUSES,
+  MARRIAGE_STATUS_LABELS,
+  type MarriageProfile,
+  type MarriageStatus,
+} from "../../lib/marriage";
 
 const cardClass = "border border-[#b38b59]/25 rounded-[2rem] p-6 bg-[#faf6ef]";
 const inputClass = "w-full rounded-2xl border border-[#c8a97d] bg-white px-4 py-3 outline-none";
@@ -28,17 +36,23 @@ type DirectoryRow = {
   languages?: string;
   bio?: string;
   networkStatus?: NetworkStatus;
+  heritageDesignation?: HeritageDesignation | null;
+  heritageArea?: string;
+  recognitionNote?: string;
 };
 
 type BlockRow = { id: string; blockedUid: string };
 
 export default function MemberNetwork() {
-  const { user, profile, updateNetworkStatus, syncPublicProfile } = useAuth();
+  const { user, profile, updateNetworkStatus, updateMarriageStatus, syncPublicProfile } = useAuth();
   const [directory, setDirectory] = useState<DirectoryRow[]>([]);
   const [outgoing, setOutgoing] = useState<ConnectionRequest[]>([]);
   const [incoming, setIncoming] = useState<ConnectionRequest[]>([]);
   const [blocks, setBlocks] = useState<BlockRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [marriageOthers, setMarriageOthers] = useState<MarriageProfile[]>([]);
+  const marriageStatus = profile?.marriageStatus ?? DEFAULT_MARRIAGE_STATUS;
+  const marriageOptedIn = marriageStatus !== "not_listed";
 
   // Self-heal: make sure this member's own public mirror exists/is current the moment they
   // open this tab, so profiles created or last edited before this feature shipped still show
@@ -73,6 +87,21 @@ export default function MemberNetwork() {
       unsubBlocks();
     };
   }, [user]);
+
+  // Only fetched once this member has opted in themselves -- the security rule enforces that a
+  // read only succeeds when both sides have a status other than "not_listed", so this query
+  // would come back empty (or error) for anyone who hasn't opted in, by design.
+  useEffect(() => {
+    if (!marriageOptedIn) {
+      setMarriageOthers([]);
+      return;
+    }
+    const q = query(collection(db, "marriageProfiles"), where("status", "!=", "not_listed"));
+    const unsub = onSnapshot(q, (snap) => {
+      setMarriageOthers(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<MarriageProfile, "id">) })));
+    }, () => setMarriageOthers([]));
+    return unsub;
+  }, [marriageOptedIn]);
 
   const handleRespond = async (request: ConnectionRequest, accept: boolean) => {
     const payload: Record<string, unknown> = { status: accept ? "accepted" : "declined", respondedAt: serverTimestamp() };
@@ -139,6 +168,14 @@ export default function MemberNetwork() {
         </div>
         <p className="text-sm text-[#8b6a43] mt-3">{NETWORK_STATUS_DESCRIPTIONS[profile.networkStatus ?? DEFAULT_NETWORK_STATUS]}</p>
       </div>
+
+      <MarriageNetworkCard
+        status={marriageStatus}
+        note={profile.marriageNote}
+        others={marriageOthers.filter((m) => m.id !== user.uid)}
+        directory={directory}
+        onUpdate={updateMarriageStatus}
+      />
 
       {pendingIncoming.length > 0 && (
         <div className={cardClass}>
@@ -324,11 +361,18 @@ function DirectoryCard({
             <span className="text-[10px] uppercase tracking-wide font-bold px-2 py-0.5 rounded-full bg-[#efe4cf] text-[#8b6a43] border border-[#b38b59]/40">
               {roleLabel(member.role)}
             </span>
+            {member.heritageDesignation && (
+              <span className="text-[10px] uppercase tracking-wide font-bold px-2 py-0.5 rounded-full bg-[#e5efe0] text-[#2f6b3a] border border-[#2f6b3a]/30">
+                {HERITAGE_DESIGNATION_LABELS[member.heritageDesignation]}
+                {member.heritageArea ? ` -- ${member.heritageArea}` : ""}
+              </span>
+            )}
           </div>
           {location && <p className="text-sm text-[#8b6a43]">{location}</p>}
         </div>
       </div>
 
+      {member.recognitionNote && <p className="text-sm text-[#8b6a43] mt-2 italic">{member.recognitionNote}</p>}
       {details.length > 0 && <p className="text-[#4a3728] mt-2 text-sm">{details.join(" • ")}</p>}
       {member.bio && <p className="text-[#4a3728] mt-2">{member.bio}</p>}
 
@@ -425,6 +469,103 @@ function DirectoryCard({
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+// Deliberately separate from the main directory: visibility here is mutual opt-in only (a
+// member sees others only once they've set their own status to something other than "Not
+// Listed"), so this can't just be another column on the regular directory card.
+function MarriageNetworkCard({
+  status,
+  note,
+  others,
+  directory,
+  onUpdate,
+}: {
+  status: MarriageStatus;
+  note?: string;
+  others: MarriageProfile[];
+  directory: DirectoryRow[];
+  onUpdate: (status: MarriageStatus, note?: string) => Promise<{ error: string | null }>;
+}) {
+  const [noteDraft, setNoteDraft] = useState(note ?? "");
+  const [busy, setBusy] = useState(false);
+  const optedIn = status !== "not_listed";
+
+  const handleSetStatus = async (newStatus: MarriageStatus) => {
+    setBusy(true);
+    await onUpdate(newStatus, noteDraft);
+    setBusy(false);
+  };
+
+  const handleSaveNote = async () => {
+    setBusy(true);
+    await onUpdate(status, noteDraft);
+    setBusy(false);
+  };
+
+  return (
+    <div className={cardClass}>
+      <h3 className="text-xl font-bold mb-2">Marriage Networking</h3>
+      <p className="text-sm text-[#8b6a43] mb-4">
+        Voluntary and adult-only. Visibility is mutual: another member only appears here for you,
+        and you only appear for them, once you've both set your status to something other than
+        "Not Listed". Nobody's status is shown anywhere else on the site.
+      </p>
+      <div className="flex flex-wrap gap-2 mb-3">
+        {MARRIAGE_STATUSES.map((s) => (
+          <button
+            key={s}
+            onClick={() => handleSetStatus(s)}
+            disabled={busy}
+            className={
+              status === s
+                ? "px-4 py-2 rounded-full bg-[#5b3419] text-white text-sm disabled:opacity-60"
+                : "px-4 py-2 rounded-full border border-[#5b3419] text-[#5b3419] text-sm disabled:opacity-60"
+            }
+          >
+            {MARRIAGE_STATUS_LABELS[s]}
+          </button>
+        ))}
+      </div>
+
+      {optedIn && (
+        <div className="mb-4 space-y-2">
+          <textarea
+            className={inputClass}
+            placeholder="Optional note visible only to others who are also listed"
+            value={noteDraft}
+            onChange={(e) => setNoteDraft(e.target.value)}
+            rows={2}
+          />
+          <button onClick={handleSaveNote} disabled={busy} className="text-[#5b3419] font-semibold text-sm underline underline-offset-4 disabled:opacity-60">
+            Save Note
+          </button>
+        </div>
+      )}
+
+      {optedIn && (
+        <div className="border-t border-[#b38b59]/20 pt-4">
+          <p className="text-sm text-[#8b6a43] mb-3">Other members also listed:</p>
+          {others.length === 0 ? (
+            <p className="text-[#4a3728] text-sm">No one else is listed yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {others.map((m) => {
+                const person = directory.find((d) => d.id === m.id);
+                return (
+                  <div key={m.id} className="border border-[#b38b59]/20 rounded-2xl p-4 bg-white/60">
+                    <p className="font-bold">{person?.fullName ?? "Member"}</p>
+                    <p className="text-sm text-[#8b6a43]">{MARRIAGE_STATUS_LABELS[m.status]}</p>
+                    {m.note && <p className="text-[#4a3728] mt-1">{m.note}</p>}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

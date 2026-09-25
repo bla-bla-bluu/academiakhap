@@ -30,6 +30,7 @@ function HomePage() {
           { to: "/research", label: "Archive" },
           { to: "/heritage-network", label: "Heritage Network" },
           { to: "/community", label: "Chaupal" },
+          { to: "/club", label: "Club" },
           { to: "/contact", label: "Contact" },
         ]}
       />

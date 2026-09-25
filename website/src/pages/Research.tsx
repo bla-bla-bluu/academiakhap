@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ArticleCard from "../components/ArticleCard";
 import KhapHierarchyDiagram from "../components/KhapHierarchyDiagram";
@@ -89,9 +89,12 @@ export default function ResearchPage() {
   const navigate = useNavigate();
   const articleRef = useRef<HTMLDivElement | null>(null);
   const [search, setSearch] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const typeFilter = searchParams.get("type");
 
-  const filteredArticles = articlesNewestFirst.filter((article) =>
-    article.title.toLowerCase().includes(search.toLowerCase())
+  const filteredArticles = articlesNewestFirst.filter(
+    (article) =>
+      article.title.toLowerCase().includes(search.toLowerCase()) && (!typeFilter || article.type === typeFilter)
   );
   const selectedArticle = slug
     ? articles.find((article) => article.slug.endsWith(`/${slug}`)) ?? null
@@ -123,6 +126,7 @@ export default function ResearchPage() {
           { to: "/", label: "Home" },
           { to: "/heritage-network", label: "Heritage Network" },
           { to: "/community", label: "Chaupal" },
+          { to: "/club", label: "Club" },
         ]}
       />
 
@@ -139,6 +143,22 @@ export default function ResearchPage() {
               onChange={(e) => setSearch(e.target.value)}
               className="w-full rounded-2xl border border-[#b38b59]/30 bg-white py-4 pl-14 pr-4 outline-none"
             />
+          </div>
+
+          <div className="flex flex-wrap gap-2 mb-6">
+            {[null, "article", "podcast", "video"].map((t) => (
+              <button
+                key={t ?? "all"}
+                onClick={() => setSearchParams(t ? { type: t } : {})}
+                className={
+                  typeFilter === t
+                    ? "px-3 py-1.5 rounded-full bg-[#5b3419] text-white text-xs"
+                    : "px-3 py-1.5 rounded-full border border-[#5b3419] text-[#5b3419] text-xs"
+                }
+              >
+                {t ? `${TYPE_LABELS[t]}s` : "All"}
+              </button>
+            ))}
           </div>
 
           <div className="space-y-4">
