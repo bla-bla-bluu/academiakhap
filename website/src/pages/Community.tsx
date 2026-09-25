@@ -178,6 +178,7 @@ function CommunityPageContent() {
           { to: "/", label: "Home" },
           { to: "/heritage-network", label: "Heritage Network" },
           { to: "/community", label: "Chaupal", active: true },
+          { to: "/club", label: "Club" },
         ]}
       />
 

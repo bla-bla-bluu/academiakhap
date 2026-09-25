@@ -29,6 +29,11 @@ export const staticPages: Record<string, { title: string; description: string }>
     description:
       "Village origin, gotra and marriage traditions, old buildings, folk memory, and genealogical records, documented village by village by Academia Khap's researcher network.",
   },
+  "/club": {
+    title: "Academia Khap Club | Member Benefits",
+    description:
+      "Additional benefits for active annual Academia Khap members -- networking, research participation, heritage projects, podcasts, events, and recognition.",
+  },
   "/contact": {
     title: "Contact Academia Khap | Research & Collaboration",
     description:

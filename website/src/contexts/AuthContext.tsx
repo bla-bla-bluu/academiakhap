@@ -13,6 +13,8 @@ import { doc, getDoc, onSnapshot, serverTimestamp, setDoc, type Timestamp } from
 import { auth, db } from "../lib/firebase";
 import type { MembershipStatus } from "../lib/membership";
 import { DEFAULT_NETWORK_STATUS, type NetworkStatus } from "../lib/network";
+import type { HeritageDesignation } from "../lib/researcher";
+import type { MarriageStatus } from "../lib/marriage";
 
 export type Role = "admin" | "trustee" | "member" | "scholar";
 export type Gender = "male" | "female";
@@ -51,6 +53,11 @@ export type Profile = {
   languages?: string;
   bio?: string;
   networkStatus?: NetworkStatus;
+  heritageDesignation?: HeritageDesignation | null;
+  heritageArea?: string;
+  recognitionNote?: string;
+  marriageStatus?: MarriageStatus;
+  marriageNote?: string;
 };
 
 export type ProfileExtras = {
@@ -90,6 +97,7 @@ type AuthState = {
   updateFullName: (fullName: string) => Promise<{ error: string | null }>;
   updateProfileExtras: (extras: Partial<ProfileExtras>) => Promise<{ error: string | null }>;
   updateNetworkStatus: (status: NetworkStatus) => Promise<{ error: string | null }>;
+  updateMarriageStatus: (status: MarriageStatus, note?: string) => Promise<{ error: string | null }>;
   syncPublicProfile: () => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -135,9 +143,18 @@ async function syncPublicProfileDoc(uid: string, current: Profile | null, overri
       languages: merged.languages ?? null,
       bio: merged.bio ?? null,
       networkStatus: merged.networkStatus ?? DEFAULT_NETWORK_STATUS,
+      heritageDesignation: merged.heritageDesignation ?? null,
+      heritageArea: merged.heritageArea ?? null,
+      recognitionNote: merged.recognitionNote ?? null,
     },
     { merge: true }
   );
+}
+
+// Mirrors just the marriage-networking status (never anything else about the member) into
+// marriageProfiles/{uid} -- the collection whose read rule enforces mutual opt-in visibility.
+async function syncMarriageProfileDoc(uid: string, status: MarriageStatus, note?: string) {
+  await setDoc(doc(db, "marriageProfiles", uid), { status, note: note ?? null }, { merge: true });
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -199,6 +216,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             languages: data.languages,
             bio: data.bio,
             networkStatus: data.networkStatus,
+            heritageDesignation: data.heritageDesignation ?? null,
+            heritageArea: data.heritageArea,
+            recognitionNote: data.recognitionNote,
+            marriageStatus: data.marriageStatus,
+            marriageNote: data.marriageNote,
           });
           setRegistrationStatus(null);
           setProfileLoading(false);
@@ -322,6 +344,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateMarriageStatus = async (status: MarriageStatus, note?: string) => {
+    if (!user) return { error: "Not signed in." };
+    try {
+      await setDoc(doc(db, "profiles", user.uid), { marriageStatus: status, marriageNote: note?.trim() || null }, { merge: true });
+      await syncMarriageProfileDoc(user.uid, status, note);
+      return { error: null };
+    } catch (err: any) {
+      return { error: err.message ?? "Could not update your marriage networking preference." };
+    }
+  };
+
   // Self-heal, mirroring ensureRegistrationRequest above: lets a profile created before the
   // Member Network existed appear in the directory the first time its owner opens that tab,
   // without needing an admin backfill pass.
@@ -348,6 +381,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         updateFullName,
         updateProfileExtras,
         updateNetworkStatus,
+        updateMarriageStatus,
         syncPublicProfile,
         signOut,
       }}

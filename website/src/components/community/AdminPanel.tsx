@@ -30,6 +30,7 @@ import {
   type HeritageSubmission,
   type VerificationStatus,
 } from "../../lib/heritage";
+import { HERITAGE_DESIGNATIONS, HERITAGE_DESIGNATION_LABELS, type HeritageDesignation } from "../../lib/researcher";
 
 const ASSIGNABLE_ROLES: Role[] = ["admin", "trustee", "member", "scholar"];
 const money = (n: number) => `₹${(n ?? 0).toLocaleString("en-IN")}`;
@@ -148,6 +149,116 @@ function MembershipControls({
   );
 }
 
+// Admin-only institutional designation (spec section 4's "additional project roles") plus a
+// free-text recognition note (spec section 18) -- both shown on the member's public profile
+// card in the Member Network and denormalized onto their heritage submissions as byline credit.
+function HeritageDesignationControl({
+  uid,
+  designation,
+  area,
+  recognitionNote,
+}: {
+  uid: string;
+  designation?: HeritageDesignation | null;
+  area?: string;
+  recognitionNote?: string;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [pendingDesignation, setPendingDesignation] = useState<HeritageDesignation | "none">(designation ?? "none");
+  const [areaInput, setAreaInput] = useState(area ?? "");
+  const [noteInput, setNoteInput] = useState(recognitionNote ?? "");
+  const [busy, setBusy] = useState(false);
+
+  const handleSave = async () => {
+    setBusy(true);
+    try {
+      await setDoc(
+        doc(db, "profiles", uid),
+        {
+          heritageDesignation: pendingDesignation === "none" ? null : pendingDesignation,
+          heritageArea: areaInput.trim() || null,
+          recognitionNote: noteInput.trim() || null,
+        },
+        { merge: true }
+      );
+      await setDoc(
+        doc(db, "publicProfiles", uid),
+        {
+          heritageDesignation: pendingDesignation === "none" ? null : pendingDesignation,
+          heritageArea: areaInput.trim() || null,
+          recognitionNote: noteInput.trim() || null,
+        },
+        { merge: true }
+      );
+      setEditing(false);
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not save this designation.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (!editing) {
+    return (
+      <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
+        {designation ? (
+          <span className="text-[#8b6a43]">
+            {HERITAGE_DESIGNATION_LABELS[designation]}
+            {area ? ` -- ${area}` : ""}
+          </span>
+        ) : (
+          <span className="text-[#8b6a43]">No heritage designation</span>
+        )}
+        <button onClick={() => setEditing(true)} className="text-[#5b3419] font-semibold underline underline-offset-4">
+          Edit →
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-2 space-y-2">
+      <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => setPendingDesignation("none")}
+          className={pendingDesignation === "none" ? "px-3 py-1.5 rounded-full bg-[#5b3419] text-white text-xs" : "px-3 py-1.5 rounded-full border border-[#5b3419] text-[#5b3419] text-xs"}
+        >
+          None
+        </button>
+        {HERITAGE_DESIGNATIONS.map((d) => (
+          <button
+            key={d}
+            onClick={() => setPendingDesignation(d)}
+            className={pendingDesignation === d ? "px-3 py-1.5 rounded-full bg-[#5b3419] text-white text-xs" : "px-3 py-1.5 rounded-full border border-[#5b3419] text-[#5b3419] text-xs"}
+          >
+            {HERITAGE_DESIGNATION_LABELS[d]}
+          </button>
+        ))}
+      </div>
+      <input
+        className="rounded-xl border border-[#c8a97d] bg-white px-3 py-1.5 text-sm outline-none w-full"
+        placeholder="Area (e.g. Jind district, or Rupgarh village)"
+        value={areaInput}
+        onChange={(e) => setAreaInput(e.target.value)}
+      />
+      <input
+        className="rounded-xl border border-[#c8a97d] bg-white px-3 py-1.5 text-sm outline-none w-full"
+        placeholder="Recognition note (e.g. Certificate of Recognition, 2026)"
+        value={noteInput}
+        onChange={(e) => setNoteInput(e.target.value)}
+      />
+      <div className="flex gap-3">
+        <button onClick={handleSave} disabled={busy} className="text-[#5b3419] font-semibold text-sm underline underline-offset-4 disabled:opacity-60">
+          {busy ? "Saving..." : "Save"}
+        </button>
+        <button onClick={() => setEditing(false)} className="text-[#8b6a43] text-sm underline underline-offset-4">
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // Assigns a Member ID to a profile that doesn't have one yet: either the next sequential
 // number (ordinary backfill for members approved before this feature existed), or a
 // hand-typed ID for the three reserved founding-leadership slots (0001-0003), which this
@@ -255,6 +366,9 @@ type MemberRow = {
   researchInterests?: string;
   languages?: string;
   bio?: string;
+  heritageDesignation?: HeritageDesignation | null;
+  heritageArea?: string;
+  recognitionNote?: string;
 };
 type MemberExpenseRow = { id: string; amount: number; description: string; spentAt: string; createdAt: Timestamp | null };
 type OrgTotals = { totalDonations: number; totalOrgExpenses: number; totalAllotted: number; balance: number };
@@ -604,6 +718,9 @@ function MembersSection() {
               researchInterests: data.researchInterests,
               languages: data.languages,
               bio: data.bio,
+              heritageDesignation: data.heritageDesignation ?? null,
+              heritageArea: data.heritageArea,
+              recognitionNote: data.recognitionNote,
             };
           }
         });
@@ -829,6 +946,12 @@ function MembersSection() {
             </p>
             {!m.memberId && <AssignMemberId uid={m.id} />}
             <MembershipControls uid={m.id} status={m.membershipStatus} renewalDate={m.renewalDate} />
+            <HeritageDesignationControl
+              uid={m.id}
+              designation={m.heritageDesignation}
+              area={m.heritageArea}
+              recognitionNote={m.recognitionNote}
+            />
             <div className="flex justify-between py-1">
               <span>Allotted</span>
               <span>{money(m.totalAllotted)}</span>
@@ -930,7 +1053,12 @@ function MembersSection() {
             {expandedId === m.id && (
               <div className="mt-4 space-y-3">
                 <input className={inputClass} placeholder="Amount (₹)" value={allotAmount} onChange={(e) => setAllotAmount(e.target.value)} type="number" />
-                <input className={inputClass} placeholder="Note (optional)" value={allotNote} onChange={(e) => setAllotNote(e.target.value)} />
+                <input
+                  className={inputClass}
+                  placeholder="Note (optional) -- e.g. research/travel/photography support for a named subject"
+                  value={allotNote}
+                  onChange={(e) => setAllotNote(e.target.value)}
+                />
                 {allotError ? <p className="text-[#8c2f23] text-sm">{allotError}</p> : null}
                 <div className="flex gap-3 flex-wrap">
                   <button onClick={() => handleAllot(m.id)} disabled={allotSubmitting} className={buttonClass}>
@@ -1491,6 +1619,18 @@ function HeritageSubmissionCard({ entry, published }: { entry: HeritageSubmissio
         {field("Independent Verification", entry.independentVerification)}
         {field("Current Condition", entry.currentCondition)}
         {field("References", entry.references)}
+        {entry.photoUrls && entry.photoUrls.length > 0 && (
+          <div className="py-2">
+            <p className="text-sm text-[#8b6a43] mb-2">Photos</p>
+            <div className="flex flex-wrap gap-2">
+              {entry.photoUrls.map((url) => (
+                <a key={url} href={url} target="_blank" rel="noreferrer">
+                  <img src={url} alt="" className="w-20 h-20 object-cover rounded-xl border border-[#b38b59]/30" />
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {published ? (

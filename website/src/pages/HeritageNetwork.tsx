@@ -11,6 +11,7 @@ export default function HeritageNetworkPage() {
   const [entries, setEntries] = useState<HeritageSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [district, setDistrict] = useState("all");
+  const [tehsil, setTehsil] = useState("all");
   const [search, setSearch] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedId = searchParams.get("entry");
@@ -25,14 +26,25 @@ export default function HeritageNetworkPage() {
 
   const districts = useMemo(() => Array.from(new Set(entries.map((e) => e.district))).sort(), [entries]);
 
+  const tehsils = useMemo(() => {
+    const pool = district === "all" ? entries : entries.filter((e) => e.district === district);
+    return Array.from(new Set(pool.map((e) => e.tehsil).filter((t): t is string => Boolean(t)))).sort();
+  }, [entries, district]);
+
+  const handleDistrictChange = (value: string) => {
+    setDistrict(value);
+    setTehsil("all");
+  };
+
   const filtered = useMemo(() => {
     return entries.filter((e) => {
       if (district !== "all" && e.district !== district) return false;
+      if (tehsil !== "all" && e.tehsil !== tehsil) return false;
       if (!search.trim()) return true;
       const haystack = `${e.subject} ${e.village} ${e.tehsil ?? ""} ${e.district}`.toLowerCase();
       return haystack.includes(search.trim().toLowerCase());
     });
-  }, [entries, district, search]);
+  }, [entries, district, tehsil, search]);
 
   const researchers = useMemo(() => {
     const counts = new Map<string, number>();
@@ -50,6 +62,7 @@ export default function HeritageNetworkPage() {
           { to: "/research", label: "Archive" },
           { to: "/heritage-network", label: "Heritage Network", active: true },
           { to: "/community", label: "Chaupal" },
+          { to: "/club", label: "Club" },
         ]}
       />
 
@@ -82,7 +95,7 @@ export default function HeritageNetworkPage() {
             <div className="flex flex-wrap gap-3 mb-8">
               <select
                 value={district}
-                onChange={(e) => setDistrict(e.target.value)}
+                onChange={(e) => handleDistrictChange(e.target.value)}
                 className="rounded-2xl border border-[#c8a97d] bg-white px-4 py-3 outline-none"
               >
                 <option value="all">All Districts</option>
@@ -92,6 +105,20 @@ export default function HeritageNetworkPage() {
                   </option>
                 ))}
               </select>
+              {tehsils.length > 0 && (
+                <select
+                  value={tehsil}
+                  onChange={(e) => setTehsil(e.target.value)}
+                  className="rounded-2xl border border-[#c8a97d] bg-white px-4 py-3 outline-none"
+                >
+                  <option value="all">All Tehsils</option>
+                  {tehsils.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+              )}
               <input
                 type="text"
                 placeholder="Search village, subject..."
@@ -126,7 +153,9 @@ export default function HeritageNetworkPage() {
                     </div>
                     <p className="text-[#4a3728] mt-3 line-clamp-3">{entry.historicalClaim}</p>
                     <div className="flex items-center justify-between mt-4">
-                      <p className="text-sm text-[#8b6a43]">Researcher: {entry.researcherName}</p>
+                      <p className="text-sm text-[#8b6a43]">
+                        {entry.researcherDesignation ? `${entry.researcherDesignation}${entry.researcherArea ? `, ${entry.researcherArea}` : ""}` : `Researcher: ${entry.researcherName}`}
+                      </p>
                       <button
                         onClick={() => setSearchParams({ entry: entry.id })}
                         className="text-[#5b3419] font-semibold underline underline-offset-4"
@@ -204,9 +233,21 @@ function EntryDetail({ entry }: { entry: HeritageSubmission }) {
       {field("Independent Verification", entry.independentVerification)}
       {field("Current Condition", entry.currentCondition)}
       {field("References", entry.references)}
+      {entry.photoUrls && entry.photoUrls.length > 0 && (
+        <div className="py-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {entry.photoUrls.map((url) => (
+              <a key={url} href={url} target="_blank" rel="noreferrer">
+                <img src={url} alt={entry.subject} className="w-full h-32 object-cover rounded-2xl border border-[#b38b59]/30" />
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
 
       <p className="text-sm text-[#8b6a43] mt-4">
-        Researcher: {entry.researcherName}
+        {entry.researcherDesignation ? `${entry.researcherDesignation}${entry.researcherArea ? `, ${entry.researcherArea}` : ""} -- ` : ""}
+        {entry.researcherName}
         {entry.researcherMemberId ? ` (${entry.researcherMemberId})` : ""}
       </p>
     </div>

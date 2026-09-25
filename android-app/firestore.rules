@@ -124,6 +124,22 @@ service cloud.firestore {
         id == request.resource.data.blockerUid + '_' + request.resource.data.blockedUid;
     }
 
+    // Spec section 9 (Marriage/Personal Networking). Visibility is mutual opt-in, not just
+    // hidden in the UI: reading someone else's doc only succeeds if *both* that person's status
+    // and your own are something other than "not_listed" -- so a member who hasn't opted in
+    // themselves cannot read anyone else's status either. profiles/{uid}.marriageStatus (self-
+    // update already allowed there) is the source of truth for "your own status" below; this
+    // collection is the mirror members actually query against, matching the publicProfiles/
+    // heritageSubmissions pattern elsewhere in this file.
+    function marriageStatus(uid) {
+      return get(/databases/$(database)/documents/marriageProfiles/$(uid)).data.get('status', 'not_listed');
+    }
+    match /marriageProfiles/{uid} {
+      allow read: if isSelf(uid) || isAdmin() ||
+        (isSignedIn() && resource.data.status != 'not_listed' && marriageStatus(request.auth.uid) != 'not_listed');
+      allow write: if isAdmin() || isSelf(uid);
+    }
+
     // A member reporting another member for admin attention. Only the reporter and an admin
     // ever need to touch this -- read/review/close is admin-only, matching how donations and
     // org expenses are handled elsewhere in this file.

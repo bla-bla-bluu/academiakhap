@@ -1,0 +1,21 @@
+rules_version = '2';
+
+// Deploy from the Firebase Console: Storage -> Rules -> paste this in -> Publish.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Photos attached to a Village Heritage Research submission. Publicly readable -- these
+    // are documentation photos (villages, buildings, documents) meant for the public archive
+    // once their submission is published, and the unlisted-but-fetchable state of an
+    // unpublished submission's photos is an accepted tradeoff, the same way an unlisted video
+    // works, rather than replicating Firestore's per-document publish gate here. Only the
+    // owning uid may write into their own folder, images only, capped at 5MB each.
+    match /heritage-photos/{uid}/{submissionId}/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == uid
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}
