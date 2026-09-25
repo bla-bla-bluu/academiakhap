@@ -1,44 +1,22 @@
-import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-[#f4efe4] text-[#3b2415] font-serif">
 
-      {/* Navbar */}
-      <nav className="w-full bg-[#efe4cf] border-b border-[#8b6a43]/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex flex-col sm:flex-row gap-3 sm:gap-0 items-start sm:items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img
-              src="/logo_clean.png"
-              alt="Academia Khap Logo"
-              className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
-            />
-            <p className="text-xl sm:text-2xl font-bold tracking-wide">
-              Academia Khap
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2 sm:gap-4">
-            <Link
-              to="/"
-              className="px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300"
-            >
-              Home
-            </Link>
-            <Link
-              to="/terms-of-service"
-              className="px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300"
-            >
-              Terms of Service
-            </Link>
-            <Link
-              to="/contact"
-              className="px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300"
-            >
-              Contact
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar
+        links={[
+          { to: "/", label: "Home" },
+          { to: "/about", label: "About Us" },
+          { to: "/work", label: "Work With Us" },
+          { to: "/research", label: "Archive" },
+          { to: "/heritage-network", label: "Heritage Network" },
+          { to: "/community", label: "Chaupal" },
+          { to: "/club", label: "Club" },
+          { to: "/privacy-policy", label: "Privacy Policy", active: true },
+          { to: "/terms-of-service", label: "Terms of Service" },
+        ]}
+      />
 
       {/* Hero */}
       <section className="bg-[#efe4cf] border-b border-[#8b6a43]/20 pt-12 sm:pt-20 pb-8">

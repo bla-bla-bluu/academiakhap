@@ -1,10 +1,9 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./pages/Home";
 import AboutPage from "./pages/About";
 import WorkWithUsPage from "./pages/Work";
 import ResearchPage from "./pages/Research";
-import ContactPage from "./pages/Contact";
 import PrivacyPolicyPage from "./pages/PrivacyPolicy";
 import TermsOfServicePage from "./pages/TermsOfService";
 import ClubPage from "./pages/Club";
@@ -29,7 +28,9 @@ export default function App() {
         <Route path="/work" element={<WorkWithUsPage />} />
         <Route path="/research" element={<ResearchPage />} />
         <Route path="/research/:slug" element={<ResearchPage />} />
-        <Route path="/contact" element={<ContactPage />} />
+        {/* Contact's content (email + socials) was folded into Work With Us, since it was
+            just that plus three links; this keeps any existing /contact link working. */}
+        <Route path="/contact" element={<Navigate to="/work" replace />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
         <Route path="/club" element={<ClubPage />} />

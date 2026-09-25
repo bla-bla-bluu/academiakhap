@@ -31,7 +31,6 @@ function HomePage() {
           { to: "/heritage-network", label: "Heritage Network" },
           { to: "/community", label: "Chaupal" },
           { to: "/club", label: "Club" },
-          { to: "/contact", label: "Contact" },
         ]}
       />
 
@@ -358,7 +357,7 @@ function HomePage() {
           </a>
 
           <Link
-          to="/contact"
+          to="/work"
           className="px-8 py-4 rounded-full border border-white font-semibold hover:bg-white hover:text-[#5b3419] transition duration-300">
           Contact Us
         </Link>
