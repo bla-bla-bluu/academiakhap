@@ -60,7 +60,6 @@ export type HeritageSubmission = {
   interviewee?: string;
   intervieweeAge?: number;
   photoNotes?: string;
-  photoUrls?: string[];
   researcherObservations?: string;
   independentVerification?: string;
   currentCondition?: string;

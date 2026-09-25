@@ -227,17 +227,6 @@ function EntryDetail({ entry }: { entry: HeritageSubmission }) {
       {field("Independent Verification", entry.independentVerification)}
       {field("Current Condition", entry.currentCondition)}
       {field("References", entry.references)}
-      {entry.photoUrls && entry.photoUrls.length > 0 && (
-        <div className="py-3">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {entry.photoUrls.map((url) => (
-              <a key={url} href={url} target="_blank" rel="noreferrer">
-                <img src={url} alt={entry.subject} className="w-full h-32 object-cover rounded-2xl border border-[#b38b59]/30" />
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
 
       <p className="text-sm text-[#8b6a43] mt-4">
         {entry.researcherDesignation ? `${entry.researcherDesignation}${entry.researcherArea ? `, ${entry.researcherArea}` : ""} -- ` : ""}

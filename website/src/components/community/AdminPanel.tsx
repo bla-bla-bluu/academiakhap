@@ -1619,18 +1619,6 @@ function HeritageSubmissionCard({ entry, published }: { entry: HeritageSubmissio
         {field("Independent Verification", entry.independentVerification)}
         {field("Current Condition", entry.currentCondition)}
         {field("References", entry.references)}
-        {entry.photoUrls && entry.photoUrls.length > 0 && (
-          <div className="py-2">
-            <p className="text-sm text-[#8b6a43] mb-2">Photos</p>
-            <div className="flex flex-wrap gap-2">
-              {entry.photoUrls.map((url) => (
-                <a key={url} href={url} target="_blank" rel="noreferrer">
-                  <img src={url} alt="" className="w-20 h-20 object-cover rounded-xl border border-[#b38b59]/30" />
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {published ? (
