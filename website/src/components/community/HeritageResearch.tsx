@@ -47,7 +47,7 @@ export default function HeritageResearch() {
   const [form, setForm] = useState(emptyForm);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [submittedReportNumber, setSubmittedReportNumber] = useState<string | null>(null);
   const [mine, setMine] = useState<HeritageSubmission[]>([]);
 
   useEffect(() => {
@@ -71,7 +71,14 @@ export default function HeritageResearch() {
     }
     setSubmitting(true);
     try {
-      await setDoc(doc(collection(db, "heritageSubmissions")), {
+      // The doc ref is created client-side before writing, so its own id can double as a
+      // short, unique report number the submitter can quote when emailing photos or documents
+      // separately -- there's no file upload here, so this is how we match an email back to
+      // the right submission.
+      const submissionRef = doc(collection(db, "heritageSubmissions"));
+      const reportNumber = `VHR-${submissionRef.id.slice(0, 8).toUpperCase()}`;
+      await setDoc(submissionRef, {
+        reportNumber,
         researcherUid: user.uid,
         researcherName: profile.fullName,
         researcherMemberId: profile.memberId ?? null,
@@ -99,8 +106,7 @@ export default function HeritageResearch() {
         createdAt: serverTimestamp(),
       });
       setForm(emptyForm);
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      setSubmittedReportNumber(reportNumber);
     } catch (err: any) {
       setError(err.message ?? "Could not submit your research.");
     } finally {
@@ -115,6 +121,24 @@ export default function HeritageResearch() {
 
   return (
     <div className="space-y-8">
+      {submittedReportNumber ? (
+        <div className={cardClass}>
+          <h3 className="text-xl font-bold mb-2">Submitted -- Your Report Number</h3>
+          <p className="text-3xl font-bold font-mono tracking-wide text-[#5b3419] my-4">{submittedReportNumber}</p>
+          <p className="text-[#4a3728] mb-4">
+            Save this number. If you have photos, videos, scanned documents or any other material for this report,
+            email them separately to{" "}
+            <a href="mailto:academiakhap@gmail.com" className="underline underline-offset-4 hover:text-[#5b3419]">
+              academiakhap@gmail.com
+            </a>{" "}
+            and mention this report number in the subject or body, so we can match your media to the right
+            submission.
+          </p>
+          <button onClick={() => setSubmittedReportNumber(null)} className="text-[#5b3419] font-semibold underline underline-offset-4">
+            Submit Another Report
+          </button>
+        </div>
+      ) : (
       <div className={cardClass}>
         <h3 className="text-xl font-bold mb-2">Submit Village Heritage Research</h3>
         <p className="text-sm text-[#8b6a43] mb-6">
@@ -180,12 +204,12 @@ export default function HeritageResearch() {
           </div>
 
           {error && <p className="text-[#8c2f23] text-sm">{error}</p>}
-          {success && <p className="text-[#2f6b3a] text-sm">Submitted for review.</p>}
           <button type="submit" disabled={submitting} className={buttonClass}>
             {submitting ? "Submitting..." : "Submit for Review"}
           </button>
         </form>
       </div>
+      )}
 
       <div>
         <h3 className="text-xl font-bold mb-4">Your Submissions</h3>
@@ -201,6 +225,7 @@ export default function HeritageResearch() {
                     <p className="text-sm text-[#8b6a43]">
                       {[m.village, m.tehsil, m.district].filter(Boolean).join(", ")}
                     </p>
+                    {m.reportNumber && <p className="text-xs font-mono text-[#8b6a43] mt-1">{m.reportNumber}</p>}
                   </div>
                   <span className={`text-[10px] uppercase tracking-wide font-bold px-2 py-0.5 rounded-full border ${STATUS_COLORS[m.publicationStatus]}`}>
                     {STATUS_LABELS[m.publicationStatus]}

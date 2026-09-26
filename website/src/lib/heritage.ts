@@ -43,6 +43,7 @@ export type PublicationStatus = "submitted" | "published" | "rejected";
 
 export type HeritageSubmission = {
   id: string;
+  reportNumber?: string;
   researcherUid: string;
   researcherName: string;
   researcherMemberId?: string;

@@ -1592,6 +1592,7 @@ function HeritageSubmissionCard({ entry, published }: { entry: HeritageSubmissio
         <div>
           <p className="font-bold text-lg">{entry.subject}</p>
           <p className="text-sm text-[#8b6a43]">{[entry.village, entry.tehsil, entry.district, entry.state].filter(Boolean).join(", ")}</p>
+          {entry.reportNumber && <p className="text-xs font-mono text-[#8b6a43] mt-1">{entry.reportNumber}</p>}
         </div>
         <span className="text-[10px] uppercase tracking-wide font-bold px-2 py-0.5 rounded-full bg-[#efe4cf] text-[#8b6a43] border border-[#b38b59]/40">
           {RESEARCH_LEVEL_LABELS[entry.researchLevel]}
