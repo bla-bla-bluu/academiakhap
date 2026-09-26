@@ -1,12 +1,17 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { collection, doc, deleteDoc, onSnapshot, query, serverTimestamp, setDoc, where } from "firebase/firestore";
+import type { Unsubscribe } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { useAuth } from "../../contexts/AuthContext";
 import {
   RESEARCH_LEVELS,
   RESEARCH_LEVEL_LABELS,
   VERIFICATION_STATUS_LABELS,
+  REVIEW_DECISIONS,
+  REVIEW_DECISION_LABELS,
   type HeritageSubmission,
+  type HeritageReviewAssignment,
+  type ReviewDecision,
   type ResearchLevel,
 } from "../../lib/heritage";
 import { HERITAGE_DESIGNATION_LABELS } from "../../lib/researcher";
@@ -15,11 +20,17 @@ const cardClass = "border border-[#b38b59]/25 rounded-[2rem] p-6 bg-[#faf6ef]";
 const inputClass = "w-full rounded-2xl border border-[#c8a97d] bg-white px-4 py-3 outline-none";
 const buttonClass = "px-6 py-3 rounded-full bg-[#5b3419] text-white font-semibold hover:bg-[#3b2415] transition disabled:opacity-60";
 
-const STATUS_LABELS: Record<string, string> = { submitted: "Under Review", published: "Published", rejected: "Not Published" };
+const STATUS_LABELS: Record<string, string> = {
+  submitted: "Under Review",
+  published: "Published",
+  rejected: "Not Published",
+  additional_research: "Additional Research Requested",
+};
 const STATUS_COLORS: Record<string, string> = {
   submitted: "bg-[#efe4cf] text-[#8b6a43] border-[#b38b59]/40",
   published: "bg-[#e5efe0] text-[#2f6b3a] border-[#2f6b3a]/30",
   rejected: "bg-[#f3e2dc] text-[#8c2f23] border-[#8c2f23]/30",
+  additional_research: "bg-[#e9e2f3] text-[#5b3a7a] border-[#5b3a7a]/30",
 };
 
 const emptyForm = {
@@ -244,6 +255,149 @@ export default function HeritageResearch() {
             ))}
           </div>
         )}
+      </div>
+
+      <AssignedReviewsSection />
+    </div>
+  );
+}
+
+function AssignedReviewCard({ assignment, submission }: { assignment: HeritageReviewAssignment; submission: HeritageSubmission }) {
+  const [decision, setDecision] = useState<ReviewDecision | null>(assignment.decision ?? null);
+  const [comments, setComments] = useState(assignment.comments ?? "");
+  const [saving, setSaving] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      await setDoc(
+        doc(db, "heritageReviewAssignments", assignment.id),
+        { decision, comments: comments.trim(), decidedAt: serverTimestamp() },
+        { merge: true }
+      );
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not save your review.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className={cardClass}>
+      <div className="flex justify-between items-start gap-3 flex-wrap">
+        <div>
+          <p className="font-bold text-lg">{submission.subject}</p>
+          <p className="text-sm text-[#8b6a43]">{[submission.village, submission.tehsil, submission.district].filter(Boolean).join(", ")}</p>
+          {submission.reportNumber && <p className="text-xs font-mono text-[#8b6a43] mt-1">{submission.reportNumber}</p>}
+        </div>
+        <button onClick={() => setExpanded((v) => !v)} className="text-[#5b3419] text-sm underline underline-offset-4">
+          {expanded ? "Hide details" : "Read full submission →"}
+        </button>
+      </div>
+      <p className="text-sm text-[#8b6a43] mt-2">Submitted by: {submission.researcherName}</p>
+
+      {expanded && (
+        <div className="mt-3 border-t border-[#b38b59]/20 pt-3 space-y-2 text-sm">
+          <p><span className="text-[#8b6a43]">Historical Claim: </span><span className="text-[#4a3728] whitespace-pre-wrap">{submission.historicalClaim}</span></p>
+          <p><span className="text-[#8b6a43]">Source: </span><span className="text-[#4a3728] whitespace-pre-wrap">{submission.source}</span></p>
+          {submission.researcherObservations && (
+            <p><span className="text-[#8b6a43]">Researcher's Observations: </span><span className="text-[#4a3728] whitespace-pre-wrap">{submission.researcherObservations}</span></p>
+          )}
+          {submission.independentVerification && (
+            <p><span className="text-[#8b6a43]">Independent Verification: </span><span className="text-[#4a3728] whitespace-pre-wrap">{submission.independentVerification}</span></p>
+          )}
+          {submission.references && (
+            <p><span className="text-[#8b6a43]">References: </span><span className="text-[#4a3728] whitespace-pre-wrap">{submission.references}</span></p>
+          )}
+        </div>
+      )}
+
+      <div className="mt-4 border-t border-[#b38b59]/20 pt-4 space-y-3">
+        <p className="text-sm text-[#8b6a43] font-semibold">Your Review</p>
+        <div className="flex flex-wrap gap-2">
+          {REVIEW_DECISIONS.map((d) => (
+            <button
+              key={d}
+              type="button"
+              onClick={() => setDecision(d)}
+              className={
+                decision === d
+                  ? "px-3 py-1.5 rounded-full bg-[#5b3419] text-white text-xs"
+                  : "px-3 py-1.5 rounded-full border border-[#5b3419] text-[#5b3419] text-xs"
+              }
+            >
+              {REVIEW_DECISION_LABELS[d]}
+            </button>
+          ))}
+        </div>
+        <textarea
+          className={inputClass}
+          placeholder="Comments for the admin (may be shared with the submitter over email)"
+          value={comments}
+          onChange={(e) => setComments(e.target.value)}
+          rows={3}
+        />
+        <button onClick={save} disabled={saving || !decision} className={buttonClass}>
+          {saving ? "Saving..." : "Save Review"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function AssignedReviewsSection() {
+  const { user } = useAuth();
+  const [assignments, setAssignments] = useState<HeritageReviewAssignment[]>([]);
+  const [submissions, setSubmissions] = useState<Record<string, HeritageSubmission>>({});
+  const subsRef = useRef<Record<string, Unsubscribe>>({});
+
+  useEffect(() => {
+    if (!user) return;
+    const unsub = onSnapshot(query(collection(db, "heritageReviewAssignments"), where("reviewerUid", "==", user.uid)), (snap) => {
+      setAssignments(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<HeritageReviewAssignment, "id">) })));
+    });
+    return unsub;
+  }, [user]);
+
+  useEffect(() => {
+    const wanted = new Set(assignments.map((a) => a.submissionId));
+    // Drop listeners for submissions no longer assigned to this reviewer.
+    Object.keys(subsRef.current).forEach((id) => {
+      if (!wanted.has(id)) {
+        subsRef.current[id]();
+        delete subsRef.current[id];
+        setSubmissions((prev) => {
+          const next = { ...prev };
+          delete next[id];
+          return next;
+        });
+      }
+    });
+    // Add listeners for newly assigned submissions.
+    wanted.forEach((id) => {
+      if (subsRef.current[id]) return;
+      subsRef.current[id] = onSnapshot(doc(db, "heritageSubmissions", id), (snap) => {
+        if (snap.exists()) {
+          setSubmissions((prev) => ({ ...prev, [id]: { id: snap.id, ...(snap.data() as Omit<HeritageSubmission, "id">) } }));
+        }
+      });
+    });
+  }, [assignments]);
+
+  useEffect(() => () => Object.values(subsRef.current).forEach((unsub) => unsub()), []);
+
+  if (assignments.length === 0) return null;
+
+  return (
+    <div>
+      <h3 className="text-xl font-bold mb-4">Reports Assigned to You for Review</h3>
+      <div className="space-y-4">
+        {assignments.map((a) => {
+          const submission = submissions[a.submissionId];
+          if (!submission) return null;
+          return <AssignedReviewCard key={a.id} assignment={a} submission={submission} />;
+        })}
       </div>
     </div>
   );

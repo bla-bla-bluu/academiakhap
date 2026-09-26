@@ -39,7 +39,7 @@ export const VERIFICATION_STATUS_LABELS: Record<VerificationStatus, string> = {
   contested: "Contested Claim",
 };
 
-export type PublicationStatus = "submitted" | "published" | "rejected";
+export type PublicationStatus = "submitted" | "published" | "rejected" | "additional_research";
 
 export type HeritageSubmission = {
   id: string;
@@ -69,4 +69,28 @@ export type HeritageSubmission = {
   verificationStatus?: VerificationStatus | null;
   publicationStatus: PublicationStatus;
   editorialNote?: string;
+};
+
+// A reviewer's recommendation on an assigned submission -- distinct from the editorial
+// publicationStatus, which only an admin sets. Doc id is `${submissionId}_${reviewerUid}`, both
+// so a reviewer can only ever be assigned to a given submission once and so the Firestore rule
+// granting the reviewer read access to that submission can check existence with a single id.
+export type ReviewDecision = "recommend_publish" | "recommend_reject" | "needs_more_work";
+
+export const REVIEW_DECISIONS: ReviewDecision[] = ["recommend_publish", "recommend_reject", "needs_more_work"];
+
+export const REVIEW_DECISION_LABELS: Record<ReviewDecision, string> = {
+  recommend_publish: "Recommend Publish",
+  recommend_reject: "Recommend Reject",
+  needs_more_work: "Needs More Work",
+};
+
+export type HeritageReviewAssignment = {
+  id: string;
+  submissionId: string;
+  reviewerUid: string;
+  reviewerName: string;
+  assignedByName?: string;
+  decision?: ReviewDecision | null;
+  comments?: string;
 };
