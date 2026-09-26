@@ -161,7 +161,8 @@ service cloud.firestore {
     // own entry's content up until it's published, and may withdraw it while it isn't.
     match /heritageSubmissions/{id} {
       allow read: if resource.data.publicationStatus == 'published' || isAdmin() ||
-        (isSignedIn() && resource.data.researcherUid == request.auth.uid);
+        (isSignedIn() && resource.data.researcherUid == request.auth.uid) ||
+        (isSignedIn() && exists(/databases/$(database)/documents/heritageReviewAssignments/$(id + '_' + request.auth.uid)));
       allow create: if isSignedIn() &&
         request.resource.data.researcherUid == request.auth.uid &&
         request.resource.data.publicationStatus == 'submitted' &&
@@ -179,6 +180,26 @@ service cloud.firestore {
       );
       allow delete: if isAdmin() ||
         (isSignedIn() && resource.data.researcherUid == request.auth.uid && resource.data.publicationStatus != 'published');
+    }
+
+    // An admin assigns a member to review one heritage submission. Doc id is fixed as
+    // `${submissionId}_${reviewerUid}` -- both so a reviewer can only ever be assigned once to a
+    // given submission, and so the heritageSubmissions read rule above can grant that reviewer
+    // access with a single exists() check, the same compound-id trick used by blocks/{id} above.
+    // Only an admin may create, reassign or remove an assignment; the assigned reviewer may only
+    // ever write their own decision and comments, never reassign themselves or edit who assigned
+    // them.
+    match /heritageReviewAssignments/{id} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.reviewerUid == request.auth.uid);
+      allow create: if isAdmin() &&
+        id == request.resource.data.submissionId + '_' + request.resource.data.reviewerUid &&
+        request.resource.data.reviewerUid is string &&
+        request.resource.data.reviewerName is string;
+      allow update: if isAdmin() || (
+        isSignedIn() && resource.data.reviewerUid == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['decision', 'comments', 'decidedAt'])
+      );
+      allow delete: if isAdmin();
     }
 
     // Incoming donations -- admin-only in both directions, members never see donor detail.

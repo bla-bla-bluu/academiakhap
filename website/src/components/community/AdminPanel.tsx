@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   increment,
@@ -27,8 +28,10 @@ import {
   VERIFICATION_STATUSES,
   VERIFICATION_STATUS_LABELS,
   RESEARCH_LEVEL_LABELS,
+  REVIEW_DECISION_LABELS,
   type HeritageSubmission,
   type VerificationStatus,
+  type HeritageReviewAssignment,
 } from "../../lib/heritage";
 import { HERITAGE_DESIGNATIONS, HERITAGE_DESIGNATION_LABELS, type HeritageDesignation } from "../../lib/researcher";
 
@@ -1531,6 +1534,109 @@ function ReportsSection() {
   );
 }
 
+function ReviewerAssignmentPanel({ submissionId }: { submissionId: string }) {
+  const { profile } = useAuth();
+  const [assignments, setAssignments] = useState<HeritageReviewAssignment[]>([]);
+  const [allProfiles, setAllProfiles] = useState<{ uid: string; fullName: string; memberId?: string }[]>([]);
+  const [search, setSearch] = useState("");
+  const [assigning, setAssigning] = useState<string | null>(null);
+
+  useEffect(() => {
+    const unsub = onSnapshot(query(collection(db, "heritageReviewAssignments"), where("submissionId", "==", submissionId)), (snap) => {
+      setAssignments(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<HeritageReviewAssignment, "id">) })));
+    });
+    return unsub;
+  }, [submissionId]);
+
+  useEffect(() => {
+    const unsub = onSnapshot(query(collection(db, "profiles"), orderBy("fullName")), (snap) => {
+      setAllProfiles(snap.docs.map((d) => ({ uid: d.id, fullName: d.data().fullName, memberId: d.data().memberId })));
+    });
+    return unsub;
+  }, []);
+
+  const assignedUids = new Set(assignments.map((a) => a.reviewerUid));
+  const needle = search.trim().toLowerCase();
+  const matches = needle
+    ? allProfiles.filter((p) => p.fullName?.toLowerCase().includes(needle) && !assignedUids.has(p.uid)).slice(0, 6)
+    : [];
+
+  const assign = async (p: { uid: string; fullName: string }) => {
+    setAssigning(p.uid);
+    try {
+      await setDoc(doc(db, "heritageReviewAssignments", `${submissionId}_${p.uid}`), {
+        submissionId,
+        reviewerUid: p.uid,
+        reviewerName: p.fullName,
+        assignedByName: profile?.fullName ?? null,
+        decision: null,
+        comments: "",
+        assignedAt: serverTimestamp(),
+      });
+      setSearch("");
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not assign this reviewer.");
+    } finally {
+      setAssigning(null);
+    }
+  };
+
+  const unassign = async (assignmentId: string) => {
+    if (!window.confirm("Remove this reviewer's access to this report?")) return;
+    try {
+      await deleteDoc(doc(db, "heritageReviewAssignments", assignmentId));
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not remove this reviewer.");
+    }
+  };
+
+  return (
+    <div className="mt-4 border-t border-[#b38b59]/20 pt-4 space-y-3">
+      <p className="text-sm text-[#8b6a43] font-semibold">Assign Reviewers</p>
+      <div className="relative">
+        <input
+          className={inputClass}
+          placeholder="Search a member by name to assign as reviewer"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        {matches.length > 0 && (
+          <div className="absolute z-10 mt-1 w-full bg-white border border-[#c8a97d] rounded-2xl shadow-lg overflow-hidden">
+            {matches.map((p) => (
+              <button
+                key={p.uid}
+                type="button"
+                onClick={() => assign(p)}
+                disabled={assigning === p.uid}
+                className="block w-full text-left px-4 py-2 hover:bg-[#faf6ef] disabled:opacity-60"
+              >
+                {p.fullName}
+                {p.memberId ? ` (${p.memberId})` : ""}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      {assignments.length > 0 && (
+        <div className="space-y-2">
+          {assignments.map((a) => (
+            <div key={a.id} className="flex items-start justify-between gap-3 bg-white rounded-xl px-3 py-2 border border-[#b38b59]/20">
+              <div>
+                <p className="text-sm font-semibold text-[#4a3728]">{a.reviewerName}</p>
+                <p className="text-xs text-[#8b6a43]">{a.decision ? REVIEW_DECISION_LABELS[a.decision] : "Awaiting review"}</p>
+                {a.comments && <p className="text-sm text-[#4a3728] mt-1 whitespace-pre-wrap">&ldquo;{a.comments}&rdquo;</p>}
+              </div>
+              <button onClick={() => unassign(a.id)} className="text-[#8c2f23] text-xs underline underline-offset-4 shrink-0">
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function HeritageSubmissionCard({ entry, published }: { entry: HeritageSubmission; published: boolean }) {
   const [verification, setVerification] = useState<VerificationStatus>(entry.verificationStatus ?? "oral_history");
   const [note, setNote] = useState(entry.editorialNote ?? "");
@@ -1561,6 +1667,21 @@ function HeritageSubmissionCard({ entry, published }: { entry: HeritageSubmissio
       );
     } catch (err: any) {
       window.alert(err.message ?? "Could not reject this entry.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleAdditionalWork = async () => {
+    setBusy(true);
+    try {
+      await setDoc(
+        doc(db, "heritageSubmissions", entry.id),
+        { publicationStatus: "additional_research", editorialNote: note.trim() || null, reviewedAt: serverTimestamp() },
+        { merge: true }
+      );
+    } catch (err: any) {
+      window.alert(err.message ?? "Could not flag this entry for additional research.");
     } finally {
       setBusy(false);
     }
@@ -1659,6 +1780,13 @@ function HeritageSubmissionCard({ entry, published }: { entry: HeritageSubmissio
               {busy ? "Working..." : "Publish"}
             </button>
             <button
+              onClick={handleAdditionalWork}
+              disabled={busy}
+              className="px-6 py-3 rounded-full border border-[#5b3a7a] text-[#5b3a7a] font-semibold disabled:opacity-60"
+            >
+              Additional Work
+            </button>
+            <button
               onClick={handleReject}
               disabled={busy}
               className="px-6 py-3 rounded-full border border-[#8c2f23] text-[#8c2f23] font-semibold disabled:opacity-60"
@@ -1666,6 +1794,11 @@ function HeritageSubmissionCard({ entry, published }: { entry: HeritageSubmissio
               Reject
             </button>
           </div>
+          <p className="text-xs text-[#8b6a43]">
+            "Additional Work" saves this entry for later without publishing or rejecting it -- use it when the
+            submission needs further source verification or field investigation before a decision can be made.
+          </p>
+          <ReviewerAssignmentPanel submissionId={entry.id} />
         </div>
       )}
     </div>
@@ -1674,7 +1807,9 @@ function HeritageSubmissionCard({ entry, published }: { entry: HeritageSubmissio
 
 function HeritageReviewSection() {
   const [submitted, setSubmitted] = useState<HeritageSubmission[]>([]);
+  const [additionalWork, setAdditionalWork] = useState<HeritageSubmission[]>([]);
   const [published, setPublished] = useState<HeritageSubmission[]>([]);
+  const [showAdditionalWork, setShowAdditionalWork] = useState(false);
   const [showPublished, setShowPublished] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -1684,11 +1819,18 @@ function HeritageReviewSection() {
       setSubmitted(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<HeritageSubmission, "id">) })));
       setLoading(false);
     });
+    const unsubAdditionalWork = onSnapshot(
+      query(collection(db, "heritageSubmissions"), where("publicationStatus", "==", "additional_research")),
+      (snap) => {
+        setAdditionalWork(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<HeritageSubmission, "id">) })));
+      }
+    );
     const unsubPublished = onSnapshot(query(collection(db, "heritageSubmissions"), where("publicationStatus", "==", "published")), (snap) => {
       setPublished(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<HeritageSubmission, "id">) })));
     });
     return () => {
       unsubSubmitted();
+      unsubAdditionalWork();
       unsubPublished();
     };
   }, []);
@@ -1705,6 +1847,19 @@ function HeritageReviewSection() {
           {submitted.map((entry) => (
             <HeritageSubmissionCard key={entry.id} entry={entry} published={false} />
           ))}
+        </div>
+      )}
+
+      <button onClick={() => setShowAdditionalWork((v) => !v)} className="text-[#5b3a7a] font-semibold underline underline-offset-4">
+        {showAdditionalWork ? "Hide Additional / Further Research" : `Show Additional / Further Research (${additionalWork.length}) →`}
+      </button>
+      {showAdditionalWork && (
+        <div className="space-y-4">
+          {additionalWork.length === 0 ? (
+            <p className="text-[#4a3728]">Nothing set aside for additional research.</p>
+          ) : (
+            additionalWork.map((entry) => <HeritageSubmissionCard key={entry.id} entry={entry} published={false} />)
+          )}
         </div>
       )}
 

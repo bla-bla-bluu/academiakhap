@@ -66,16 +66,6 @@ export const articles: Article[] = [
   },
   {
     id: 5,
-    title: "Reading Khap Panchayats in Full: The Ramrai Meetings of August 2026",
-    category: "Society & Institutions",
-    slug: "/research/khap-panchayat-2026",
-    type: "article",
-    author: "Mr. Deepak Dhillon",
-    body: KhapPanchayat2026.body,
-    sources: KhapPanchayat2026.sources,
-  },
-  {
-    id: 6,
     title: "The Khap Panchayat: Origins, Structure, and How It Actually Works",
     category: "Society & Institutions",
     slug: "/research/khap-panchayat-system",
@@ -83,6 +73,16 @@ export const articles: Article[] = [
     author: "Mr. Deepak Dhillon",
     body: KhapPanchayatSystem.body,
     sources: KhapPanchayatSystem.sources,
+  },
+  {
+    id: 6,
+    title: "The Naugama Khap Panchayat at Ramrai, August 2026",
+    category: "Society & Institutions",
+    slug: "/research/khap-panchayat-2026",
+    type: "article",
+    author: "Mr. Deepak Dhillon",
+    body: KhapPanchayat2026.body,
+    sources: KhapPanchayat2026.sources,
   },
   {
     id: 7,
