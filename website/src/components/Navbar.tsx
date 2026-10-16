@@ -36,27 +36,34 @@ export default function Navbar() {
           <p className="text-xl sm:text-2xl font-bold tracking-wide truncate notranslate">Academia Khap</p>
         </div>
 
-        <div className="-mx-4 sm:mx-0 overflow-x-auto pb-1 sm:pb-0">
-          {/* No justify-end here: when this row is wider than the space next to the logo (it
-              now regularly is, with 7 links plus the language pills), flexbox end-aligning an
-              overflowing row pushes its start -- Home -- off to the left of the scrollable area,
-              unreachable by scrolling back. Left-aligned overflow always keeps Home visible
-              first, pushing any overflow off the right instead, which scrolling can reach. */}
-          <div className="flex w-max sm:w-auto flex-nowrap items-center gap-1 sm:gap-2 px-4 sm:px-0">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className={
-                  isActive(pathname, link.to)
-                    ? "whitespace-nowrap px-3.5 sm:px-5 py-2 rounded-full bg-[#5b3419] text-white text-sm sm:text-base leading-none"
-                    : "whitespace-nowrap px-2.5 sm:px-3 py-2 rounded-full text-[#5b3419] font-medium hover:bg-[#5b3419]/10 transition duration-300 text-sm sm:text-base leading-none"
-                }
-              >
-                {link.label}
-              </Link>
-            ))}
-            <span aria-hidden="true" className="w-px self-stretch bg-[#8b6a43]/25 mx-1" />
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="-mx-4 sm:mx-0 overflow-x-auto pb-1 sm:pb-0 min-w-0">
+            {/* No justify-end here: when this row is wider than the space available, flexbox
+                end-aligning an overflowing row pushes its start -- Home -- off to the left of
+                the scrollable area, unreachable by scrolling back. Left-aligned overflow always
+                keeps Home visible first, pushing any overflow off the right instead, which
+                scrolling can reach. LanguagePills lives outside this scroller (below) rather
+                than inside it: a popover inside an overflow-x-auto container gets clipped by
+                that same container, and on narrow screens it was also scrolling out of reach
+                along with the nav links. */}
+            <div className="flex w-max sm:w-auto flex-nowrap items-center gap-1 sm:gap-2 px-4 sm:px-0">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className={
+                    isActive(pathname, link.to)
+                      ? "whitespace-nowrap px-3.5 sm:px-5 py-2 rounded-full bg-[#5b3419] text-white text-sm sm:text-base leading-none"
+                      : "whitespace-nowrap px-2.5 sm:px-3 py-2 rounded-full text-[#5b3419] font-medium hover:bg-[#5b3419]/10 transition duration-300 text-sm sm:text-base leading-none"
+                  }
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+          <span aria-hidden="true" className="hidden sm:block w-px self-stretch bg-[#8b6a43]/25 flex-shrink-0" />
+          <div className="flex-shrink-0">
             <LanguagePills />
           </div>
         </div>
