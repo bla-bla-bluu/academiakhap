@@ -101,10 +101,10 @@ function HomePage() {
      {/* Donation */}
 <section id="donate" className="bg-[#efe4cf] border-y border-[#8b6a43]/20 scroll-mt-6">
 
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 grid lg:grid-cols-2 gap-10 sm:gap-14 items-start">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 grid lg:grid-cols-2 gap-10 sm:gap-14 items-stretch">
 
     {/* Left Content */}
-    <div>
+    <div className="flex flex-col">
 
       <p className="uppercase tracking-[0.3em] text-sm text-[#8b6a43] mb-3">
         Support Our Work
@@ -128,7 +128,7 @@ function HomePage() {
         and awareness-driven activities.
       </p>
 
-      <div className="bg-[#faf6ef] border border-[#b38b59]/20 rounded-[2rem] p-8 mt-10">
+      <div className="flex-1 bg-[#faf6ef] border border-[#b38b59]/20 rounded-[2rem] p-8 mt-10">
 
         <h3 className="text-2xl font-bold mb-5">
           What Your Contribution Supports
