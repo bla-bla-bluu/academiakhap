@@ -42,7 +42,7 @@ export default function Navbar() {
               overflowing row pushes its start -- Home -- off to the left of the scrollable area,
               unreachable by scrolling back. Left-aligned overflow always keeps Home visible
               first, pushing any overflow off the right instead, which scrolling can reach. */}
-          <div className="flex w-max sm:w-auto flex-nowrap gap-2 sm:gap-3 px-4 sm:px-0">
+          <div className="flex w-max sm:w-auto flex-nowrap items-center gap-1 sm:gap-2 px-4 sm:px-0">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.to}
@@ -50,13 +50,13 @@ export default function Navbar() {
                 className={
                   isActive(pathname, link.to)
                     ? "whitespace-nowrap px-3.5 sm:px-5 py-2 rounded-full bg-[#5b3419] text-white text-sm sm:text-base leading-none"
-                    : "whitespace-nowrap px-3.5 sm:px-5 py-2 rounded-full border border-[#5b3419] hover:bg-[#5b3419] hover:text-white transition duration-300 text-sm sm:text-base leading-none"
+                    : "whitespace-nowrap px-2.5 sm:px-3 py-2 rounded-full text-[#5b3419] font-medium hover:bg-[#5b3419]/10 transition duration-300 text-sm sm:text-base leading-none"
                 }
               >
                 {link.label}
               </Link>
             ))}
-            <span aria-hidden="true" className="w-px self-stretch bg-[#8b6a43]/25 mx-0.5" />
+            <span aria-hidden="true" className="w-px self-stretch bg-[#8b6a43]/25 mx-1" />
             <LanguagePills />
           </div>
         </div>
