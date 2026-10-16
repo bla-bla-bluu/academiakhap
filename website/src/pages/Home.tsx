@@ -98,34 +98,6 @@ function HomePage() {
         </div>
       </section>
 
-{/* Members */}
-<section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
-
-  {/* Community & Team Outside Ring */}
-  <p className="uppercase tracking-[0.3em] text-sm text-[#8b6a43] mb-5">
-    Community & Team
-  </p>
-
-  <div className="flex flex-col sm:flex-row gap-6">
-
-    <Link
-      to="/about"
-      className="flex-1 text-center text-2xl sm:text-3xl lg:text-4xl font-bold px-8 py-10 rounded-[2rem] border border-[#5b3419] bg-[#5b3419] text-white transition duration-300 hover:bg-[#f4efe4] hover:text-[#5b3419]"
-    >
-      Our Members
-    </Link>
-
-    <Link
-      to="/community"
-      className="flex-1 text-center text-2xl sm:text-3xl lg:text-4xl font-bold px-8 py-10 rounded-[2rem] border border-[#5b3419] bg-[#5b3419] text-white transition duration-300 hover:bg-[#f4efe4] hover:text-[#5b3419]"
-    >
-      Chaupal
-    </Link>
-
-  </div>
-
-</section>
-
      {/* Donation */}
 <section id="donate" className="bg-[#efe4cf] border-y border-[#8b6a43]/20 scroll-mt-6">
 
