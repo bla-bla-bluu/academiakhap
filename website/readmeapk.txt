@@ -9,7 +9,7 @@ Current web project:
 - Site name: Academia Khap
 - Live URL: https://academiakhap.vercel.app
 - Framework used on web: React + Vite + Tailwind CSS
-- Clean website project folder: /Users/dr/Desktop/khap/website
+- Clean website project folder: /path/to/khap/website
 - Android target: native Android app or cross-platform app matching this design
 
 

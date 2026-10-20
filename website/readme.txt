@@ -4,11 +4,11 @@ ACADEMIA KHAP WEBSITE PROJECT GUIDE
 This folder is the clean website project that should be uploaded to GitHub.
 
 Project folder:
-/Users/dr/Desktop/khap/website
+/path/to/khap/website
 
 Important:
 - Run all npm/build/deploy commands from this website folder.
-- Do not upload the parent /Users/dr/Desktop/khap folder if it contains loose images, old builds, node_modules, or the older nested khap project.
+- Do not upload the parent /path/to/khap folder if it contains loose images, old builds, node_modules, or the older nested khap project.
 - The parent folder is only a workspace/container now.
 
 
@@ -54,7 +54,7 @@ Android handoff:
 
 2) INSTALL AND RUN
 ------------------
-From /Users/dr/Desktop/khap/website:
+From /path/to/khap/website:
 
 npm install
 npm run dev
@@ -181,14 +181,14 @@ Do not upload these from the parent workspace:
 - temporary local files
 
 The clean upload target is:
-/Users/dr/Desktop/khap/website
+/path/to/khap/website
 
 
 9) QUICK CHECK
 --------------
 Before pushing or deploying:
 
-cd /Users/dr/Desktop/khap/website
+cd /path/to/khap/website
 npm run build
 
 If the build passes, routing/imports are generally correct.

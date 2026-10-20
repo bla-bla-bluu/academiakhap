@@ -8,3 +8,4 @@ dist-check
 .idea
 android
 ios
+.claude/

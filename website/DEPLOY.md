@@ -2,7 +2,7 @@
 
 The clean deployable project now lives in this folder:
 
-`/Users/dr/Desktop/khap/website`
+`/path/to/khap/website`
 
 ## Vercel Settings
 
@@ -22,7 +22,7 @@ Recommended: upload only the contents of `website/` to GitHub so unrelated files
 ## Local Check
 
 ```bash
-cd /Users/dr/Desktop/khap/website
+cd /path/to/khap/website
 npm install
 npm run build
 ```

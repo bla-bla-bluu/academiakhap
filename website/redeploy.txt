@@ -1,11 +1,11 @@
 Redeploy note:
 
 The website project has been moved to:
-/Users/dr/Desktop/khap/website
+/path/to/khap/website
 
 Run commands from that folder:
 
-cd /Users/dr/Desktop/khap/website
+cd /path/to/khap/website
 npm install
 npm run build
 
